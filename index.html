@@ -38,16 +38,16 @@
         stageWidth,
         stageHeight
       );
-      stage.fill;
-      stage.stroke = '#000';
+      stage.fill = '#2c3e50';
+      stage.stroke = '#ecf0f1';
       stage.linewidth = 1;
 
       // create grid
       for (let x = 0; x <= stageWidth; x += gridSize) {
-        two.makeLine(x, 0, x, stageHeight);
+        two.makeLine(x, 0, x, stageHeight).stroke = '#fff';
       }
       for (let y = 0; y <= stageHeight; y += gridSize) {
-        two.makeLine(0, y, stageWidth, y);
+        two.makeLine(0, y, stageWidth, y).stroke = '#fff';
       }
 
       // create players
@@ -74,6 +74,9 @@
 
       const enemy = {
         name: 'enemy',
+        prevDirection: 'up',
+        direction: 'up',
+        speed: 1,
         alive: true,
         group: createPlayerCircle(
           stageWidth - gridSize,
@@ -81,8 +84,10 @@
           '#e67e22'
         ),
         color: '#e67e22',
-        // TODO: Change me
-        currentOrigin: new Two.Vector(stageWidth - gridSize, 0),
+        currentOrigin: new Two.Vector(
+          stageWidth - gridSize,
+          stageWidth - gridSize
+        ),
         lightTrails: []
       };
 
@@ -103,7 +108,6 @@
         }
 
         const pr = player.group.getBoundingClientRect();
-
         let collidedWithTrail = players.some(_player => {
           return _player.lightTrails.some(trail => {
             const tr = trail.getBoundingClientRect();
@@ -115,9 +119,12 @@
                 pr.top > tr.bottom
               )
             ) {
-              // should be immune to your last created trail
+              // should be immune to your last 2 created trails
               const lt = player.lightTrails;
-              if (lt.length > 0 && lt[lt.length - 1].id === trail.id) {
+              if (
+                (lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
+                (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id)
+              ) {
                 // skip
               } else {
                 console.log(
@@ -143,7 +150,7 @@
           player.group.translation.y
         );
         lightTrail.stroke = player.color;
-        lightTrail.linewidth = playerSize;
+        lightTrail.linewidth = 6;
         lightTrail.opacity = 0.9;
         lightTrail.origin = player.currentOrigin;
 
@@ -157,7 +164,6 @@
         player.lightTrails.push(lightTrail);
       }
 
-      createLightTrail(enemy);
       const speedPerTick = 1; //playerSize;
       const leftVec = new Two.Vector(-speedPerTick, 0);
       const rightVec = new Two.Vector(speedPerTick, 0);
@@ -192,7 +198,7 @@
           createLightTrail(player);
           // Make circle on top of trail
           two.remove(player.group);
-          player.group = createPlayerCircle(trn.x, trn.y, user.color);
+          player.group = createPlayerCircle(trn.x, trn.y, player.color);
         }
         player.prevDirection = player.direction;
       }
@@ -206,9 +212,9 @@
 
       const lightTrails = [];
 
-      // user controls
       document.body.onkeydown = k => {
         switch (k.code) {
+          // user controls
           case 'KeyS':
             if (user.prevDirection !== 'up') {
               user.direction = 'down';
@@ -239,12 +245,44 @@
               user.speed -= 1;
             }
             break;
+          // enemy controls
+          case 'ArrowDown':
+            if (enemy.prevDirection !== 'up') {
+              enemy.direction = 'down';
+            }
+            break;
+          case 'ArrowUp':
+            if (enemy.prevDirection !== 'down') {
+              enemy.direction = 'up';
+            }
+            break;
+          case 'ArrowLeft':
+            if (enemy.prevDirection !== 'right') {
+              enemy.direction = 'left';
+            }
+            break;
+          case 'ArrowRight':
+            if (enemy.prevDirection !== 'left') {
+              enemy.direction = 'right';
+            }
+            break;
+          case 'Quote':
+            if (enemy.speed < 3) {
+              enemy.speed += 1;
+            }
+            break;
+          case 'Slash':
+            if (enemy.speed > 1) {
+              enemy.speed -= 1;
+            }
+            break;
         }
       };
       two
         .bind('update', frameCount => {
           if (players.every(p => p.alive)) {
             generateMove(user);
+            generateMove(enemy);
           }
         })
         .play();
