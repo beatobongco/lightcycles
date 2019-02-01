@@ -249,12 +249,12 @@ document.body.onkeydown = k => {
         enemy.direction = 'right';
       }
       break;
-    case 'Quote':
+    case 'BracketRight':
       if (enemy.speed < 3) {
         enemy.speed += 1;
       }
       break;
-    case 'Slash':
+    case 'BracketLeft':
       if (enemy.speed > 1) {
         enemy.speed -= 1;
       }
