@@ -3,20 +3,51 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>> lightmagnets $</title>
+    <title>> lightcycles_</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Press+Start+2P"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.6.0/two.js"></script>
     <style>
       #stage {
         margin: 0 auto;
         width: 500px;
       }
+      body {
+        font-family: 'Press Start 2P';
+        background-color: #000;
+        color: #fff;
+      }
+      h1 {
+        text-align: center;
+      }
+      .controls {
+        width: 500px;
+        margin: 0 auto;
+      }
     </style>
   </head>
 
   <body>
+    <h1 id="title">> lightcycles_</h1>
     <div id="stage"></div>
+    <div class="controls">
+      <p>
+        <p>Player 1 controls:</p>
+        <p>WASD - move</p>
+        <p>t - shift to faster gear</p>
+        <p>g - shift to slower gear</p>
+      </p>
+      <p>
+        <p>Player 2 controls:</p>
+        <p>arrow keys - move</p>
+        <p>' - shift to faster gear</p>
+        <p>/ - shift to slower gear</p>
+      </p>
+    </div>
     <script>
       const elem = document.getElementById('stage');
 
@@ -60,36 +91,43 @@
         return circle;
       }
 
-      const user = {
-        name: 'user',
-        prevDirection: 'down',
-        direction: 'down',
-        speed: 1,
-        alive: true,
-        group: createPlayerCircle(gridSize, gridSize, '#3498db'),
-        color: '#3498db',
-        currentOrigin: new Two.Vector(gridSize, gridSize),
-        lightTrails: []
-      };
+      function initUser() {
+        return {
+          name: 'user',
+          prevDirection: 'down',
+          direction: 'down',
+          speed: 1,
+          alive: true,
+          group: createPlayerCircle(gridSize, gridSize, '#3498db'),
+          color: '#3498db',
+          currentOrigin: new Two.Vector(gridSize, gridSize),
+          lightTrails: []
+        };
+      }
 
-      const enemy = {
-        name: 'enemy',
-        prevDirection: 'up',
-        direction: 'up',
-        speed: 1,
-        alive: true,
-        group: createPlayerCircle(
-          stageWidth - gridSize,
-          stageHeight - gridSize,
-          '#e67e22'
-        ),
-        color: '#e67e22',
-        currentOrigin: new Two.Vector(
-          stageWidth - gridSize,
-          stageWidth - gridSize
-        ),
-        lightTrails: []
-      };
+      const user = initUser();
+
+      function initEnemy() {
+        return {
+          name: 'enemy',
+          prevDirection: 'up',
+          direction: 'up',
+          speed: 1,
+          alive: true,
+          group: createPlayerCircle(
+            stageWidth - gridSize,
+            stageHeight - gridSize,
+            '#e67e22'
+          ),
+          color: '#e67e22',
+          currentOrigin: new Two.Vector(
+            stageWidth - gridSize,
+            stageWidth - gridSize
+          ),
+          lightTrails: []
+        };
+      }
+      const enemy = initEnemy();
 
       const players = [user, enemy];
 
@@ -193,6 +231,7 @@
           if (checkCollision(player)) {
             console.log(player.name, 'died.');
             player.alive = false;
+            two.remove(player.group);
             return;
           }
           createLightTrail(player);
@@ -214,6 +253,9 @@
 
       document.body.onkeydown = k => {
         switch (k.code) {
+          case 'Space':
+            // reset();
+            break;
           // user controls
           case 'KeyS':
             if (user.prevDirection !== 'up') {
