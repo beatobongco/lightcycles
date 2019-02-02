@@ -70,45 +70,31 @@ function createPlayerCircle(x, y, color, direction) {
   return group;
 }
 
-function initUser() {
+function initPlayer(name, x, y, defaultDirection, wins, color) {
   return {
-    name: 'user',
-    prevDirection: 'down',
-    direction: 'down',
+    name: name,
+    prevDirection: defaultDirection,
+    direction: defaultDirection,
     lastMoveFrame: 0,
     speed: 1,
     alive: true,
-    wins: 0,
-    group: createPlayerCircle(gridSize, gridSize, '#3498db', 'down'),
-    color: '#3498db',
-    currentOrigin: new Two.Vector(gridSize, gridSize),
+    wins: wins,
+    group: createPlayerCircle(x, y, color, defaultDirection),
+    color: color,
+    currentOrigin: new Two.Vector(x, y),
     lightTrails: []
   };
 }
 
-let user = initUser();
-
-function initEnemy() {
-  return {
-    name: 'enemy',
-    prevDirection: 'up',
-    direction: 'up',
-    lastMoveFrame: 0,
-    speed: 1,
-    alive: true,
-    wins: 0,
-    group: createPlayerCircle(
-      stageWidth - gridSize,
-      stageHeight - gridSize,
-      '#e67e22',
-      'up'
-    ),
-    color: '#e67e22',
-    currentOrigin: new Two.Vector(stageWidth - gridSize, stageWidth - gridSize),
-    lightTrails: []
-  };
-}
-let enemy = initEnemy();
+let user = initPlayer('P1', gridSize, gridSize, 'down', 0, '#3498db');
+let enemy = initPlayer(
+  'P2',
+  stageWidth - gridSize,
+  stageWidth - gridSize,
+  'up',
+  0,
+  '#e67e22'
+);
 
 let players = [user, enemy];
 
@@ -239,8 +225,15 @@ function reset() {
         two.remove(l);
       });
     });
-    user = initUser();
-    enemy = initEnemy();
+    user = initPlayer('P1', gridSize, gridSize, 'down', user.wins, '#3498db');
+    enemy = initPlayer(
+      'P2',
+      stageWidth - gridSize,
+      stageWidth - gridSize,
+      'up',
+      enemy.wins,
+      '#e67e22'
+    );
     players = [user, enemy];
     two.update();
   }
