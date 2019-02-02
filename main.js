@@ -237,16 +237,18 @@ function runTimes(n) {
 }
 
 function reset() {
-  players.forEach(p => {
-    two.remove(p.group);
-    p.lightTrails.forEach(l => {
-      two.remove(l);
+  if (players.some(p => !p.alive)) {
+    players.forEach(p => {
+      two.remove(p.group);
+      p.lightTrails.forEach(l => {
+        two.remove(l);
+      });
     });
-  });
-  user = initUser();
-  enemy = initEnemy();
-  players = [user, enemy];
-  two.update();
+    user = initUser();
+    enemy = initEnemy();
+    players = [user, enemy];
+    two.update();
+  }
 }
 
 function playerMove(player, direction) {
@@ -263,7 +265,7 @@ function playerMove(player, direction) {
 
 document.body.onkeydown = k => {
   switch (k.code) {
-    case 'KeyM':
+    case 'KeyR':
       reset();
       break;
     // user controls
