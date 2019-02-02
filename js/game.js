@@ -87,7 +87,8 @@ function initPlayer(name, x, y, defaultDirection, wins, color, trimColor) {
     color: color,
     trimColor: trimColor,
     currentOrigin: new Two.Vector(x, y),
-    lightTrails: []
+    lightTrails: [],
+    corpse: null
   };
 }
 
@@ -131,7 +132,6 @@ function checkCollision(player) {
     trn.y >= stageHeight - hitboxSize || // down limit
     trn.y <= 0 + hitboxSize // up limit
   ) {
-    console.log('Hit the arena');
     return true;
   }
 
@@ -203,6 +203,12 @@ function isMoveLegal(player, direction) {
   );
 }
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function generateMove(player, frameCount) {
   const cooldown = 6;
   // only register changes of directions every <cooldown> frames
@@ -236,9 +242,48 @@ function generateMove(player, frameCount) {
         break;
     }
     if (checkCollision(player)) {
-      console.log(player.name, 'died.');
       player.alive = false;
       two.remove(player.group);
+      // create a corpse
+      const pieces = [];
+      const { offsetX, offsetY } = getOffsets(direction, -1);
+      const spreadFactor = 6;
+      // create a random amount of pieces that fly in the opposite direction
+      // player is facing. Size, distance, and quantity affected by speed
+      for (
+        let i = 0;
+        i < getRandomInt(1 + player.speed, 5 + player.speed);
+        i++
+      ) {
+        const poly = two.makePolygon(
+          trn.x + getRandomInt(-spreadFactor, spreadFactor),
+          trn.y + getRandomInt(-spreadFactor, spreadFactor),
+          getRandomInt(2, 6 - player.speed), //size
+          3
+        );
+        poly.fill = player.trimColor;
+        poly.noStroke();
+        poly.rotation = getRandomInt(-10, 10);
+
+        const baseX = offsetX * player.speed;
+        const baseY = offsetY * player.speed;
+
+        poly.translation.addSelf(
+          new Two.Vector(
+            getRandomInt(
+              baseX,
+              baseX * (spreadFactor + player.speed) + spreadFactor
+            )
+          ),
+          getRandomInt(
+            baseY,
+            baseY * (spreadFactor + player.speed) + spreadFactor
+          )
+        );
+        pieces.push(poly);
+      }
+      const corpse = two.makeGroup(...pieces);
+      player.corpse = corpse;
       return;
     }
     createLightTrail(
