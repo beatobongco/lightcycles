@@ -66,7 +66,7 @@ document.body.onkeydown = k => {
       userHud.setPlayer(user);
       enemyHud.setPlayer(enemy);
       gameOver = false;
-      document.getElementById('gameOverText').style.display = 'none';
+      document.getElementById('gameOverContainer').style.display = 'none';
       two.update();
     }
   }

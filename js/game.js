@@ -264,9 +264,8 @@ two
           enemy.wins += 1;
           gameOverText = `${enemy.name} WINS!`;
         }
-        const got = document.getElementById('gameOverText');
-        got.style.display = 'block';
-        got.innerText = gameOverText;
+        document.getElementById('gameOverContainer').style.display = 'block';
+        document.getElementById('gameOverText').innerText = gameOverText;
         gameOver = true;
       }
     }
