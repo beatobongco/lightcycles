@@ -1,0 +1,47 @@
+/* apply a natural box layout model to all elements, but allowing components to change */
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+#stage {
+  margin: 0 auto;
+}
+
+body {
+  font-family: 'Press Start 2P';
+  background-color: #000;
+  color: #fff;
+}
+
+h1 {
+  text-align: center;
+}
+
+.controls {
+  margin: 0 auto;
+  width: 500px;
+  display: flex;
+}
+
+.controls > .p2 {
+  margin-left: 1rem;
+}
+
+.controls > .c-box {
+  width: 250px;
+}
+
+.game {
+  display: flex;
+  width: 675px;
+  margin: 0 auto;
+}
+
+.hud {
+  text-align: center;
+}

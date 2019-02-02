@@ -6,40 +6,14 @@
     <title>> lightcycles_</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+    />
+    <link
       href="https://fonts.googleapis.com/css?family=Press+Start+2P"
       rel="stylesheet"
     />
-    <style>
-      #stage {
-        margin: 0 auto;
-        width: 500px;
-      }
-
-      body {
-        font-family: 'Press Start 2P';
-        background-color: #000;
-        color: #fff;
-      }
-
-      h1 {
-        text-align: center;
-      }
-
-      .controls {
-        margin: 0 auto;
-        width: 500px;
-      }
-
-      .game {
-        display: flex;
-        width: 675px;
-        margin: 0 auto;
-      }
-
-      .hud {
-        text-align: center;
-      }
-    </style>
+    <link rel="stylesheet" href="css/main.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.6.0/two.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.22/vue.min.js"></script>
   </head>
@@ -54,18 +28,18 @@
       </div>
     </div>
     <div class="controls">
-      <div class="p1">
-        <p class="title">P1 controls</p>
+      <div class="c-box p1">
+        <p>P1 controls</p>
         <p>WASD - move</p>
-        <p>T - shift to faster gear</p>
-        <p>Y - shift to slower gear</p>
+        <p>T - shift up</p>
+        <p>Y - shift down</p>
       </div>
       <br />
-      <div class="p2">
-        <p>Player 2 controls:</p>
+      <div class="c-box p2">
+        <p>P2 controls</p>
         <p>arrow keys - move</p>
-        <p>] - shift to faster gear</p>
-        <p>[ - shift to slower gear</p>
+        <p>] - shift up</p>
+        <p>[ - shift down</p>
       </div>
     </div>
     <script src="js/game.js"></script>
