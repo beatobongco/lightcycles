@@ -297,7 +297,7 @@ function generateMove(player, frameCount) {
       trn.y,
       player.color,
       player.trimColor,
-      player.direction
+      direction
     );
   }
 }
