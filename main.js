@@ -31,13 +31,43 @@ for (let y = 0; y <= stageHeight; y += gridSize) {
 }
 
 // create players
+// TODO: Make small hitboxes on the head of the circle to avoid colliding when turning fast
 const playerSize = 6;
-function createPlayerCircle(x, y, color) {
+const hitboxSize = 5;
+const hitboxOffset = 3;
+function createPlayerCircle(x, y, color, direction) {
   const circle = two.makeCircle(x, y, playerSize);
   circle.stroke = color;
   circle.fill = '#fff';
   circle.linewidth = 2;
-  return circle;
+  let offsetX = 0;
+  let offsetY = 0;
+  switch (direction) {
+    case 'up':
+      offsetY = -hitboxOffset;
+      break;
+    case 'down':
+      offsetY = hitboxOffset;
+      break;
+    case 'left':
+      offsetX = -hitboxOffset;
+      break;
+    case 'right':
+      offsetX = hitboxOffset;
+      break;
+  }
+  const hitbox = two.makeRectangle(
+    x + offsetX,
+    y + offsetY,
+    hitboxSize,
+    hitboxSize
+  );
+  hitbox.fill = '#FF0000';
+  hitbox.noStroke();
+  const group = two.makeGroup(circle, hitbox);
+  group.center();
+  group.translation.set(x, y);
+  return group;
 }
 
 function initUser() {
@@ -45,62 +75,65 @@ function initUser() {
     name: 'user',
     prevDirection: 'down',
     direction: 'down',
+    lastMoveFrame: 0,
     speed: 1,
     alive: true,
-    group: createPlayerCircle(gridSize, gridSize, '#3498db'),
+    group: createPlayerCircle(gridSize, gridSize, '#3498db', 'down'),
     color: '#3498db',
     currentOrigin: new Two.Vector(gridSize, gridSize),
     lightTrails: []
   };
 }
 
-const user = initUser();
+let user = initUser();
 
 function initEnemy() {
   return {
     name: 'enemy',
     prevDirection: 'up',
     direction: 'up',
+    lastMoveFrame: 0,
     speed: 1,
     alive: true,
     group: createPlayerCircle(
       stageWidth - gridSize,
       stageHeight - gridSize,
-      '#e67e22'
+      '#e67e22',
+      'up'
     ),
     color: '#e67e22',
     currentOrigin: new Two.Vector(stageWidth - gridSize, stageWidth - gridSize),
     lightTrails: []
   };
 }
-const enemy = initEnemy();
+let enemy = initEnemy();
 
-const players = [user, enemy];
+let players = [user, enemy];
 
 two.update();
 
 function checkCollision(player) {
   const trn = player.group.translation;
   if (
-    trn.x >= stageWidth - playerSize || // right limit
-    trn.x <= 0 + playerSize || // left limit
-    trn.y >= stageHeight - playerSize || // down limit
-    trn.y <= 0 + playerSize // up limit
+    trn.x >= stageWidth - hitboxSize || // right limit
+    trn.x <= 0 + hitboxSize || // left limit
+    trn.y >= stageHeight - hitboxSize || // down limit
+    trn.y <= 0 + hitboxSize // up limit
   ) {
     console.log('Hit the arena');
     return true;
   }
 
-  const pr = player.group.getBoundingClientRect();
+  const hitboxRect = player.group._collection[1].getBoundingClientRect();
   let collidedWithTrail = players.some(_player => {
     return _player.lightTrails.some(trail => {
-      const tr = trail.getBoundingClientRect();
+      const trailHitbox = trail.getBoundingClientRect();
       if (
         !(
-          pr.right < tr.left ||
-          pr.left > tr.right ||
-          pr.bottom < tr.top ||
-          pr.top > tr.bottom
+          hitboxRect.right < trailHitbox.left ||
+          hitboxRect.left > trailHitbox.right ||
+          hitboxRect.bottom < trailHitbox.top ||
+          hitboxRect.top > trailHitbox.bottom
         )
       ) {
         // should be immune to your last 2 created trails
@@ -121,7 +154,6 @@ function checkCollision(player) {
 }
 
 function createLightTrail(player) {
-  // deferred creation of lighttrails
   const lightTrail = two.makeLine(
     player.currentOrigin.x,
     player.currentOrigin.y,
@@ -149,13 +181,23 @@ const rightVec = new Two.Vector(speedPerTick, 0);
 const upVec = new Two.Vector(0, -speedPerTick);
 const downVec = new Two.Vector(0, speedPerTick);
 
-function generateMove(player) {
-  const trn = player.group.translation;
-  if (player.direction !== player.prevDirection) {
+function generateMove(player, frameCount) {
+  // only register changes of directions every n frames
+  let direction = player.direction;
+  const cooldown = 6;
+  if (
+    player.direction !== player.prevDirection &&
+    frameCount - player.lastMoveFrame > cooldown
+  ) {
     player.currentOrigin = player.group.translation.clone();
+    player.prevDirection = direction;
+    player.lastMoveFrame = frameCount;
+  } else {
+    direction = player.prevDirection;
   }
+  const trn = player.group.translation;
   for (let i = 0; i < player.speed; i++) {
-    switch (player.direction) {
+    switch (direction) {
       case 'left':
         trn.addSelf(leftVec);
         break;
@@ -178,9 +220,13 @@ function generateMove(player) {
     createLightTrail(player);
     // Make circle on top of trail
     two.remove(player.group);
-    player.group = createPlayerCircle(trn.x, trn.y, player.color);
+    player.group = createPlayerCircle(
+      trn.x,
+      trn.y,
+      player.color,
+      player.direction
+    );
   }
-  player.prevDirection = player.direction;
 }
 
 function runTimes(n) {
@@ -190,33 +236,48 @@ function runTimes(n) {
   }
 }
 
-const lightTrails = [];
+function reset() {
+  players.forEach(p => {
+    two.remove(p.group);
+    p.lightTrails.forEach(l => {
+      two.remove(l);
+    });
+  });
+  user = initUser();
+  enemy = initEnemy();
+  players = [user, enemy];
+  two.update();
+}
+
+function playerMove(player, direction) {
+  // dont allow movements in opposite directions
+  if (
+    (direction === 'down' && player.direction !== 'up') ||
+    (direction === 'up' && player.direction !== 'down') ||
+    (direction === 'right' && player.direction !== 'left') ||
+    (direction === 'left' && player.direction !== 'right')
+  ) {
+    player.direction = direction;
+  }
+}
 
 document.body.onkeydown = k => {
   switch (k.code) {
-    case 'Space':
-      // reset();
+    case 'KeyM':
+      reset();
       break;
     // user controls
     case 'KeyS':
-      if (user.prevDirection !== 'up') {
-        user.direction = 'down';
-      }
+      playerMove(user, 'down');
       break;
     case 'KeyW':
-      if (user.prevDirection !== 'down') {
-        user.direction = 'up';
-      }
+      playerMove(user, 'up');
       break;
     case 'KeyA':
-      if (user.prevDirection !== 'right') {
-        user.direction = 'left';
-      }
+      playerMove(user, 'left');
       break;
     case 'KeyD':
-      if (user.prevDirection !== 'left') {
-        user.direction = 'right';
-      }
+      playerMove(user, 'right');
       break;
     case 'KeyT':
       if (user.speed < 3) {
@@ -230,24 +291,16 @@ document.body.onkeydown = k => {
       break;
     // enemy controls
     case 'ArrowDown':
-      if (enemy.prevDirection !== 'up') {
-        enemy.direction = 'down';
-      }
+      playerMove(enemy, 'down');
       break;
     case 'ArrowUp':
-      if (enemy.prevDirection !== 'down') {
-        enemy.direction = 'up';
-      }
+      playerMove(enemy, 'up');
       break;
     case 'ArrowLeft':
-      if (enemy.prevDirection !== 'right') {
-        enemy.direction = 'left';
-      }
+      playerMove(enemy, 'left');
       break;
     case 'ArrowRight':
-      if (enemy.prevDirection !== 'left') {
-        enemy.direction = 'right';
-      }
+      playerMove(enemy, 'right');
       break;
     case 'BracketRight':
       if (enemy.speed < 3) {
@@ -261,11 +314,12 @@ document.body.onkeydown = k => {
       break;
   }
 };
+
 two
   .bind('update', frameCount => {
     if (players.every(p => p.alive)) {
-      generateMove(user);
-      generateMove(enemy);
+      generateMove(user, frameCount);
+      generateMove(enemy, frameCount);
     }
   })
   .play();
