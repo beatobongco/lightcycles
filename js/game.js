@@ -241,7 +241,10 @@ function generateMove(player, frameCount) {
       two.remove(player.group);
       return;
     }
-    createLightTrail(player, getOffsets(direction, playerSize / 2));
+    createLightTrail(
+      player,
+      getOffsets(direction, (playerSize + (player.speed - 1)) / 2)
+    );
     // Make circle on top of trail
     two.remove(player.group);
     player.group = createPlayerCircle(
