@@ -10,6 +10,7 @@ html {
 
 #stage {
   margin: 0 auto;
+  position: relative;
 }
 
 body {
@@ -52,4 +53,12 @@ h1 {
 
 .hud {
   text-align: center;
+}
+
+#gameOverText {
+  margin-top: 225px;
+  width: 500px;
+  text-align: center;
+  position: absolute;
+  display: none;
 }

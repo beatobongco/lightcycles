@@ -61,6 +61,21 @@ document.body.onkeydown = k => {
         break;
     }
   } else if (k.code === 'KeyR') {
-    reset();
+    if (players.some(p => !p.alive)) {
+      players.forEach(p => {
+        two.remove(p.group);
+        p.lightTrails.forEach(l => {
+          two.remove(l);
+        });
+      });
+      user = initUser(user.wins);
+      enemy = initEnemy(enemy.wins);
+      players = [user, enemy];
+      userHud.setPlayer(user);
+      enemyHud.setPlayer(enemy);
+      gameOver = false;
+      document.getElementById('gameOverText').style.display = 'none';
+      two.update();
+    }
   }
 };

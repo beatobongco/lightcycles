@@ -236,24 +236,6 @@ function generateMove(player, frameCount) {
   }
 }
 
-function reset() {
-  if (players.some(p => !p.alive)) {
-    players.forEach(p => {
-      two.remove(p.group);
-      p.lightTrails.forEach(l => {
-        two.remove(l);
-      });
-    });
-    user = initUser(user.wins);
-    enemy = initEnemy(enemy.wins);
-    players = [user, enemy];
-    userHud.setPlayer(user);
-    enemyHud.setPlayer(enemy);
-    gameOver = false;
-    two.update();
-  }
-}
-
 let gameOver = false;
 two
   .bind('update', frameCount => {
@@ -262,11 +244,17 @@ two
       generateMove(enemy, frameCount);
     } else {
       if (!gameOver) {
+        let gameOverText = 'DRAW!';
         if (user.alive && !enemy.alive) {
           user.wins += 1;
+          gameOverText = `${user.name} WINS!`;
         } else if (enemy.alive && !user.alive) {
           enemy.wins += 1;
+          gameOverText = `${enemy.name} WINS!`;
         }
+        const got = document.getElementById('gameOverText');
+        got.style.display = 'block';
+        got.innerText = gameOverText;
         gameOver = true;
       }
     }
