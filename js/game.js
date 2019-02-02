@@ -30,6 +30,26 @@ for (let y = 0; y <= stageHeight; y += gridSize) {
   two.makeLine(0, y, stageWidth, y).stroke = '#fff';
 }
 
+function getOffsets(direction, baseAmount) {
+  let offsetX = 0;
+  let offsetY = 0;
+  switch (direction) {
+    case 'up':
+      offsetY = -baseAmount;
+      break;
+    case 'down':
+      offsetY = baseAmount;
+      break;
+    case 'left':
+      offsetX = -baseAmount;
+      break;
+    case 'right':
+      offsetX = baseAmount;
+      break;
+  }
+  return { offsetX, offsetY };
+}
+
 // create players
 const playerSize = 6;
 const hitboxSize = 5;
@@ -39,22 +59,7 @@ function createPlayerCircle(x, y, color, trimColor, direction) {
   circle.stroke = color;
   circle.fill = trimColor;
   circle.linewidth = 2;
-  let offsetX = 0;
-  let offsetY = 0;
-  switch (direction) {
-    case 'up':
-      offsetY = -hitboxOffset;
-      break;
-    case 'down':
-      offsetY = hitboxOffset;
-      break;
-    case 'left':
-      offsetX = -hitboxOffset;
-      break;
-    case 'right':
-      offsetX = hitboxOffset;
-      break;
-  }
+  const { offsetX, offsetY } = getOffsets(direction, hitboxOffset);
   const hitbox = two.makeRectangle(
     x + offsetX,
     y + offsetY,
@@ -159,12 +164,13 @@ function checkCollision(player) {
   return collidedWithTrail;
 }
 
-function createLightTrail(player) {
+function createLightTrail(player, offsets) {
+  const { offsetX, offsetY } = offsets;
   const lightTrail = two.makeLine(
     player.currentOrigin.x,
     player.currentOrigin.y,
-    player.group.translation.x,
-    player.group.translation.y
+    player.group.translation.x + offsetX,
+    player.group.translation.y + offsetY
   );
   lightTrail.stroke = player.color;
   lightTrail.linewidth = 6;
@@ -235,7 +241,7 @@ function generateMove(player, frameCount) {
       two.remove(player.group);
       return;
     }
-    createLightTrail(player);
+    createLightTrail(player, getOffsets(direction, playerSize / 2));
     // Make circle on top of trail
     two.remove(player.group);
     player.group = createPlayerCircle(
