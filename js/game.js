@@ -31,7 +31,6 @@ for (let y = 0; y <= stageHeight; y += gridSize) {
 }
 
 // create players
-// TODO: Make small hitboxes on the head of the circle to avoid colliding when turning fast
 const playerSize = 6;
 const hitboxSize = 5;
 const hitboxOffset = 3;
