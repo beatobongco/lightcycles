@@ -235,20 +235,27 @@ function reset() {
       '#e67e22'
     );
     players = [user, enemy];
+    userHud.setPlayer(user);
+    enemyHud.setPlayer(enemy);
+    gameOver = false;
     two.update();
   }
 }
 
+let gameOver = false;
 two
   .bind('update', frameCount => {
     if (players.every(p => p.alive)) {
       generateMove(user, frameCount);
       generateMove(enemy, frameCount);
     } else {
-      if (user.alive && !enemy.alive) {
-        user.wins += 1;
-      } else if (enemy.alive && !user.alive) {
-        enemy.wins += 1;
+      if (!gameOver) {
+        if (user.alive && !enemy.alive) {
+          user.wins += 1;
+        } else if (enemy.alive && !user.alive) {
+          enemy.wins += 1;
+        }
+        gameOver = true;
       }
     }
   })
