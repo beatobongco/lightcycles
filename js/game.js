@@ -187,14 +187,26 @@ const rightVec = new Two.Vector(speedPerTick, 0);
 const upVec = new Two.Vector(0, -speedPerTick);
 const downVec = new Two.Vector(0, speedPerTick);
 
+function isMoveLegal(player, direction) {
+  // dont allow movements in opposite directions
+  return (
+    (direction === 'down' && player.prevDirection !== 'up') ||
+    (direction === 'up' && player.prevDirection !== 'down') ||
+    (direction === 'right' && player.prevDirection !== 'left') ||
+    (direction === 'left' && player.prevDirection !== 'right')
+  );
+}
+
 function generateMove(player, frameCount) {
   const cooldown = 6;
   // only register changes of directions every <cooldown> frames
   let direction = player.direction;
   if (
     player.direction !== player.prevDirection &&
-    frameCount - player.lastMoveFrame > cooldown
+    frameCount - player.lastMoveFrame > cooldown &&
+    isMoveLegal(player, direction)
   ) {
+    // set a new origin for the light trail
     player.currentOrigin = player.group.translation.clone();
     player.prevDirection = direction;
     player.lastMoveFrame = frameCount;
