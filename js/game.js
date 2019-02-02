@@ -175,16 +175,16 @@ function createLightTrail(player) {
   player.lightTrails.push(lightTrail);
 }
 
-const speedPerTick = 1; //playerSize;
+const speedPerTick = 1;
 const leftVec = new Two.Vector(-speedPerTick, 0);
 const rightVec = new Two.Vector(speedPerTick, 0);
 const upVec = new Two.Vector(0, -speedPerTick);
 const downVec = new Two.Vector(0, speedPerTick);
 
 function generateMove(player, frameCount) {
-  // only register changes of directions every n frames
-  let direction = player.direction;
   const cooldown = 6;
+  // only register changes of directions every <cooldown> frames
+  let direction = player.direction;
   if (
     player.direction !== player.prevDirection &&
     frameCount - player.lastMoveFrame > cooldown
@@ -229,13 +229,6 @@ function generateMove(player, frameCount) {
   }
 }
 
-function runTimes(n) {
-  for (let i = 0; i < n; i++) {
-    generateMove(user);
-    two.update();
-  }
-}
-
 function reset() {
   if (players.some(p => !p.alive)) {
     players.forEach(p => {
@@ -250,72 +243,6 @@ function reset() {
     two.update();
   }
 }
-
-function playerMove(player, direction) {
-  // dont allow movements in opposite directions
-  if (
-    (direction === 'down' && player.direction !== 'up') ||
-    (direction === 'up' && player.direction !== 'down') ||
-    (direction === 'right' && player.direction !== 'left') ||
-    (direction === 'left' && player.direction !== 'right')
-  ) {
-    player.direction = direction;
-  }
-}
-
-document.body.onkeydown = k => {
-  switch (k.code) {
-    case 'KeyR':
-      reset();
-      break;
-    // user controls
-    case 'KeyS':
-      playerMove(user, 'down');
-      break;
-    case 'KeyW':
-      playerMove(user, 'up');
-      break;
-    case 'KeyA':
-      playerMove(user, 'left');
-      break;
-    case 'KeyD':
-      playerMove(user, 'right');
-      break;
-    case 'KeyT':
-      if (user.speed < 3) {
-        user.speed += 1;
-      }
-      break;
-    case 'KeyG':
-      if (user.speed > 1) {
-        user.speed -= 1;
-      }
-      break;
-    // enemy controls
-    case 'ArrowDown':
-      playerMove(enemy, 'down');
-      break;
-    case 'ArrowUp':
-      playerMove(enemy, 'up');
-      break;
-    case 'ArrowLeft':
-      playerMove(enemy, 'left');
-      break;
-    case 'ArrowRight':
-      playerMove(enemy, 'right');
-      break;
-    case 'BracketRight':
-      if (enemy.speed < 3) {
-        enemy.speed += 1;
-      }
-      break;
-    case 'BracketLeft':
-      if (enemy.speed > 1) {
-        enemy.speed -= 1;
-      }
-      break;
-  }
-};
 
 two
   .bind('update', frameCount => {
