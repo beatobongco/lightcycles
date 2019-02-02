@@ -34,10 +34,10 @@ for (let y = 0; y <= stageHeight; y += gridSize) {
 const playerSize = 6;
 const hitboxSize = 5;
 const hitboxOffset = 3;
-function createPlayerCircle(x, y, color, direction) {
+function createPlayerCircle(x, y, color, trimColor, direction) {
   const circle = two.makeCircle(x, y, playerSize);
   circle.stroke = color;
-  circle.fill = '#fff';
+  circle.fill = trimColor;
   circle.linewidth = 2;
   let offsetX = 0;
   let offsetY = 0;
@@ -61,7 +61,7 @@ function createPlayerCircle(x, y, color, direction) {
     hitboxSize,
     hitboxSize
   );
-  hitbox.fill = '#FF0000';
+  hitbox.noFill();
   hitbox.noStroke();
   const group = two.makeGroup(circle, hitbox);
   group.center();
@@ -69,7 +69,7 @@ function createPlayerCircle(x, y, color, direction) {
   return group;
 }
 
-function initPlayer(name, x, y, defaultDirection, wins, color) {
+function initPlayer(name, x, y, defaultDirection, wins, color, trimColor) {
   return {
     name: name,
     prevDirection: defaultDirection,
@@ -78,22 +78,41 @@ function initPlayer(name, x, y, defaultDirection, wins, color) {
     speed: 1,
     alive: true,
     wins: wins,
-    group: createPlayerCircle(x, y, color, defaultDirection),
+    group: createPlayerCircle(x, y, color, trimColor, defaultDirection),
     color: color,
+    trimColor: trimColor,
     currentOrigin: new Two.Vector(x, y),
     lightTrails: []
   };
 }
 
-let user = initPlayer('P1', gridSize, gridSize, 'down', 0, '#3498db');
-let enemy = initPlayer(
-  'P2',
-  stageWidth - gridSize,
-  stageWidth - gridSize,
-  'up',
-  0,
-  '#e67e22'
-);
+function initUser(wins) {
+  return initPlayer(
+    'P1',
+    gridSize,
+    gridSize,
+    'down',
+    wins,
+    '#3498db',
+    '#ffffff'
+  );
+}
+
+let user = initUser(0);
+
+function initEnemy(wins) {
+  return initPlayer(
+    'P2',
+    stageWidth - gridSize,
+    stageWidth - gridSize,
+    'up',
+    wins,
+    '#e67e22',
+    '#000000'
+  );
+}
+
+let enemy = initEnemy(0);
 
 let players = [user, enemy];
 
@@ -211,6 +230,7 @@ function generateMove(player, frameCount) {
       trn.x,
       trn.y,
       player.color,
+      player.trimColor,
       player.direction
     );
   }
@@ -224,15 +244,8 @@ function reset() {
         two.remove(l);
       });
     });
-    user = initPlayer('P1', gridSize, gridSize, 'down', user.wins, '#3498db');
-    enemy = initPlayer(
-      'P2',
-      stageWidth - gridSize,
-      stageWidth - gridSize,
-      'up',
-      enemy.wins,
-      '#e67e22'
-    );
+    user = initUser(user.wins);
+    enemy = initEnemy(enemy.wins);
     players = [user, enemy];
     userHud.setPlayer(user);
     enemyHud.setPlayer(enemy);
