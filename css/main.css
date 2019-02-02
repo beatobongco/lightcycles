@@ -25,15 +25,23 @@ h1 {
 .controls {
   margin: 0 auto;
   width: 500px;
+}
+
+.player-controls {
   display: flex;
 }
 
-.controls > .p2 {
+.player-controls > .p2 {
   margin-left: 1rem;
 }
 
-.controls > .c-box {
+.player-controls > .c-box {
   width: 250px;
+  font-size: 80%;
+}
+
+.controls > .tips {
+  text-align: center;
 }
 
 .game {
