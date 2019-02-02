@@ -66,7 +66,8 @@ function createPlayerCircle(x, y, color, trimColor, direction) {
     hitboxSize,
     hitboxSize
   );
-  hitbox.noFill();
+  // hitbox.noFill();
+  hitbox.fill = '#FF0000';
   hitbox.noStroke();
   const group = two.makeGroup(circle, hitbox);
   group.center();
@@ -165,12 +166,13 @@ function checkCollision(player) {
 }
 
 function createLightTrail(player, offsets) {
-  const { offsetX, offsetY } = offsets;
+  // TODO: find a way to fill in the line without causing crashes
+  // due to excess hitbox
   const lightTrail = two.makeLine(
     player.currentOrigin.x,
     player.currentOrigin.y,
-    player.group.translation.x + offsetX,
-    player.group.translation.y + offsetY
+    player.group.translation.x,
+    player.group.translation.y
   );
   lightTrail.stroke = player.color;
   lightTrail.linewidth = 6;
@@ -286,10 +288,7 @@ function generateMove(player, frameCount) {
       player.corpse = corpse;
       return;
     }
-    createLightTrail(
-      player,
-      getOffsets(direction, (playerSize + (player.speed - 1)) / 2)
-    );
+    createLightTrail(player);
     // Make circle on top of trail
     two.remove(player.group);
     player.group = createPlayerCircle(
