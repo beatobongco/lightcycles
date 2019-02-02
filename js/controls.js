@@ -1,13 +1,5 @@
 function playerMove(player, direction) {
-  // dont allow movements in opposite directions
-  if (
-    (direction === 'down' && player.direction !== 'up') ||
-    (direction === 'up' && player.direction !== 'down') ||
-    (direction === 'right' && player.direction !== 'left') ||
-    (direction === 'left' && player.direction !== 'right')
-  ) {
-    player.direction = direction;
-  }
+  player.direction = direction;
 }
 
 document.body.onkeydown = k => {
