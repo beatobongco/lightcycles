@@ -78,6 +78,7 @@ function initUser() {
     lastMoveFrame: 0,
     speed: 1,
     alive: true,
+    wins: 0,
     group: createPlayerCircle(gridSize, gridSize, '#3498db', 'down'),
     color: '#3498db',
     currentOrigin: new Two.Vector(gridSize, gridSize),
@@ -95,6 +96,7 @@ function initEnemy() {
     lastMoveFrame: 0,
     speed: 1,
     alive: true,
+    wins: 0,
     group: createPlayerCircle(
       stageWidth - gridSize,
       stageHeight - gridSize,
@@ -249,6 +251,12 @@ two
     if (players.every(p => p.alive)) {
       generateMove(user, frameCount);
       generateMove(enemy, frameCount);
+    } else {
+      if (user.alive && !enemy.alive) {
+        user.wins += 1;
+      } else if (enemy.alive && !user.alive) {
+        enemy.wins += 1;
+      }
     }
   })
   .play();
