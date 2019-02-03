@@ -96,7 +96,7 @@ function initPlayer(name, x, y, defaultDirection, wins, color, trimColor) {
 function initUser(wins) {
   return initPlayer(
     'P1',
-    gridSize,
+    Math.round(stageWidth / 2),
     gridSize,
     'down',
     wins,
@@ -110,7 +110,7 @@ let user = initUser(0);
 function initEnemy(wins) {
   return initPlayer(
     'P2',
-    stageWidth - gridSize,
+    Math.round(stageWidth / 2),
     stageWidth - gridSize,
     'up',
     wins,
