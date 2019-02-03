@@ -41,8 +41,12 @@ h1 {
   font-size: 80%;
 }
 
-.controls > .tip {
-  text-align: center;
+.tips {
+  font-size: 80%;
+}
+
+.tips > li {
+  margin: 10px 0;
 }
 
 .game {
