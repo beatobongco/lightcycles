@@ -8,6 +8,21 @@ function pShift(player, gear) {
 }
 
 document.body.onkeydown = k => {
+  if (k.code === 'KeyG') {
+    const docElem = document.documentElement;
+    if (docElem.requestFullscreen) {
+      docElem.requestFullscreen();
+    } else if (docElem.mozRequestFullScreen) {
+      /* Firefox */
+      docElem.mozRequestFullScreen();
+    } else if (docElem.webkitRequestFullscreen) {
+      /* Chrome, Safari and Opera */
+      docElem.webkitRequestFullscreen();
+    } else if (docElem.msRequestFullscreen) {
+      /* IE/Edge */
+      docElem.msRequestFullscreen();
+    }
+  }
   if (!gameOver) {
     switch (k.code) {
       // user controls
