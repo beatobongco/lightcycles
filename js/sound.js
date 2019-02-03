@@ -1,3 +1,16 @@
+const sounds = [
+  'sound/speed1.mp3',
+  'sound/speed2.mp3',
+  'sound/speed3.mp3',
+  'sound/shiftup.mp3',
+  'sound/shiftdown.mp3',
+  'sound/derezz.mp3'
+];
+
+sounds.forEach(s => {
+  var _sound = new Audio(s);
+});
+
 function initPlayerSounds() {
   players.forEach(player => {
     player.sound.src = `sound/speed${player.speed}.mp3`;
