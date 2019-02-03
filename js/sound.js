@@ -9,6 +9,9 @@ const sounds = [
 
 sounds.forEach(s => {
   var _sound = new Audio(s);
+  _sound.addEventListener('canplaythrough', () => {
+    console.log(s, 'loaded');
+  });
 });
 
 function initPlayerSounds() {
