@@ -51,8 +51,4 @@ function playDerezzSound() {
   derezz.play();
 }
 
-// const eol = new Audio('sound/eol.mp3');
-// eol.loop = true;
-// eol.play();
-
 initPlayerSounds();
