@@ -70,3 +70,12 @@ h1 {
 .smaller {
   font-size: 50%;
 }
+
+.centered {
+  text-align: center;
+}
+
+a.unstyled {
+  text-decoration: none;
+  color: #fff;
+}
