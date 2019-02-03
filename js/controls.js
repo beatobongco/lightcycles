@@ -3,7 +3,7 @@ function playerMove(player, direction) {
 }
 
 function pShift(player, gear) {
-  playShiftSound();
+  playShiftSound(gear);
   player.speed += gear;
 }
 

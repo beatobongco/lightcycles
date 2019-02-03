@@ -1,6 +1,6 @@
 function initPlayerSounds() {
   players.forEach(player => {
-    player.sound.src = `sound/${player.name}_speed${player.speed}.mp3`;
+    player.sound.src = `sound/speed${player.speed}.mp3`;
     player.sound.loop = true;
     player.sound.play();
   });
@@ -13,7 +13,7 @@ function stopPlayerSounds() {
 }
 
 function playBikeSound(player) {
-  var newSrc = `sound/${player.name}_speed${player.speed}.mp3`;
+  var newSrc = `sound/speed${player.speed}.mp3`;
   var src = player.sound.src.split('/');
   var lastTwo = src.slice(src.length - 2, src.length);
   if (!(newSrc === lastTwo.join('/'))) {
@@ -22,8 +22,11 @@ function playBikeSound(player) {
   }
 }
 
-function playShiftSound() {
-  var shiftSound = new Audio('sound/shift.mp3');
+function playShiftSound(gear) {
+  var shiftSound = new Audio('sound/shiftdown.mp3');
+  if (gear > 0) {
+    shiftSound.src = 'sound/shiftup.mp3';
+  }
   shiftSound.play();
 }
 
@@ -31,5 +34,9 @@ function playDerezzSound() {
   var derezz = new Audio('sound/derezz.mp3');
   derezz.play();
 }
+
+// const eol = new Audio('sound/eol.mp3');
+// eol.loop = true;
+// eol.play();
 
 initPlayerSounds();
