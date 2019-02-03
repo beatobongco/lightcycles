@@ -2,6 +2,11 @@ function playerMove(player, direction) {
   player.direction = direction;
 }
 
+function pShift(player, gear) {
+  playShiftSound();
+  player.speed += gear;
+}
+
 document.body.onkeydown = k => {
   if (!gameOver) {
     switch (k.code) {
@@ -20,13 +25,15 @@ document.body.onkeydown = k => {
         break;
       case 'KeyT':
         if (user.speed < 3) {
-          user.speed += 1;
+          pShift(user, 1);
         }
+        playBikeSound(user);
         break;
       case 'KeyY':
         if (user.speed > 1) {
-          user.speed -= 1;
+          pShift(user, -1);
         }
+        playBikeSound(user);
         break;
       // enemy controls
       case 'ArrowDown':
@@ -43,13 +50,15 @@ document.body.onkeydown = k => {
         break;
       case 'BracketRight':
         if (enemy.speed < 3) {
-          enemy.speed += 1;
+          pShift(enemy, 1);
         }
+        playBikeSound(enemy);
         break;
       case 'BracketLeft':
         if (enemy.speed > 1) {
-          enemy.speed -= 1;
+          pShift(enemy, -1);
         }
+        playBikeSound(enemy);
         break;
     }
   } else if (k.code === 'KeyR') {
@@ -67,6 +76,7 @@ document.body.onkeydown = k => {
       userHud.setPlayer(user);
       enemyHud.setPlayer(enemy);
       gameOver = false;
+      initPlayerSounds();
       document.getElementById('gameOverContainer').style.display = 'none';
       two.update();
     }

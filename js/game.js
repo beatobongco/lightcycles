@@ -88,7 +88,8 @@ function initPlayer(name, x, y, defaultDirection, wins, color, trimColor) {
     trimColor: trimColor,
     currentOrigin: new Two.Vector(x, y),
     lightTrails: [],
-    corpse: null
+    corpse: null,
+    sound: new Audio()
   };
 }
 
@@ -223,6 +224,8 @@ function generateMove(player, frameCount) {
     player.currentOrigin = player.group.translation.clone();
     player.prevDirection = direction;
     player.lastMoveFrame = frameCount;
+    player.sound.currentTime = 0.5;
+    player.sound.play();
   } else {
     direction = player.prevDirection;
   }
@@ -243,6 +246,7 @@ function generateMove(player, frameCount) {
         break;
     }
     if (checkCollision(player)) {
+      playDerezzSound();
       player.alive = false;
       two.remove(player.group);
       // create a corpse
@@ -319,6 +323,7 @@ two
         document.getElementById('gameOverContainer').style.display = 'block';
         document.getElementById('gameOverText').innerText = gameOverText;
         gameOver = true;
+        stopPlayerSounds();
       }
     }
   })
