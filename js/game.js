@@ -313,26 +313,26 @@ function generateMove(player, frameCount) {
 }
 
 let gameOver = false;
-two
-  .bind('update', frameCount => {
-    stats.begin();
-    if (players.every(p => p.alive)) {
-      generateMove(user, frameCount);
-      generateMove(enemy, frameCount);
-    } else if (!gameOver) {
-      let gameOverText = 'DRAW!';
-      if (user.alive && !enemy.alive) {
-        user.wins += 1;
-        gameOverText = `${user.name} WINS!`;
-      } else if (enemy.alive && !user.alive) {
-        enemy.wins += 1;
-        gameOverText = `${enemy.name} WINS!`;
-      }
-      document.getElementById('gameOverContainer').style.display = 'block';
-      document.getElementById('gameOverText').innerText = gameOverText;
-      gameOver = true;
-      stopPlayerSounds();
+const gameInst = two.bind('update', frameCount => {
+  stats.begin();
+  if (players.every(p => p.alive)) {
+    generateMove(user, frameCount);
+    generateMove(enemy, frameCount);
+  } else if (!gameOver) {
+    let gameOverText = 'DRAW!';
+    if (user.alive && !enemy.alive) {
+      user.wins += 1;
+      gameOverText = `${user.name} WINS!`;
+    } else if (enemy.alive && !user.alive) {
+      enemy.wins += 1;
+      gameOverText = `${enemy.name} WINS!`;
     }
-    stats.end();
-  })
-  .play();
+    document.getElementById('gameOverContainer').style.display = 'block';
+    document.getElementById('gameOverText').innerText = gameOverText;
+    document.getElementById('gameOverSubtext').innerText =
+      'Press`r` to play again.';
+    gameOver = true;
+    stopPlayerSounds();
+  }
+  stats.end();
+});

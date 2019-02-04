@@ -60,11 +60,16 @@ h1 {
 }
 
 #gameOverContainer {
-  margin-top: 180px;
-  width: 500px;
+  width: 100%;
+  height: 100%;
   text-align: center;
   position: absolute;
-  display: none;
+  display: block;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+#gameOverContainer > .inner {
+  margin-top: 200px;
 }
 
 .smaller {

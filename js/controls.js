@@ -13,6 +13,10 @@ function showStats() {
 
 document.body.onkeydown = k => {
   if (k.code === 'KeyG') {
+    if (!gameInst.playing) {
+      gameInst.play();
+      document.getElementById('gameOverContainer').style.display = 'none';
+    }
     const docElem = document.documentElement;
     if (docElem.requestFullscreen) {
       docElem.requestFullscreen();
