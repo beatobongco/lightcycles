@@ -307,6 +307,7 @@ function generateMove(player, frameCount) {
 let gameOver = false;
 two
   .bind('update', frameCount => {
+    stats.begin();
     if (players.every(p => p.alive)) {
       generateMove(user, frameCount);
       generateMove(enemy, frameCount);
@@ -324,5 +325,6 @@ two
       gameOver = true;
       stopPlayerSounds();
     }
+    stats.end();
   })
   .play();

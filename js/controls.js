@@ -7,6 +7,10 @@ function pShift(player, gear) {
   player.speed += gear;
 }
 
+function showStats() {
+  document.getElementById('fps').style.display = 'block';
+}
+
 document.body.onkeydown = k => {
   if (k.code === 'KeyG') {
     const docElem = document.documentElement;

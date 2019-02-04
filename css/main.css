@@ -82,3 +82,9 @@ a.unstyled {
 a {
   color: #fff;
 }
+
+#fps {
+  width: 80px;
+  margin: 0 auto;
+  display: none;
+}
