@@ -137,9 +137,13 @@ function checkCollision(player) {
   }
 
   const hitboxRect = player.group._collection[1].getBoundingClientRect();
-  let collidedWithTrail = players.some(_player => {
-    return _player.lightTrails.some(trail => {
-      const trailHitbox = trail.getBoundingClientRect();
+  // Use for-loops instead for better performance
+  // https://github.com/dg92/Performance-Analysis-JS
+  const lt = player.lightTrails;
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < players[i].lightTrails.length; j++) {
+      let trail = players[i].lightTrails[j];
+      let trailHitbox = trail.getBoundingClientRect();
       if (
         !(
           hitboxRect.right < trailHitbox.left ||
@@ -149,20 +153,24 @@ function checkCollision(player) {
         )
       ) {
         // should be immune to your last 2 created trails
-        const lt = player.lightTrails;
         if (
           (lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
           (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id)
         ) {
           // skip
         } else {
-          console.log(player.name, 'collided with', _player.name, 'lighttrail');
+          console.log(
+            player.name,
+            'collided with',
+            players[i].name,
+            'lighttrail'
+          );
           return true;
         }
       }
-    });
-  });
-  return collidedWithTrail;
+    }
+  }
+  return false;
 }
 
 function createLightTrail(player, offsets) {
