@@ -16,6 +16,7 @@ document.body.onkeydown = k => {
     if (!gameInst.playing) {
       gameInst.play();
       document.getElementById('gameOverContainer').style.display = 'none';
+      initPlayerSounds();
     }
     const docElem = document.documentElement;
     if (docElem.requestFullscreen) {

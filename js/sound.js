@@ -57,5 +57,3 @@ function playDerezzSound() {
     derezz.play();
   }
 }
-
-initPlayerSounds();
