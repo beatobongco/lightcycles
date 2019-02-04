@@ -1,16 +1,17 @@
-const sounds = [
-  'sound/speed1.mp3',
-  'sound/speed2.mp3',
-  'sound/speed3.mp3',
-  'sound/shiftup.mp3',
-  'sound/shiftdown.mp3',
-  'sound/derezz.mp3'
-];
+// Preload sounds, keep them in an object to know if they are loaded
+const sounds = {
+  'sound/speed1.mp3': false,
+  'sound/speed2.mp3': false,
+  'sound/speed3.mp3': false,
+  'sound/shiftup.mp3': false,
+  'sound/shiftdown.mp3': false,
+  'sound/derezz.mp3': false
+};
 
-sounds.forEach(s => {
+Object.keys(sounds).forEach(s => {
   var _sound = new Audio(s);
   _sound.addEventListener('canplaythrough', () => {
-    console.log(s, 'loaded');
+    sounds[s] = true;
   });
 });
 
@@ -39,16 +40,22 @@ function playBikeSound(player) {
 }
 
 function playShiftSound(gear) {
-  var shiftSound = new Audio('sound/shiftdown.mp3');
+  let src = 'sound/shiftdown.mp3';
   if (gear > 0) {
-    shiftSound.src = 'sound/shiftup.mp3';
+    src = 'sound/shiftup.mp3';
   }
-  shiftSound.play();
+  if (sounds[src]) {
+    let shiftSound = new Audio(src);
+    shiftSound.play();
+  }
 }
 
 function playDerezzSound() {
-  var derezz = new Audio('sound/derezz.mp3');
-  derezz.play();
+  let src = 'sound/derezz.mp3';
+  if (sounds[src]) {
+    let derezz = new Audio(src);
+    derezz.play();
+  }
 }
 
 initPlayerSounds();
