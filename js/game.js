@@ -331,6 +331,7 @@ const gameInst = two.bind('update', frameCount => {
     document.getElementById('gameOverText').innerText = gameOverText;
     document.getElementById('gameOverSubtext').innerText =
       'Press`r` to play again.';
+    document.getElementById('tips-container').style.display = 'block';
     gameOver = true;
     stopPlayerSounds();
   }

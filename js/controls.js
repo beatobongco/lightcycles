@@ -16,6 +16,7 @@ document.body.onkeydown = k => {
     if (!gameInst.playing) {
       gameInst.play();
       document.getElementById('gameOverContainer').style.display = 'none';
+      document.getElementById('tips-container').style.display = 'none';
       initPlayerSounds();
     }
     const docElem = document.documentElement;
@@ -102,6 +103,7 @@ document.body.onkeydown = k => {
       gameOver = false;
       initPlayerSounds();
       document.getElementById('gameOverContainer').style.display = 'none';
+      document.getElementById('tips-container').style.display = 'none';
       two.update();
     }
   }
