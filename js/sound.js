@@ -18,7 +18,7 @@ Object.keys(sounds).forEach(s => {
 function initPlayerSounds() {
   players.forEach(player => {
     player.sound.src = `sound/speed${player.speed}.mp3`;
-    player.sound.loop = true;
+    // player.sound.loop = true;
     player.sound.play();
   });
 }
