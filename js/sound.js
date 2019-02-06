@@ -1,8 +1,8 @@
 // Preload sounds, keep them in an object to know if they are loaded
 const sounds = {
-  'sound/speed1.mp3': false,
-  'sound/speed2.mp3': false,
-  'sound/speed3.mp3': false,
+  'sound/speed1.ogg': false,
+  'sound/speed2.ogg': false,
+  'sound/speed3.ogg': false,
   'sound/shiftup.mp3': false,
   'sound/shiftdown.mp3': false,
   'sound/derezz.mp3': false
@@ -17,8 +17,8 @@ Object.keys(sounds).forEach(s => {
 
 function initPlayerSounds() {
   players.forEach(player => {
-    player.sound.src = `sound/speed${player.speed}.mp3`;
-    // player.sound.loop = true;
+    player.sound.src = `sound/speed${player.speed}.ogg`;
+    player.sound.loop = true;
     player.sound.play();
   });
 }
@@ -30,7 +30,7 @@ function stopPlayerSounds() {
 }
 
 function playBikeSound(player) {
-  var newSrc = `sound/speed${player.speed}.mp3`;
+  var newSrc = `sound/speed${player.speed}.ogg`;
   var src = player.sound.src.split('/');
   var lastTwo = src.slice(src.length - 2, src.length);
   if (!(newSrc === lastTwo.join('/'))) {
