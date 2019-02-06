@@ -47,9 +47,12 @@ h1 {
 
 .tips {
   font-size: 80%;
+  text-align: left;
+  width: 475px;
+  margin: 100px auto 0;
 }
 
-.tips > li {
+.tips li {
   margin: 10px 0;
 }
 
@@ -73,7 +76,7 @@ h1 {
 }
 
 #gameOverContainer > .inner {
-  margin-top: 200px;
+  margin-top: 225px;
 }
 
 .smaller {
