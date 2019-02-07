@@ -140,16 +140,17 @@ function checkCollision(player) {
   // Use for-loops instead for better performance
   // https://github.com/dg92/Performance-Analysis-JS
   const lt = player.lightTrails;
+  const lightTrailOffset = 2;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < players[i].lightTrails.length; j++) {
       let trail = players[i].lightTrails[j];
       let trailHitbox = trail.getBoundingClientRect();
       if (
         !(
-          hitboxRect.right < trailHitbox.left ||
-          hitboxRect.left > trailHitbox.right ||
-          hitboxRect.bottom < trailHitbox.top ||
-          hitboxRect.top > trailHitbox.bottom
+          hitboxRect.right < trailHitbox.left + lightTrailOffset ||
+          hitboxRect.left > trailHitbox.right - lightTrailOffset ||
+          hitboxRect.bottom < trailHitbox.top + lightTrailOffset ||
+          hitboxRect.top > trailHitbox.bottom - lightTrailOffset
         )
       ) {
         // should be immune to your last 2 created trails
@@ -173,7 +174,7 @@ function checkCollision(player) {
   return false;
 }
 
-function createLightTrail(player, offsets) {
+function createLightTrail(player) {
   // TODO: find a way to fill in the line without causing crashes
   // due to excess hitbox
   const lightTrail = two.makeLine(
