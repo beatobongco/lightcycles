@@ -20,8 +20,8 @@ Y - shift down
 
 ```
 arrow keys - change direction
-[ - shift down
 ] - shift up
+[ - shift down
 ```
 
 ## Shifting
