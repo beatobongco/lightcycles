@@ -10,15 +10,19 @@ Two player in-browser Tron-inspired game made in Two.js.
 
 ### Player 1
 
+```
 WASD - change direction
 T - shift up
 Y - shift down
+```
 
 #### Player 2
 
+```
 arrow keys - change direction
-\[ - shift down
-\] - shift up
+[ - shift down
+] - shift up
+```
 
 ## Shifting
 
