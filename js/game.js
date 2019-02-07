@@ -260,37 +260,35 @@ function generateMove(player, frameCount) {
       // create a corpse
       const pieces = [];
       const { offsetX, offsetY } = getOffsets(direction, -1);
-      const spreadFactor = 6;
       // create a random amount of pieces that fly in the opposite direction
       // player is facing. Size, distance, and quantity affected by speed
+      const momentum = playerSize * player.speed;
+      const spreadFactor = playerSize;
       for (
         let i = 0;
-        i < getRandomInt(1 + player.speed, 5 + player.speed);
+        i < getRandomInt(6, 6 * (player.speed + 1)); //getRandomInt(2 + player.speed, playerSize + player.speed);
         i++
       ) {
         const poly = two.makePolygon(
           trn.x + getRandomInt(-spreadFactor, spreadFactor),
           trn.y + getRandomInt(-spreadFactor, spreadFactor),
-          getRandomInt(2, 6 - player.speed), //size
-          3
+          getRandomInt(1, 3), //size
+          3 // make triangles
         );
         poly.fill = player.trimColor;
         poly.noStroke();
         poly.rotation = getRandomInt(-10, 10);
 
-        const baseX = offsetX * player.speed;
-        const baseY = offsetY * player.speed;
-
         poly.translation.addSelf(
           new Two.Vector(
             getRandomInt(
-              baseX,
-              baseX * (spreadFactor + player.speed) + spreadFactor
+              offsetX * playerSize,
+              offsetX * momentum * player.speed
+            ),
+            getRandomInt(
+              offsetY * playerSize,
+              offsetY * momentum * player.speed
             )
-          ),
-          getRandomInt(
-            baseY,
-            baseY * (spreadFactor + player.speed) + spreadFactor
           )
         );
         pieces.push(poly);
