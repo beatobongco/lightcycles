@@ -14,6 +14,7 @@ function showStats() {
 document.body.onkeydown = k => {
   if (k.code === 'KeyG') {
     if (!gameInst.playing) {
+      gameOver = false;
       gameInst.play();
       document.getElementById('gameOverContainer').style.display = 'none';
       document.getElementById('tips-container').style.display = 'none';

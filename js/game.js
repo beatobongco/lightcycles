@@ -312,7 +312,7 @@ function generateMove(player, frameCount) {
   }
 }
 
-let gameOver = false;
+let gameOver = true;
 const gameInst = two.bind('update', frameCount => {
   stats.begin();
   if (players.every(p => p.alive)) {
