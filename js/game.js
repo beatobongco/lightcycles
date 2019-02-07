@@ -97,7 +97,7 @@ function initUser(wins) {
   return initPlayer(
     'P1',
     Math.round(stageWidth / 2),
-    gridSize * 6,
+    gridSize * 8,
     'down',
     wins,
     '#3498db',
@@ -111,7 +111,7 @@ function initEnemy(wins) {
   return initPlayer(
     'P2',
     Math.round(stageWidth / 2),
-    stageHeight - gridSize * 6,
+    stageHeight - gridSize * 8,
     'up',
     wins,
     '#e67e22',
