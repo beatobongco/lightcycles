@@ -18,8 +18,7 @@ Object.keys(sounds).forEach(s => {
 function initPlayerSounds() {
   players.forEach(player => {
     player.sound.src = `sound/speed${player.speed}.ogg`;
-    player.sound.loop = true;
-    player.sound.play();
+    player.soundPromise = player.sound.play();
   });
 }
 
@@ -30,12 +29,27 @@ function stopPlayerSounds() {
 }
 
 function playBikeSound(player) {
-  var newSrc = `sound/speed${player.speed}.ogg`;
-  var src = player.sound.src.split('/');
-  var lastTwo = src.slice(src.length - 2, src.length);
-  if (!(newSrc === lastTwo.join('/'))) {
-    player.sound.src = newSrc;
-    player.sound.play();
+  function _playBikeSound(player, src) {
+    const currSrc = player.sound.src.split('/');
+    const lastTwo = currSrc.slice(currSrc.length - 2, currSrc.length);
+    if (src === lastTwo.join('/')) {
+      return;
+    }
+    player.soundPromise.then(_ => {
+      const newSound = new Audio(src);
+      newSound.oncanplay = _ => {
+        player.sound.pause();
+        player.sound = newSound;
+        player.soundPromise = player.sound.play();
+      };
+    });
+  }
+  if (player.isAccelerating) {
+    _playBikeSound(player, 'sound/speed3.ogg');
+  } else if (player.isBraking) {
+    _playBikeSound(player, 'sound/speed1.ogg');
+  } else {
+    _playBikeSound(player, 'sound/speed1.ogg');
   }
 }
 

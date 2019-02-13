@@ -110,6 +110,11 @@ function initPlayer(
       document.getElementById(`${name}-speed`).innerText = spd;
       this._speed = spd;
     },
+    isAccelerating: false,
+    isBraking: false,
+    lastDecelerateFrame: 0,
+    lastAccelerateFrame: 0,
+    lastBrakeFrame: 0,
     alive: true,
     wins: wins,
     group: createPlayerCircle(x, y, color, trimColor, defaultDirection),
@@ -118,7 +123,8 @@ function initPlayer(
     currentOrigin: new Two.Vector(x, y),
     lightTrails: [],
     corpse: null,
-    sound: new Audio()
+    sound: new Audio(),
+    soundPromise: null
   };
 }
 
@@ -264,11 +270,45 @@ function generateMove(player, frameCount) {
     player.currentOrigin = player.group.translation.clone();
     player.prevDirection = direction;
     player.lastMoveFrame = frameCount;
-    player.sound.currentTime = 0.5;
+    // reset sound when turning
+    player.sound.currentTime = 0;
     player.sound.play();
   } else {
     direction = player.prevDirection;
   }
+
+  const decelerationTime = 16;
+  // [round(log(x,2) * 6) for x in range(2, 11)]
+  const accelerationTime = [6, 10, 12, 14, 16, 17, 18, 19, 20];
+  const brakeTime = 3;
+  const maxSpeed = 6;
+  if (player.isAccelerating) {
+    if (
+      player.speed < maxSpeed &&
+      frameCount - player.lastAccelerateFrame >
+        accelerationTime[player.speed - 1]
+    ) {
+      player.speed += 1;
+      player.lastAccelerateFrame = frameCount;
+    }
+  } else if (player.isBraking) {
+    if (player.speed > 1 && frameCount - player.lastBrakeFrame > brakeTime) {
+      player.speed -= 1;
+      player.lastBrakeFrame = frameCount;
+    }
+  } else if (
+    !player.isAccelerating &&
+    !player.isBraking &&
+    frameCount - player.lastDecelerateFrame > decelerationTime &&
+    player.speed > 1
+  ) {
+    // by default player slows down if not accelerating or braking
+    player.speed -= 1;
+    player.lastDecelerateFrame = frameCount;
+  }
+
+  playBikeSound(player);
+
   const trn = player.group.translation;
   for (let i = 0; i < player.speed; i++) {
     switch (direction) {
@@ -294,7 +334,7 @@ function generateMove(player, frameCount) {
       const { offsetX, offsetY } = getOffsets(direction, -1);
       // create a random amount of pieces that fly in the opposite direction
       // player is facing. Size, distance, and quantity affected by speed
-      const momentum = playerSize * player.speed;
+      const momentum = playerSize * player.speed * (player.speed / 2);
       const spreadFactor = playerSize;
       for (
         let i = 0;
@@ -313,20 +353,15 @@ function generateMove(player, frameCount) {
 
         poly.translation.addSelf(
           new Two.Vector(
-            getRandomInt(
-              offsetX * playerSize,
-              offsetX * momentum * player.speed
-            ),
-            getRandomInt(
-              offsetY * playerSize,
-              offsetY * momentum * player.speed
-            )
+            getRandomInt(offsetX * playerSize, offsetX * momentum),
+            getRandomInt(offsetY * playerSize, offsetY * momentum)
           )
         );
         pieces.push(poly);
       }
       const corpse = two.makeGroup(...pieces);
       player.corpse = corpse;
+      gameOver = true;
       return;
     }
     createLightTrail(player);
@@ -345,10 +380,11 @@ function generateMove(player, frameCount) {
 let gameOver = true;
 const gameInst = two.bind('update', frameCount => {
   stats.begin();
-  if (players.every(p => p.alive)) {
-    generateMove(user, frameCount);
-    generateMove(enemy, frameCount);
-  } else if (!gameOver) {
+  if (!gameOver) {
+    players.forEach(p => {
+      generateMove(p, frameCount);
+    });
+  } else {
     let gameOverText = 'DRAW!';
     if (user.alive && !enemy.alive) {
       user.wins += 1;
@@ -362,8 +398,8 @@ const gameInst = two.bind('update', frameCount => {
     document.getElementById('gameOverSubtext').innerText =
       'Press`r` to play again.';
     document.getElementById('tips-container').style.display = 'block';
-    gameOver = true;
     stopPlayerSounds();
+    two.pause();
   }
   stats.end();
 });

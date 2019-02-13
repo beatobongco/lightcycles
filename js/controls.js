@@ -4,12 +4,39 @@ function playerMove(player, direction) {
 
 function pShift(player, gear) {
   playShiftSound(gear);
-  player.speed += gear;
+  player.speed = gear;
 }
 
-function showStats() {
-  document.getElementById('fps').style.display = 'block';
+function pBrake(player) {
+  if (!player.isBraking) {
+    playShiftSound(-1);
+  }
+  player.isBraking = true;
 }
+
+function pAccelerate(player) {
+  if (!player.isAccelerating) {
+    playShiftSound(1);
+  }
+  player.isAccelerating = true;
+}
+
+document.body.onkeyup = k => {
+  switch (k.code) {
+    case 'KeyT':
+      user.isAccelerating = false;
+      break;
+    case 'KeyY':
+      user.isBraking = false;
+      break;
+    case 'BracketRight':
+      enemy.isAccelerating = false;
+      break;
+    case 'BracketLeft':
+      enemy.isBraking = false;
+      break;
+  }
+};
 
 document.body.onkeydown = k => {
   if (k.code === 'KeyG') {
@@ -50,16 +77,10 @@ document.body.onkeydown = k => {
         playerMove(user, 'right');
         break;
       case 'KeyT':
-        if (user.speed < 3) {
-          pShift(user, 1);
-        }
-        playBikeSound(user);
+        pAccelerate(user);
         break;
       case 'KeyY':
-        if (user.speed > 1) {
-          pShift(user, -1);
-        }
-        playBikeSound(user);
+        pBrake(user);
         break;
       // enemy controls
       case 'ArrowDown':
@@ -75,16 +96,10 @@ document.body.onkeydown = k => {
         playerMove(enemy, 'right');
         break;
       case 'BracketRight':
-        if (enemy.speed < 3) {
-          pShift(enemy, 1);
-        }
-        playBikeSound(enemy);
+        pAccelerate(enemy);
         break;
       case 'BracketLeft':
-        if (enemy.speed > 1) {
-          pShift(enemy, -1);
-        }
-        playBikeSound(enemy);
+        pBrake(enemy);
         break;
     }
   } else if (k.code === 'KeyR') {
@@ -99,11 +114,14 @@ document.body.onkeydown = k => {
       user = initUser(user.wins);
       enemy = initEnemy(enemy.wins);
       players = [user, enemy];
+      if (noEnemy) {
+        players = [user];
+      }
       gameOver = false;
       initPlayerSounds();
       document.getElementById('gameOverContainer').style.display = 'none';
       document.getElementById('tips-container').style.display = 'none';
-      two.update();
+      two.play();
     }
   }
 };
