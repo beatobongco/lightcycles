@@ -1,7 +1,6 @@
 // Preload sounds, keep them in an object to know if they are loaded
 const sounds = {
   'sound/speed1.ogg': false,
-  'sound/speed2.ogg': false,
   'sound/speed3.ogg': false,
   'sound/shiftup.mp3': false,
   'sound/shiftdown.mp3': false,
