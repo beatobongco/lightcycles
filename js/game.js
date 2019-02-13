@@ -325,56 +325,54 @@ function generateMove(player, frameCount) {
         trn.addSelf(downVec);
         break;
     }
-    if (checkCollision(player)) {
-      playDerezzSound();
-      player.alive = false;
-      two.remove(player.group);
-      // create a corpse
-      const pieces = [];
-      const { offsetX, offsetY } = getOffsets(direction, -1);
-      // create a random amount of pieces that fly in the opposite direction
-      // player is facing. Size, distance, and quantity affected by speed
-      const momentum = playerSize * player.speed * (player.speed / 2);
-      const spreadFactor = playerSize;
-      for (
-        let i = 0;
-        i < getRandomInt(6, 6 * (player.speed + 1)); //getRandomInt(2 + player.speed, playerSize + player.speed);
-        i++
-      ) {
-        const poly = two.makePolygon(
-          trn.x + getRandomInt(-spreadFactor, spreadFactor),
-          trn.y + getRandomInt(-spreadFactor, spreadFactor),
-          getRandomInt(1, 3), //size
-          3 // make triangles
-        );
-        poly.fill = player.trimColor;
-        poly.noStroke();
-        poly.rotation = getRandomInt(-10, 10);
-
-        poly.translation.addSelf(
-          new Two.Vector(
-            getRandomInt(offsetX * playerSize, offsetX * momentum),
-            getRandomInt(offsetY * playerSize, offsetY * momentum)
-          )
-        );
-        pieces.push(poly);
-      }
-      const corpse = two.makeGroup(...pieces);
-      player.corpse = corpse;
-      gameOver = true;
-      return;
-    }
-    createLightTrail(player);
-    // Make circle on top of trail
-    two.remove(player.group);
-    player.group = createPlayerCircle(
-      trn.x,
-      trn.y,
-      player.color,
-      player.trimColor,
-      direction
-    );
   }
+  // TODO: might want to only check collisions when both players move already
+  // P1 might have a slight advantage
+  if (checkCollision(player)) {
+    playDerezzSound();
+    player.alive = false;
+    two.remove(player.group);
+    // create a corpse
+    const pieces = [];
+    const { offsetX, offsetY } = getOffsets(direction, -1);
+    // create a random amount of pieces that fly in the opposite direction
+    // player is facing. Size, distance, and quantity affected by speed
+    const momentum = playerSize * player.speed * (player.speed / 2);
+    const spreadFactor = playerSize;
+    for (let i = 0; i < getRandomInt(6, 6 * (player.speed + 1)); i++) {
+      const poly = two.makePolygon(
+        trn.x + getRandomInt(-spreadFactor, spreadFactor),
+        trn.y + getRandomInt(-spreadFactor, spreadFactor),
+        getRandomInt(1, 3), //size
+        3 // make triangles
+      );
+      poly.fill = player.trimColor;
+      poly.noStroke();
+      poly.rotation = getRandomInt(-10, 10);
+
+      poly.translation.addSelf(
+        new Two.Vector(
+          getRandomInt(offsetX * playerSize, offsetX * momentum),
+          getRandomInt(offsetY * playerSize, offsetY * momentum)
+        )
+      );
+      pieces.push(poly);
+    }
+    const corpse = two.makeGroup(...pieces);
+    player.corpse = corpse;
+    gameOver = true;
+    return;
+  }
+  createLightTrail(player);
+  // Make circle on top of trail
+  two.remove(player.group);
+  player.group = createPlayerCircle(
+    trn.x,
+    trn.y,
+    player.color,
+    player.trimColor,
+    direction
+  );
 }
 
 let gameOver = true;
