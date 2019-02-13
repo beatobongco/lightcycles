@@ -12,20 +12,18 @@ Two player in-browser Tron-inspired game made in Two.js.
 
 ```
 WASD - change direction
-T - shift up
-Y - shift down
+T - accelerate
+Y - brake
 ```
 
 #### Player 2
 
 ```
 arrow keys - change direction
-] - shift up
-[ - shift down
+] - accelerate
+[ - brake
 ```
 
-## Shifting
+## Resources
 
-There are 3 gears. Tap once to shift. Each gear increases how fast you go uniformly. e.g. gear 3 is 3 times faster than gear 1 but is harder to control
-
-This concept was created to prevent [key rollover](<https://en.wikipedia.org/wiki/Rollover_(key)>).
+http://www.mcnews.com.au/motogp-bike-acceleration-figures/
