@@ -2,11 +2,6 @@ function playerMove(player, direction) {
   player.direction = direction;
 }
 
-function pShift(player, gear) {
-  playShiftSound(gear);
-  player.speed = gear;
-}
-
 function pBrake(player) {
   if (!player.isBraking) {
     playShiftSound(-1);
