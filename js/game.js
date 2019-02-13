@@ -54,6 +54,7 @@ function getOffsets(direction, baseAmount) {
 const playerSize = 6;
 const hitboxSize = 5;
 const hitboxOffset = 3;
+
 function createPlayerCircle(x, y, color, trimColor, direction) {
   const circle = two.makeCircle(x, y, playerSize);
   circle.stroke = color;
@@ -74,13 +75,41 @@ function createPlayerCircle(x, y, color, trimColor, direction) {
   return group;
 }
 
-function initPlayer(name, x, y, defaultDirection, wins, color, trimColor) {
+function createHUD(el, name, wins, speed) {
+  document.getElementById(el).innerHTML = `
+    <div class="hud">
+      <h3>${name}</h3>
+      <p><small>WINS</small></p>
+      <h3>${wins}</h3>
+      <p><small>SPEED</small></p>
+      <h3 id="${name}-speed">${speed}</h3>
+    </div>`;
+}
+
+function initPlayer(
+  name,
+  x,
+  y,
+  defaultDirection,
+  wins,
+  color,
+  trimColor,
+  HUDelement
+) {
+  createHUD(HUDelement, name, wins, 1);
   return {
     name: name,
     prevDirection: defaultDirection,
     direction: defaultDirection,
     lastMoveFrame: 0,
-    speed: 1,
+    _speed: 1,
+    get speed() {
+      return this._speed;
+    },
+    set speed(spd) {
+      document.getElementById(`${name}-speed`).innerText = spd;
+      this._speed = spd;
+    },
     alive: true,
     wins: wins,
     group: createPlayerCircle(x, y, color, trimColor, defaultDirection),
@@ -101,7 +130,8 @@ function initUser(wins) {
     'down',
     wins,
     '#3498db',
-    '#ffffff'
+    '#ffffff',
+    'userHud'
   );
 }
 
@@ -115,7 +145,8 @@ function initEnemy(wins) {
     'up',
     wins,
     '#e67e22',
-    '#000000'
+    '#000000',
+    'enemyHud'
   );
 }
 

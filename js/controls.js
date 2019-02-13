@@ -99,8 +99,6 @@ document.body.onkeydown = k => {
       user = initUser(user.wins);
       enemy = initEnemy(enemy.wins);
       players = [user, enemy];
-      userHud.setPlayer(user);
-      enemyHud.setPlayer(enemy);
       gameOver = false;
       initPlayerSounds();
       document.getElementById('gameOverContainer').style.display = 'none';
