@@ -282,6 +282,8 @@ function generateMove(player, frameCount) {
   const accelerationTime = [6, 10, 12, 14, 16, 17, 18, 19, 20];
   const brakeTime = 3;
   const maxSpeed = 6;
+
+  // use 3 separate conditions so you can accelerate and brake at the same time
   if (player.isAccelerating) {
     if (
       player.speed < maxSpeed &&
@@ -291,12 +293,16 @@ function generateMove(player, frameCount) {
       player.speed += 1;
       player.lastAccelerateFrame = frameCount;
     }
-  } else if (player.isBraking) {
+  }
+  if (player.isBraking) {
     if (player.speed > 1 && frameCount - player.lastBrakeFrame > brakeTime) {
       player.speed -= 1;
       player.lastBrakeFrame = frameCount;
     }
-  } else if (
+  }
+  if (
+    !player.isAccelerating &&
+    !player.isBraking &&
     frameCount - player.lastDecelerateFrame > decelerationTime &&
     player.speed > 1
   ) {

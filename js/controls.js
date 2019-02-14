@@ -16,32 +16,37 @@ function pAccelerate(player) {
   player.isAccelerating = true;
 }
 
+const userKeyAcc = 'KeyF';
+const userKeyBrake = 'KeyG';
+
+const enemyKeyAcc = 'ShiftRight';
+const enemyKeyBrake = 'ControlRight';
+
 document.body.onkeyup = k => {
   switch (k.code) {
-    case 'KeyT':
+    case userKeyAcc:
       user.isAccelerating = false;
       break;
-    case 'KeyY':
+    case userKeyBrake:
       user.isBraking = false;
       break;
-    case 'BracketRight':
+    case enemyKeyAcc:
       enemy.isAccelerating = false;
       break;
-    case 'BracketLeft':
+    case enemyKeyBrake:
       enemy.isBraking = false;
       break;
   }
 };
 
 document.body.onkeydown = k => {
-  if (k.code === 'KeyG') {
-    if (!gameInst.playing) {
-      gameOver = false;
-      gameInst.play();
-      document.getElementById('gameOverContainer').style.display = 'none';
-      document.getElementById('tips-container').style.display = 'none';
-      initPlayerSounds();
-    }
+  k.preventDefault();
+  if (k.code === 'KeyG' && !gameInst.playing) {
+    gameOver = false;
+    gameInst.play();
+    document.getElementById('gameOverContainer').style.display = 'none';
+    document.getElementById('tips-container').style.display = 'none';
+    initPlayerSounds();
     const docElem = document.documentElement;
     if (docElem.requestFullscreen) {
       docElem.requestFullscreen();
@@ -55,8 +60,7 @@ document.body.onkeydown = k => {
       /* IE/Edge */
       docElem.msRequestFullscreen();
     }
-  }
-  if (!gameOver) {
+  } else if (!gameOver) {
     switch (k.code) {
       // user controls
       case 'KeyS':
@@ -71,10 +75,10 @@ document.body.onkeydown = k => {
       case 'KeyD':
         playerMove(user, 'right');
         break;
-      case 'KeyT':
+      case userKeyAcc:
         pAccelerate(user);
         break;
-      case 'KeyY':
+      case userKeyBrake:
         pBrake(user);
         break;
       // enemy controls
@@ -90,33 +94,32 @@ document.body.onkeydown = k => {
       case 'ArrowRight':
         playerMove(enemy, 'right');
         break;
-      case 'BracketRight':
+      case enemyKeyAcc:
         pAccelerate(enemy);
         break;
-      case 'BracketLeft':
+      case enemyKeyBrake:
         pBrake(enemy);
         break;
     }
-  } else if (k.code === 'KeyR') {
-    if (players.some(p => !p.alive)) {
-      players.forEach(p => {
-        two.remove(p.group);
-        two.remove(p.corpse);
-        p.lightTrails.forEach(l => {
-          two.remove(l);
-        });
+  } else if (k.code === 'KeyR' && gameOver) {
+    players.forEach(p => {
+      p.sound.pause();
+      two.remove(p.group);
+      two.remove(p.corpse);
+      p.lightTrails.forEach(l => {
+        two.remove(l);
       });
-      user = initUser(user.wins);
-      enemy = initEnemy(enemy.wins);
-      players = [user, enemy];
-      if (noEnemy) {
-        players = [user];
-      }
-      gameOver = false;
-      initPlayerSounds();
-      document.getElementById('gameOverContainer').style.display = 'none';
-      document.getElementById('tips-container').style.display = 'none';
-      two.play();
+    });
+    user = initUser(user.wins);
+    enemy = initEnemy(enemy.wins);
+    players = [user, enemy];
+    if (noEnemy) {
+      players = [user];
     }
+    gameOver = false;
+    initPlayerSounds();
+    document.getElementById('gameOverContainer').style.display = 'none';
+    document.getElementById('tips-container').style.display = 'none';
+    two.play();
   }
 };

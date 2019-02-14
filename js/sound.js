@@ -43,7 +43,7 @@ function playBikeSound(player) {
       };
     });
   }
-  if (player.isAccelerating) {
+  if (player.isAccelerating && !player.isBraking) {
     _playBikeSound(player, 'sound/speed3.ogg');
   } else if (player.isBraking) {
     _playBikeSound(player, 'sound/speed1.ogg');
