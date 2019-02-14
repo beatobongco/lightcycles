@@ -297,8 +297,6 @@ function generateMove(player, frameCount) {
       player.lastBrakeFrame = frameCount;
     }
   } else if (
-    !player.isAccelerating &&
-    !player.isBraking &&
     frameCount - player.lastDecelerateFrame > decelerationTime &&
     player.speed > 1
   ) {
