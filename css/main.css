@@ -32,6 +32,10 @@ h1 {
   width: 500px;
 }
 
+.tiny {
+  font-size: 60%;
+}
+
 .player-controls {
   display: flex;
 }
