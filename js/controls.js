@@ -40,7 +40,11 @@ document.body.onkeyup = k => {
 };
 
 document.body.onkeydown = k => {
-  k.preventDefault();
+  // Let page refreshes through else block it
+  if (k.code === 'KeyR' && k.ctrlKey) {
+  } else {
+    k.preventDefault();
+  }
   if (k.code === 'KeyG' && !gameInst.playing) {
     gameOver = false;
     gameInst.play();
