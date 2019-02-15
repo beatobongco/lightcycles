@@ -13,15 +13,13 @@ Two player in-browser Tron-inspired game made in Two.js.
 ```
 WASD - change direction
 T - accelerate
-Y - brake
 ```
 
 #### Player 2
 
 ```
 arrow keys - change direction
-] - accelerate
-[ - brake
+Right SHIFT - accelerate
 ```
 
 ## Resources

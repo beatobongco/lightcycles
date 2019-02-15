@@ -16,11 +16,11 @@ function pAccelerate(player) {
   player.isAccelerating = true;
 }
 
-const userKeyAcc = 'KeyF';
-const userKeyBrake = 'KeyG';
+const userKeyAcc = 'KeyT';
+const userKeyBrake = null;
 
 const enemyKeyAcc = 'ShiftRight';
-const enemyKeyBrake = 'ControlRight';
+const enemyKeyBrake = null;
 
 document.body.onkeyup = k => {
   switch (k.code) {
@@ -40,17 +40,14 @@ document.body.onkeyup = k => {
 };
 
 document.body.onkeydown = k => {
-  // Let page refreshes through else block it
-  if (k.code === 'KeyR' && k.ctrlKey) {
-  } else {
-    k.preventDefault();
-  }
-  if (k.code === 'KeyG' && !gameInst.playing) {
-    gameOver = false;
-    gameInst.play();
-    document.getElementById('gameOverContainer').style.display = 'none';
-    document.getElementById('tips-container').style.display = 'none';
-    initPlayerSounds();
+  if (k.code === 'KeyG') {
+    if (!gameInst.playing) {
+      gameOver = false;
+      gameInst.play();
+      document.getElementById('gameOverContainer').style.display = 'none';
+      document.getElementById('tips-container').style.display = 'none';
+      initPlayerSounds();
+    }
     const docElem = document.documentElement;
     if (docElem.requestFullscreen) {
       docElem.requestFullscreen();
@@ -107,7 +104,6 @@ document.body.onkeydown = k => {
     }
   } else if (k.code === 'KeyR' && gameOver) {
     players.forEach(p => {
-      p.sound.pause();
       two.remove(p.group);
       two.remove(p.corpse);
       p.lightTrails.forEach(l => {

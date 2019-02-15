@@ -1,6 +1,7 @@
 // Preload sounds, keep them in an object to know if they are loaded
 const sounds = {
   'sound/speed1.ogg': false,
+  'sound/speed2.ogg': false,
   'sound/speed3.ogg': false,
   'sound/shiftup.mp3': false,
   'sound/shiftdown.mp3': false,
@@ -44,7 +45,11 @@ function playBikeSound(player) {
     });
   }
   if (player.isAccelerating && !player.isBraking) {
-    _playBikeSound(player, 'sound/speed3.ogg');
+    if (player.speed === maxSpeed) {
+      _playBikeSound(player, 'sound/speed3.ogg');
+    } else {
+      _playBikeSound(player, 'sound/speed2.ogg');
+    }
   } else if (player.isBraking) {
     _playBikeSound(player, 'sound/speed1.ogg');
   } else {

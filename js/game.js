@@ -1,5 +1,16 @@
 const elem = document.getElementById('stage');
-
+const maxSpeed = 6;
+const decelerationTime = 6;
+// [round(log(x,2) * 6) for x in range(2, 11)]
+// [6, 10, 12, 14, 16, 17, 18, 19, 20];
+function getBaseLog(x, y) {
+  return Math.log(y) / Math.log(x);
+}
+const accelerationTime = [];
+for (let i = 2; i < maxSpeed + 1; i++) {
+  accelerationTime.push(Math.round(getBaseLog(2, i) * 6));
+}
+const brakeTime = 3;
 // width and height of each grid box
 const gridSize = 16;
 
@@ -276,12 +287,6 @@ function generateMove(player, frameCount) {
   } else {
     direction = player.prevDirection;
   }
-
-  const decelerationTime = 16;
-  // [round(log(x,2) * 6) for x in range(2, 11)]
-  const accelerationTime = [6, 10, 12, 14, 16, 17, 18, 19, 20];
-  const brakeTime = 3;
-  const maxSpeed = 6;
 
   // use 3 separate conditions so you can accelerate and brake at the same time
   if (player.isAccelerating) {
