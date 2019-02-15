@@ -15,8 +15,8 @@ const brakeTime = 3;
 const gridSize = 16;
 
 // number of points
-const stageWidth = 32 * gridSize; // x limit
-const stageHeight = 32 * gridSize; // y limit
+const stageWidth = 36 * gridSize; // x limit
+const stageHeight = 36 * gridSize; // y limit
 
 const two = new Two({
   width: stageWidth,
@@ -64,7 +64,7 @@ function getOffsets(direction, baseAmount) {
 // create players
 const playerSize = 6;
 const hitboxSize = 5;
-const hitboxOffset = 3;
+const hitboxOffset = 0;
 
 function createPlayerCircle(x, y, color, trimColor, direction) {
   const circle = two.makeCircle(x, y, playerSize);
@@ -78,7 +78,8 @@ function createPlayerCircle(x, y, color, trimColor, direction) {
     hitboxSize,
     hitboxSize
   );
-  hitbox.noFill();
+  hitbox.fill = 'red';
+  // hitbox.noFill();
   hitbox.noStroke();
   const group = two.makeGroup(circle, hitbox);
   group.center();
@@ -87,11 +88,20 @@ function createPlayerCircle(x, y, color, trimColor, direction) {
 }
 
 function createHUD(el, name, wins, speed) {
+  let winDots = [
+    '<span class="windot">&#9675;</span>',
+    '<span class="windot">&#9675;</span>',
+    '<span class="windot">&#9675;</span>'
+  ];
+
+  for (let i = 0; i < wins; i++) {
+    winDots[i] = '<span class="windot">&#9679;</span>';
+  }
   document.getElementById(el).innerHTML = `
     <div class="hud">
       <h3>${name}</h3>
       <p><small>WINS</small></p>
-      <h3>${wins}</h3>
+      <div class="wins">${winDots.join('')}</div>
       <p><small>SPEED</small></p>
       <h3 id="${name}-speed">${speed}</h3>
     </div>`;
@@ -107,8 +117,7 @@ function initPlayer(
   trimColor,
   HUDelement
 ) {
-  createHUD(HUDelement, name, wins, 1);
-  return {
+  const p = {
     name: name,
     prevDirection: defaultDirection,
     direction: defaultDirection,
@@ -121,22 +130,33 @@ function initPlayer(
       document.getElementById(`${name}-speed`).innerText = spd;
       this._speed = spd;
     },
+    get wins() {
+      return this._wins;
+    },
+    set wins(wns) {
+      this._wins = wns;
+      createHUD(HUDelement, name, wns, this.speed);
+    },
     isAccelerating: false,
     isBraking: false,
     lastDecelerateFrame: 0,
     lastAccelerateFrame: 0,
     lastBrakeFrame: 0,
     alive: true,
-    wins: wins,
+    _wins: wins,
     group: createPlayerCircle(x, y, color, trimColor, defaultDirection),
     color: color,
     trimColor: trimColor,
+    originalColor: trimColor,
     currentOrigin: new Two.Vector(x, y),
     lightTrails: [],
     corpse: null,
     sound: new Audio(),
     soundPromise: null
   };
+  createHUD(HUDelement, name, wins, 1);
+
+  return p;
 }
 
 function initUser(wins) {
@@ -173,7 +193,7 @@ let players = [user, enemy];
 
 two.update();
 
-function checkCollision(player) {
+function checkCollision(player, lightTrailOffset = 2) {
   const trn = player.group.translation;
   if (
     trn.x >= stageWidth - hitboxSize || // right limit
@@ -188,7 +208,6 @@ function checkCollision(player) {
   // Use for-loops instead for better performance
   // https://github.com/dg92/Performance-Analysis-JS
   const lt = player.lightTrails;
-  const lightTrailOffset = 2;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < players[i].lightTrails.length; j++) {
       let trail = players[i].lightTrails[j];
@@ -269,8 +288,8 @@ function getRandomInt(min, max) {
 }
 
 function generateMove(player, frameCount) {
-  const cooldown = 6;
-
+  let cooldown = 7;
+  let bonus = 0;
   // use 3 separate conditions so you can accelerate and brake at the same time
   if (player.isAccelerating) {
     if (
@@ -299,12 +318,22 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
+  if (checkCollision(player, -3)) {
+    player.trimColor = 'red';
+    bonus = Math.ceil(player.speed * 0.5);
+  } else {
+    player.trimColor = player.originalColor;
+  }
+
   playBikeSound(player);
+
+  cooldown = cooldown - player.speed;
 
   const trn = player.group.translation;
   // only register changes of directions every <cooldown> frames
   let direction = player.direction;
-  for (let i = 0; i < player.speed; i++) {
+
+  for (let i = 0; i < player.speed + bonus; i++) {
     if (
       player.direction !== player.prevDirection &&
       frameCount - player.lastMoveFrame > cooldown &&
@@ -393,17 +422,31 @@ const gameInst = two.bind('update', frameCount => {
     });
   } else {
     let gameOverText = 'DRAW!';
+
     if (user.alive && !enemy.alive) {
       user.wins += 1;
-      gameOverText = `${user.name} WINS!`;
+      gameOverText = `${user.name} derezzed ${enemy.name}!`;
     } else if (enemy.alive && !user.alive) {
       enemy.wins += 1;
-      gameOverText = `${enemy.name} WINS!`;
+      gameOverText = `${enemy.name} derezzed ${user.name}!`;
     }
+    document.getElementById('gameOverSubtext').innerText =
+      'Press`r` to play next round.';
+
+    players.some(p => {
+      if (p.wins === 3) {
+        if (user.alive && !enemy.alive) {
+          gameOverText = `${user.name} wins!`;
+        } else if (enemy.alive && !user.alive) {
+          gameOverText = `${enemy.name} wins!`;
+        }
+        document.getElementById('gameOverSubtext').innerText =
+          'Press`r` for rematch.';
+        return true;
+      }
+    });
     document.getElementById('gameOverContainer').style.display = 'block';
     document.getElementById('gameOverText').innerText = gameOverText;
-    document.getElementById('gameOverSubtext').innerText =
-      'Press`r` to play again.';
     document.getElementById('tips-container').style.display = 'block';
     stopPlayerSounds();
     two.pause();

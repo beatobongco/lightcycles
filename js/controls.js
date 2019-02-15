@@ -110,8 +110,13 @@ document.body.onkeydown = k => {
         two.remove(l);
       });
     });
-    user = initUser(user.wins);
-    enemy = initEnemy(enemy.wins);
+    if (players.some(p => p.wins === 3)) {
+      user = initUser(0);
+      enemy = initEnemy(0);
+    } else {
+      user = initUser(user.wins);
+      enemy = initEnemy(enemy.wins);
+    }
     players = [user, enemy];
     if (noEnemy) {
       players = [user];

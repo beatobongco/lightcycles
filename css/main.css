@@ -62,7 +62,7 @@ h1 {
 
 .game {
   display: flex;
-  width: 660px;
+  width: 720px;
   margin: 0 auto;
 }
 
@@ -111,4 +111,15 @@ a {
 
 .accelerate {
   margin-top: 0px;
+}
+
+.wins {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -10px;
+}
+.windot {
+  font-size: 24px;
+  margin-right: 3px;
 }
