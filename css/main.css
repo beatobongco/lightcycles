@@ -104,3 +104,11 @@ a {
   margin: 0 auto;
   display: none;
 }
+
+.no-bot {
+  margin-bottom: 0;
+}
+
+.accelerate {
+  margin-top: 0px;
+}
