@@ -270,23 +270,6 @@ function getRandomInt(min, max) {
 
 function generateMove(player, frameCount) {
   const cooldown = 6;
-  // only register changes of directions every <cooldown> frames
-  let direction = player.direction;
-  if (
-    player.direction !== player.prevDirection &&
-    frameCount - player.lastMoveFrame > cooldown &&
-    isMoveLegal(player, direction)
-  ) {
-    // set a new origin for the light trail
-    player.currentOrigin = player.group.translation.clone();
-    player.prevDirection = direction;
-    player.lastMoveFrame = frameCount;
-    // reset sound when turning
-    player.sound.currentTime = 0;
-    player.sound.play();
-  } else {
-    direction = player.prevDirection;
-  }
 
   // use 3 separate conditions so you can accelerate and brake at the same time
   if (player.isAccelerating) {
@@ -319,7 +302,24 @@ function generateMove(player, frameCount) {
   playBikeSound(player);
 
   const trn = player.group.translation;
+  // only register changes of directions every <cooldown> frames
+  let direction = player.direction;
   for (let i = 0; i < player.speed; i++) {
+    if (
+      player.direction !== player.prevDirection &&
+      frameCount - player.lastMoveFrame > cooldown &&
+      isMoveLegal(player, direction)
+    ) {
+      // set a new origin for the light trail
+      player.currentOrigin = player.group.translation.clone();
+      player.prevDirection = direction;
+      player.lastMoveFrame = frameCount;
+      // reset sound when turning
+      player.sound.currentTime = 0;
+      player.sound.play();
+    } else {
+      direction = player.prevDirection;
+    }
     switch (direction) {
       case 'left':
         trn.addSelf(leftVec);
