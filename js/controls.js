@@ -39,9 +39,11 @@ document.body.onkeyup = k => {
   }
 };
 
+let firstRun = true;
 document.body.onkeydown = k => {
   if (k.code === 'KeyG') {
-    if (!gameInst.playing) {
+    if (firstRun) {
+      firstRun = false;
       gameOver = false;
       gameInst.play();
       document.getElementById('gameOverContainer').style.display = 'none';
