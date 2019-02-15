@@ -79,8 +79,7 @@ function createPlayerCircle(x, y, color, trimColor, direction) {
     hitboxSize
   );
   hitbox.fill = 'red';
-  // hitbox.noFill();
-  hitbox.noStroke();
+  hitbox.noFill();
   const group = two.makeGroup(circle, hitbox);
   group.center();
   group.translation.set(x, y);
