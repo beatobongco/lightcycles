@@ -66,10 +66,10 @@ const playerSize = 6;
 const hitboxSize = 5;
 const hitboxOffset = 0;
 
-function createPlayerCircle(x, y, color, trimColor, direction) {
+function createPlayerCircle(x, y, strokeColor, fillColor, direction) {
   const circle = two.makeCircle(x, y, playerSize);
-  circle.stroke = color;
-  circle.fill = trimColor;
+  circle.stroke = strokeColor;
+  circle.fill = fillColor;
   circle.linewidth = 2;
   const { offsetX, offsetY } = getOffsets(direction, hitboxOffset);
   const hitbox = two.makeRectangle(
@@ -80,6 +80,7 @@ function createPlayerCircle(x, y, color, trimColor, direction) {
   );
   hitbox.fill = 'red';
   hitbox.noFill();
+  hitbox.noStroke();
   const group = two.makeGroup(circle, hitbox);
   group.center();
   group.translation.set(x, y);
@@ -112,8 +113,8 @@ function initPlayer(
   y,
   defaultDirection,
   wins,
-  color,
-  trimColor,
+  strokeColor,
+  fillColor,
   HUDelement
 ) {
   const p = {
@@ -143,10 +144,11 @@ function initPlayer(
     lastBrakeFrame: 0,
     alive: true,
     _wins: wins,
-    group: createPlayerCircle(x, y, color, trimColor, defaultDirection),
-    color: color,
-    trimColor: trimColor,
-    originalColor: trimColor,
+    group: createPlayerCircle(x, y, strokeColor, fillColor, defaultDirection),
+    fillColor: fillColor,
+    strokeColor: strokeColor,
+    originalFill: fillColor,
+    lightTrailColor: strokeColor,
     currentOrigin: new Two.Vector(x, y),
     lightTrails: [],
     corpse: null,
@@ -226,12 +228,6 @@ function checkCollision(player, lightTrailOffset = 2) {
         ) {
           // skip
         } else {
-          console.log(
-            player.name,
-            'collided with',
-            players[i].name,
-            'lighttrail'
-          );
           return true;
         }
       }
@@ -249,7 +245,7 @@ function createLightTrail(player) {
     player.group.translation.x,
     player.group.translation.y
   );
-  lightTrail.stroke = player.color;
+  lightTrail.stroke = player.lightTrailColor;
   lightTrail.linewidth = 6;
   lightTrail.opacity = 0.9;
   lightTrail.origin = player.currentOrigin;
@@ -318,10 +314,11 @@ function generateMove(player, frameCount) {
   }
 
   if (checkCollision(player, -3)) {
-    player.trimColor = 'red';
+    // TODO: add directional sparks here
+    player.fillColor = '#e74c3c';
     bonus = Math.ceil(player.speed * 0.5);
   } else {
-    player.trimColor = player.originalColor;
+    player.fillColor = player.originalFill;
   }
 
   playBikeSound(player);
@@ -383,7 +380,7 @@ function generateMove(player, frameCount) {
         getRandomInt(1, 3), //size
         3 // make triangles
       );
-      poly.fill = player.trimColor;
+      poly.fill = player.fillColor;
       poly.noStroke();
       poly.rotation = getRandomInt(-10, 10);
 
@@ -406,8 +403,8 @@ function generateMove(player, frameCount) {
   player.group = createPlayerCircle(
     trn.x,
     trn.y,
-    player.color,
-    player.trimColor,
+    player.strokeColor,
+    player.fillColor,
     direction
   );
 }
