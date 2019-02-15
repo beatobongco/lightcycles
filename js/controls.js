@@ -19,7 +19,7 @@ function pAccelerate(player) {
 const userKeyAcc = 'KeyT';
 const userKeyBrake = null;
 
-const enemyKeyAcc = 'ShiftRight';
+const enemyKeyAcc = 'BracketRight';
 const enemyKeyBrake = null;
 
 document.body.onkeyup = k => {

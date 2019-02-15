@@ -19,7 +19,7 @@ T - accelerate
 
 ```
 arrow keys - change direction
-Right SHIFT - accelerate
+] - accelerate
 ```
 
 ## Resources
