@@ -283,7 +283,6 @@ function getRandomInt(min, max) {
 }
 
 function generateMove(player, frameCount) {
-  let cooldown = 7;
   let bonus = 0;
   // use 3 separate conditions so you can accelerate and brake at the same time
   if (player.isAccelerating) {
@@ -315,20 +314,23 @@ function generateMove(player, frameCount) {
 
   if (checkCollision(player, -3)) {
     // TODO: add directional sparks here
+    // and a new motor sound?
     player.fillColor = '#e74c3c';
     bonus = Math.ceil(player.speed * 0.5);
   } else {
     player.fillColor = player.originalFill;
   }
 
-  playBikeSound(player);
+  let cooldown = 6;
+  let newCoolDown = cooldown - player.speed - bonus;
 
-  cooldown = cooldown - player.speed;
+  cooldown = Math.min(cooldown, Math.abs(newCoolDown >= 0 ? newCoolDown : 1));
 
   const trn = player.group.translation;
   // only register changes of directions every <cooldown> frames
   let direction = player.direction;
 
+  playBikeSound(player, bonus);
   for (let i = 0; i < player.speed + bonus; i++) {
     if (
       player.direction !== player.prevDirection &&

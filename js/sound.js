@@ -3,6 +3,7 @@ const sounds = {
   'sound/speed1.ogg': false,
   'sound/speed2.ogg': false,
   'sound/speed3.ogg': false,
+  'sound/slipstream.ogg': false,
   'sound/shiftup.mp3': false,
   'sound/shiftdown.mp3': false,
   'sound/derezz.mp3': false
@@ -28,7 +29,7 @@ function stopPlayerSounds() {
   });
 }
 
-function playBikeSound(player) {
+function playBikeSound(player, bonus) {
   function _playBikeSound(player, src) {
     const currSrc = player.sound.src.split('/');
     const lastTwo = currSrc.slice(currSrc.length - 2, currSrc.length);
@@ -45,13 +46,13 @@ function playBikeSound(player) {
     });
   }
   if (player.isAccelerating && !player.isBraking) {
-    if (player.speed === maxSpeed) {
+    if (player.speed + bonus > maxSpeed) {
+      _playBikeSound(player, 'sound/slipstream.ogg');
+    } else if (player.speed === maxSpeed) {
       _playBikeSound(player, 'sound/speed3.ogg');
     } else {
       _playBikeSound(player, 'sound/speed2.ogg');
     }
-  } else if (player.isBraking) {
-    _playBikeSound(player, 'sound/speed1.ogg');
   } else {
     _playBikeSound(player, 'sound/speed1.ogg');
   }
