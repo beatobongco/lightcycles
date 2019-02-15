@@ -1,6 +1,6 @@
 const elem = document.getElementById('stage');
-const maxSpeed = 6;
-const decelerationTime = 6;
+let maxSpeed = 6;
+let decelerationTime = 6;
 // [round(log(x,2) * 6) for x in range(2, 11)]
 // [6, 10, 12, 14, 16, 17, 18, 19, 20];
 function getBaseLog(x, y) {
