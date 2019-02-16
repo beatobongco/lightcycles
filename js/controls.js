@@ -116,7 +116,6 @@ document.body.onkeydown = k => {
       user = initUser(user.wins, 0);
       enemy = initEnemy(enemy.wins, 0);
     } else {
-      console.log(enemy);
       user = initUser(user.wins, user.roundWins);
       enemy = initEnemy(enemy.wins, enemy.roundWins);
     }

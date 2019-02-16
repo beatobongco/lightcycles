@@ -20,7 +20,9 @@ Object.keys(sounds).forEach(s => {
 function initPlayerSounds() {
   players.forEach(player => {
     player.sound.src = `sound/speed1.ogg`;
-    player.soundPromise = player.sound.play();
+    player.soundPromise = player.sound.play().catch(_ => {
+      //catch DOMException errors
+    });
   });
 }
 
@@ -42,7 +44,9 @@ function playBikeSound(player, bonus) {
     if (sounds[src]) {
       await player.soundPromise;
       player.sound.src = src;
-      player.soundPromise = player.sound.play();
+      player.soundPromise = player.sound.play().catch(_ => {
+        //catch DOMException errors
+      });
     }
   }
   if (player.isAccelerating && !player.isBraking) {
