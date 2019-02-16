@@ -51,7 +51,7 @@ h1 {
 
 .game {
   display: flex;
-  width: 720px;
+  width: 740px;
   margin: 0 auto;
 }
 
@@ -112,7 +112,7 @@ a {
 }
 
 .credits {
-  width: 725px;
+  width: 740px;
   margin: 50px auto;
   line-height: 2rem;
 }
