@@ -422,7 +422,7 @@ const gameInst = two.bind('update', frameCount => {
       gameOverText = 'TIME UP!';
     }
     document.getElementById('gameOverSubtext').innerText =
-      'Press `G` to play next round.';
+      'Press `R` to play next round.';
 
     players.some(p => {
       if (p.roundWins === 3) {
@@ -434,7 +434,7 @@ const gameInst = two.bind('update', frameCount => {
           gameOverText = `${enemy.name} wins!`;
         }
         document.getElementById('gameOverSubtext').innerText =
-          'Press `G` for rematch.';
+          'Press `R` for rematch.';
         return true;
       }
     });

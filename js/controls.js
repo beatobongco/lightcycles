@@ -57,7 +57,7 @@ function startGame() {
 }
 let firstRun = true;
 document.body.onkeydown = k => {
-  if (k.code === 'KeyG') {
+  if (k.code === 'KeyR') {
     const docElem = document.documentElement;
     if (docElem.requestFullscreen) {
       docElem.requestFullscreen();
