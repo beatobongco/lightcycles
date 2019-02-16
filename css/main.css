@@ -49,17 +49,6 @@ h1 {
   font-size: 80%;
 }
 
-.tips {
-  font-size: 80%;
-  text-align: left;
-  width: 475px;
-  margin: 36px auto 0;
-}
-
-.tips li {
-  margin: 10px 0;
-}
-
 .game {
   display: flex;
   width: 720px;
@@ -75,12 +64,10 @@ h1 {
   height: 100%;
   text-align: center;
   position: absolute;
-  display: block;
   background-color: rgba(0, 0, 0, 0.5);
-}
-
-#gameOverContainer > .inner {
-  margin-top: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .smaller {

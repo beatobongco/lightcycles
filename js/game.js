@@ -90,15 +90,16 @@ function createHUD(el, name, wins, roundWins, speed) {
   for (let i = 0; i < roundWins; i++) {
     winDots[i] = '<span class="windot">&#9679;</span>';
   }
+  winsHTML =
+    wins > 0 ? `WINS: <span id="${name}-wins">${wins}</span>` : '&nbsp;';
   document.getElementById(el).innerHTML = `
     <div class="hud">
       <h3>${name}</h3>
-      <p><small>WINS</small></p>
-      <h3 id="${name}-wins">${wins}</h3>
       <p><small>ROUND</small></p>
       <div class="rounds">${winDots.join('')}</div>
       <p><small>SPEED</small></p>
       <h3 id="${name}-speed">${speed}</h3>
+      <small class="tiny">${winsHTML}</small>
     </div>`;
 }
 
@@ -208,6 +209,7 @@ function checkCollision(player, lightTrailOffset = 2) {
     trn.y >= stageHeight - hitboxSize || // down limit
     trn.y <= 0 + hitboxSize // up limit
   ) {
+    gameOverText = `${player.name} ran into the arena wall`;
     return true;
   }
 
@@ -234,6 +236,13 @@ function checkCollision(player, lightTrailOffset = 2) {
         ) {
           // skip
         } else {
+          const victim = player.name;
+          const killer = players[i].name;
+          if (killer === victim) {
+            gameOverText = `${victim} ran into his own jetwall`;
+          } else {
+            gameOverText = `${victim} ran into ${killer}'s jetwall`;
+          }
           return true;
         }
       }
@@ -402,6 +411,7 @@ function generateMove(player, frameCount) {
 }
 
 let gameOver = true;
+let gameOverText = null;
 const gameInst = two.bind('update', frameCount => {
   stats.begin();
   if (!gameOver) {
@@ -410,37 +420,37 @@ const gameInst = two.bind('update', frameCount => {
     });
   } else {
     clearInterval(gameTimer);
-    let gameOverText = 'DRAW!';
 
     if (user.alive && !enemy.alive) {
       user.roundWins += 1;
-      gameOverText = `${user.name} derezzed ${enemy.name}!`;
     } else if (enemy.alive && !user.alive) {
       enemy.roundWins += 1;
-      gameOverText = `${enemy.name} derezzed ${user.name}!`;
     } else if (timeLeft <= 0) {
       gameOverText = 'TIME UP!';
+    } else {
+      gameOverText = 'DRAW!';
     }
     document.getElementById('gameOverSubtext').innerText =
       'Press `R` to play next round.';
 
     players.some(p => {
+      let extraText = null;
       if (p.roundWins === 3) {
         if (user.alive && !enemy.alive) {
           user.wins += 1;
-          gameOverText = `${user.name} wins!`;
+          extraText = `${user.name} wins!`;
         } else if (enemy.alive && !user.alive) {
           enemy.wins += 1;
-          gameOverText = `${enemy.name} wins!`;
+          extraText = `${enemy.name} wins!`;
         }
-        document.getElementById('gameOverSubtext').innerText =
-          'Press `R` for rematch.';
+        document.getElementById(
+          'gameOverSubtext'
+        ).innerText = `${extraText} Press \`R\` for rematch.`;
         return true;
       }
     });
-    document.getElementById('gameOverContainer').style.display = 'block';
+    document.getElementById('gameOverContainer').style.display = 'flex';
     document.getElementById('gameOverText').innerText = gameOverText;
-    document.getElementById('tips-container').style.display = 'block';
     stopPlayerSounds();
     two.pause();
   }
