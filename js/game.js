@@ -294,20 +294,11 @@ function generateMove(player, frameCount) {
       player.speed += 1;
       player.lastAccelerateFrame = frameCount;
     }
-  }
-  if (player.isBraking) {
-    if (player.speed > 1 && frameCount - player.lastBrakeFrame > brakeTime) {
-      player.speed -= 1;
-      player.lastBrakeFrame = frameCount;
-    }
-  }
-  if (
-    !player.isAccelerating &&
-    !player.isBraking &&
+  } else if (
     frameCount - player.lastDecelerateFrame > decelerationTime &&
     player.speed > 1
   ) {
-    // by default player slows down if not accelerating or braking
+    // by default player slows down
     player.speed -= 1;
     player.lastDecelerateFrame = frameCount;
   }
