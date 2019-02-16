@@ -1,5 +1,13 @@
 function playerMove(player, direction) {
-  player.direction = direction;
+  // dont allow movements in opposite directions
+  if (
+    (direction === 'down' && player.prevDirection !== 'up') ||
+    (direction === 'up' && player.prevDirection !== 'down') ||
+    (direction === 'right' && player.prevDirection !== 'left') ||
+    (direction === 'left' && player.prevDirection !== 'right')
+  ) {
+    player.direction = direction;
+  }
 }
 
 function pBrake(player) {
