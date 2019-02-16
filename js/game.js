@@ -63,7 +63,7 @@ function getOffsets(direction, baseAmount) {
 
 // create players
 const playerSize = 6;
-const hitboxSize = 4;
+const hitboxSize = 6;
 
 function createPlayerCircle(x, y, strokeColor, fillColor, direction) {
   const circle = two.makeCircle(x, y, playerSize);
