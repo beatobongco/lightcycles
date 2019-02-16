@@ -209,7 +209,6 @@ function checkCollision(player, lightTrailOffset = 2) {
     trn.y >= stageHeight - hitboxSize || // down limit
     trn.y <= 0 + hitboxSize // up limit
   ) {
-    gameOverText = `${player.name} ran into the arena wall`;
     return true;
   }
 
@@ -236,13 +235,6 @@ function checkCollision(player, lightTrailOffset = 2) {
         ) {
           // skip
         } else {
-          const victim = player.name;
-          const killer = players[i].name;
-          if (killer === victim) {
-            gameOverText = `${victim} ran into his own jetwall`;
-          } else {
-            gameOverText = `${victim} ran into ${killer}'s jetwall`;
-          }
           return true;
         }
       }
@@ -422,13 +414,15 @@ const gameInst = two.bind('update', frameCount => {
     clearInterval(gameTimer);
 
     if (user.alive && !enemy.alive) {
+      gameOverText = `${user.name} WINS`;
       user.roundWins += 1;
     } else if (enemy.alive && !user.alive) {
+      gameOverText = `${enemy.name} WINS`;
       enemy.roundWins += 1;
     } else if (timeLeft <= 0) {
-      gameOverText = 'TIME UP!';
+      gameOverText = 'TIME UP';
     } else {
-      gameOverText = 'DRAW!';
+      gameOverText = 'DRAW';
     }
     document.getElementById('gameOverSubtext').innerText =
       'Press `R` to play next round.';
@@ -438,14 +432,14 @@ const gameInst = two.bind('update', frameCount => {
       if (p.roundWins === 3) {
         if (user.alive && !enemy.alive) {
           user.wins += 1;
-          extraText = `${user.name} wins!`;
+          gameOverText = `${user.name} WINS THE MATCH`;
         } else if (enemy.alive && !user.alive) {
           enemy.wins += 1;
-          extraText = `${enemy.name} wins!`;
+          gameOverText = `${enemy.name} WINS THE MATCH`;
         }
         document.getElementById(
           'gameOverSubtext'
-        ).innerText = `${extraText} Press \`R\` for rematch.`;
+        ).innerText = `Press \`R\` for rematch.`;
         return true;
       }
     });
