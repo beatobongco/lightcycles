@@ -409,6 +409,7 @@ const gameInst = two.bind('update', frameCount => {
       generateMove(p, frameCount);
     });
   } else {
+    clearInterval(gameTimer);
     let gameOverText = 'DRAW!';
 
     if (user.alive && !enemy.alive) {
@@ -417,6 +418,8 @@ const gameInst = two.bind('update', frameCount => {
     } else if (enemy.alive && !user.alive) {
       enemy.roundWins += 1;
       gameOverText = `${enemy.name} derezzed ${user.name}!`;
+    } else if (timeLeft <= 0) {
+      gameOverText = 'TIME UP!';
     }
     document.getElementById('gameOverSubtext').innerText =
       'Press `G` to play next round.';

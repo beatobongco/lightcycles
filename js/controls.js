@@ -48,6 +48,7 @@ document.body.onkeyup = k => {
 };
 
 function startGame() {
+  gameTimer = createTimer();
   gameOver = false;
   document.getElementById('gameOverContainer').style.display = 'none';
   document.getElementById('tips-container').style.display = 'none';

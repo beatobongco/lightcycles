@@ -133,3 +133,9 @@ a {
 .credits p {
   margin: 3rem 0;
 }
+
+.timer-container {
+  text-align: center;
+  font-size: 1.17em;
+  margin: 5px 0;
+}
