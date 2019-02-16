@@ -419,7 +419,7 @@ const gameInst = two.bind('update', frameCount => {
       gameOverText = `${enemy.name} derezzed ${user.name}!`;
     }
     document.getElementById('gameOverSubtext').innerText =
-      'Press`r` to play next round.';
+      'Press `G` to play next round.';
 
     players.some(p => {
       if (p.roundWins === 3) {
@@ -431,7 +431,7 @@ const gameInst = two.bind('update', frameCount => {
           gameOverText = `${enemy.name} wins!`;
         }
         document.getElementById('gameOverSubtext').innerText =
-          'Press`r` for rematch.';
+          'Press `G` for rematch.';
         return true;
       }
     });

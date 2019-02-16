@@ -47,17 +47,16 @@ document.body.onkeyup = k => {
   }
 };
 
+function startGame() {
+  gameOver = false;
+  document.getElementById('gameOverContainer').style.display = 'none';
+  document.getElementById('tips-container').style.display = 'none';
+  gameInst.play();
+  initPlayerSounds();
+}
 let firstRun = true;
 document.body.onkeydown = k => {
   if (k.code === 'KeyG') {
-    if (firstRun) {
-      firstRun = false;
-      gameOver = false;
-      gameInst.play();
-      document.getElementById('gameOverContainer').style.display = 'none';
-      document.getElementById('tips-container').style.display = 'none';
-      initPlayerSounds();
-    }
     const docElem = document.documentElement;
     if (docElem.requestFullscreen) {
       docElem.requestFullscreen();
@@ -70,6 +69,30 @@ document.body.onkeydown = k => {
     } else if (docElem.msRequestFullscreen) {
       /* IE/Edge */
       docElem.msRequestFullscreen();
+    }
+    if (firstRun) {
+      firstRun = false;
+      startGame();
+    } else if (gameOver) {
+      players.forEach(p => {
+        two.remove(p.group);
+        two.remove(p.corpse);
+        p.lightTrails.forEach(l => {
+          two.remove(l);
+        });
+      });
+      if (players.some(p => p.roundWins === 3)) {
+        user = initUser(user.wins, 0);
+        enemy = initEnemy(enemy.wins, 0);
+      } else {
+        user = initUser(user.wins, user.roundWins);
+        enemy = initEnemy(enemy.wins, enemy.roundWins);
+      }
+      players = [user, enemy];
+      if (noEnemy) {
+        players = [user];
+      }
+      startGame();
     }
   } else if (!gameOver) {
     switch (k.code) {
@@ -112,29 +135,5 @@ document.body.onkeydown = k => {
         pBrake(enemy);
         break;
     }
-  } else if (k.code === 'KeyR' && gameOver) {
-    players.forEach(p => {
-      two.remove(p.group);
-      two.remove(p.corpse);
-      p.lightTrails.forEach(l => {
-        two.remove(l);
-      });
-    });
-    if (players.some(p => p.roundWins === 3)) {
-      user = initUser(user.wins, 0);
-      enemy = initEnemy(enemy.wins, 0);
-    } else {
-      user = initUser(user.wins, user.roundWins);
-      enemy = initEnemy(enemy.wins, enemy.roundWins);
-    }
-    players = [user, enemy];
-    if (noEnemy) {
-      players = [user];
-    }
-    gameOver = false;
-    initPlayerSounds();
-    document.getElementById('gameOverContainer').style.display = 'none';
-    document.getElementById('tips-container').style.display = 'none';
-    two.play();
   }
 };
