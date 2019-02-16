@@ -327,8 +327,6 @@ function generateMove(player, frameCount) {
   // only register changes of directions every <cooldown> frames
   let direction = player.direction;
 
-  playBikeSound(player, bonus);
-
   for (let i = 0; i < player.speed + bonus; i++) {
     if (
       player.direction !== player.prevDirection &&
@@ -359,6 +357,7 @@ function generateMove(player, frameCount) {
         break;
     }
   }
+  playBikeSound(player, bonus);
   // TODO: might want to only check collisions when both players move already
   // P1 might have a slight advantage
   if (checkCollision(player)) {

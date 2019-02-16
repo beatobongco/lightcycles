@@ -25,30 +25,24 @@ function initPlayerSounds() {
 }
 
 function stopPlayerSounds() {
-  players.forEach(player => {
-    player.soundPromise.then(_ => {
-      player.sound.pause();
-    });
+  players.forEach(async function(player) {
+    await player.soundPromise;
+    player.sound.pause();
   });
 }
 
 function playBikeSound(player, bonus) {
   //https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
-  function _playBikeSound(player, src) {
+  async function _playBikeSound(player, src) {
     const currSrc = player.sound.src.split('/');
     const lastTwo = currSrc.slice(currSrc.length - 2, currSrc.length);
     if (src === lastTwo.join('/')) {
       return;
     }
     if (sounds[src]) {
-      player.soundPromise.then(_ => {
-        try {
-          player.sound.src = src;
-          player.soundPromise = player.sound.play();
-        } catch (error) {
-          console.log(error);
-        }
-      });
+      await player.soundPromise;
+      player.sound.src = src;
+      player.soundPromise = player.sound.play();
     }
   }
   if (player.isAccelerating && !player.isBraking) {
