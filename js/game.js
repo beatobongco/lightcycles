@@ -87,21 +87,23 @@ function createPlayerCircle(x, y, strokeColor, fillColor, direction) {
   return group;
 }
 
-function createHUD(el, name, wins, speed) {
+function createHUD(el, name, wins, roundWins, speed) {
   let winDots = [
     '<span class="windot">&#9675;</span>',
     '<span class="windot">&#9675;</span>',
     '<span class="windot">&#9675;</span>'
   ];
 
-  for (let i = 0; i < wins; i++) {
+  for (let i = 0; i < roundWins; i++) {
     winDots[i] = '<span class="windot">&#9679;</span>';
   }
   document.getElementById(el).innerHTML = `
     <div class="hud">
       <h3>${name}</h3>
       <p><small>WINS</small></p>
-      <div class="wins">${winDots.join('')}</div>
+      <h3 id="${name}-wins">${wins}</h3>
+      <p><small>ROUND</small></p>
+      <div class="rounds">${winDots.join('')}</div>
       <p><small>SPEED</small></p>
       <h3 id="${name}-speed">${speed}</h3>
     </div>`;
@@ -113,6 +115,7 @@ function initPlayer(
   y,
   defaultDirection,
   wins,
+  roundWins,
   strokeColor,
   fillColor,
   HUDelement
@@ -135,7 +138,15 @@ function initPlayer(
     },
     set wins(wns) {
       this._wins = wns;
-      createHUD(HUDelement, name, wns, this.speed);
+      createHUD(HUDelement, name, wns, this.roundWins, this._speed);
+    },
+    _roundWins: roundWins,
+    get roundWins() {
+      return this._roundWins;
+    },
+    set roundWins(rnd) {
+      this._roundWins = rnd;
+      createHUD(HUDelement, name, this.wins, rnd, this._speed);
     },
     isAccelerating: false,
     isBraking: false,
@@ -155,40 +166,42 @@ function initPlayer(
     sound: new Audio(),
     soundPromise: null
   };
-  createHUD(HUDelement, name, wins, 1);
+  createHUD(HUDelement, name, wins, roundWins, 1);
 
   return p;
 }
 
-function initUser(wins) {
+function initUser(wins, roundWins) {
   return initPlayer(
     'P1',
     Math.round(stageWidth / 2),
     gridSize * 8,
     'down',
     wins,
+    roundWins,
     '#3498db',
     '#ffffff',
     'userHud'
   );
 }
 
-let user = initUser(0);
+let user = initUser(0, 0);
 
-function initEnemy(wins) {
+function initEnemy(wins, roundWins) {
   return initPlayer(
     'P2',
     Math.round(stageWidth / 2),
     stageHeight - gridSize * 8,
     'up',
     wins,
+    roundWins,
     '#e67e22',
     '#000000',
     'enemyHud'
   );
 }
 
-let enemy = initEnemy(0);
+let enemy = initEnemy(0, 0);
 
 let players = [user, enemy];
 
@@ -417,20 +430,22 @@ const gameInst = two.bind('update', frameCount => {
     let gameOverText = 'DRAW!';
 
     if (user.alive && !enemy.alive) {
-      user.wins += 1;
+      user.roundWins += 1;
       gameOverText = `${user.name} derezzed ${enemy.name}!`;
     } else if (enemy.alive && !user.alive) {
-      enemy.wins += 1;
+      enemy.roundWins += 1;
       gameOverText = `${enemy.name} derezzed ${user.name}!`;
     }
     document.getElementById('gameOverSubtext').innerText =
       'Press`r` to play next round.';
 
     players.some(p => {
-      if (p.wins === 3) {
+      if (p.roundWins === 3) {
         if (user.alive && !enemy.alive) {
+          user.wins += 1;
           gameOverText = `${user.name} wins!`;
         } else if (enemy.alive && !user.alive) {
+          enemy.wins += 1;
           gameOverText = `${enemy.name} wins!`;
         }
         document.getElementById('gameOverSubtext').innerText =

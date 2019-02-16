@@ -112,12 +112,13 @@ document.body.onkeydown = k => {
         two.remove(l);
       });
     });
-    if (players.some(p => p.wins === 3)) {
-      user = initUser(0);
-      enemy = initEnemy(0);
+    if (players.some(p => p.roundWins === 3)) {
+      user = initUser(user.wins, 0);
+      enemy = initEnemy(enemy.wins, 0);
     } else {
-      user = initUser(user.wins);
-      enemy = initEnemy(enemy.wins);
+      console.log(enemy);
+      user = initUser(user.wins, user.roundWins);
+      enemy = initEnemy(enemy.wins, enemy.roundWins);
     }
     players = [user, enemy];
     if (noEnemy) {
