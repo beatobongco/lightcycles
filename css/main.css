@@ -123,3 +123,13 @@ a {
   font-size: 24px;
   margin-right: 3px;
 }
+
+.credits {
+  width: 720px;
+  margin: 50px auto;
+  line-height: 2rem;
+}
+
+.credits p {
+  margin: 3rem 0;
+}
