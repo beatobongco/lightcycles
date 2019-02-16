@@ -1,15 +1,15 @@
 const elem = document.getElementById('stage');
 let maxSpeed = 6;
-let decelerationTime = 6;
-// [round(log(x,2) * 6) for x in range(2, 11)]
-// [6, 10, 12, 14, 16, 17, 18, 19, 20];
+let decelerationTime = 3;
 function getBaseLog(x, y) {
   return Math.log(y) / Math.log(x);
 }
-const accelerationTime = [];
-for (let i = 2; i < maxSpeed + 1; i++) {
-  accelerationTime.push(Math.round(getBaseLog(2, i) * 6));
-}
+const accelerationTime = [3, 5, 6, 14, 16];
+// [round(log(x,2) * 6) for x in range(2, 11)]
+// [6, 10, 12, 14, 16, 17, 18, 19, 20];
+// for (let i = 2; i < maxSpeed + 1; i++) {
+//   accelerationTime.push(Math.round(getBaseLog(2, i) * 6));
+// }
 const brakeTime = 3;
 // width and height of each grid box
 const gridSize = 16;
