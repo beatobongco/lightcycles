@@ -331,6 +331,7 @@ function generateMove(player, frameCount) {
   let direction = player.direction;
 
   playBikeSound(player, bonus);
+
   for (let i = 0; i < player.speed + bonus; i++) {
     if (
       player.direction !== player.prevDirection &&
@@ -343,7 +344,6 @@ function generateMove(player, frameCount) {
       player.lastMoveFrame = frameCount;
       // reset sound when turning
       player.sound.currentTime = 0;
-      player.sound.play();
     } else {
       direction = player.prevDirection;
     }
