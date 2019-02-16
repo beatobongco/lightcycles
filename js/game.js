@@ -63,22 +63,15 @@ function getOffsets(direction, baseAmount) {
 
 // create players
 const playerSize = 6;
-const hitboxSize = 5;
-const hitboxOffset = 0;
+const hitboxSize = 4;
 
 function createPlayerCircle(x, y, strokeColor, fillColor, direction) {
   const circle = two.makeCircle(x, y, playerSize);
   circle.stroke = strokeColor;
   circle.fill = fillColor;
   circle.linewidth = 2;
-  const { offsetX, offsetY } = getOffsets(direction, hitboxOffset);
-  const hitbox = two.makeRectangle(
-    x + offsetX,
-    y + offsetY,
-    hitboxSize,
-    hitboxSize
-  );
-  hitbox.fill = 'red';
+  const hitbox = two.makeRectangle(x, y, hitboxSize, hitboxSize);
+  hitbox.fill = 'red'; // for debugging
   hitbox.noFill();
   hitbox.noStroke();
   const group = two.makeGroup(circle, hitbox);
