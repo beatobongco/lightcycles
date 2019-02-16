@@ -305,7 +305,6 @@ function generateMove(player, frameCount) {
 
   if (checkCollision(player, -3)) {
     // TODO: add directional sparks here
-    // and a new motor sound?
     player.fillColor = '#e74c3c';
     bonus = Math.ceil(player.speed * 0.5);
   } else {
@@ -378,7 +377,7 @@ function generateMove(player, frameCount) {
         getRandomInt(1, 3), //size
         3 // make triangles
       );
-      poly.fill = player.fillColor;
+      poly.fill = player.originalFill;
       poly.noStroke();
       poly.rotation = getRandomInt(-10, 10);
 
