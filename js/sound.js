@@ -11,6 +11,7 @@ const sounds = {
 
 Object.keys(sounds).forEach(s => {
   var _sound = new Audio(s);
+  _sound.load();
   _sound.addEventListener('canplaythrough', () => {
     sounds[s] = true;
   });
@@ -18,32 +19,37 @@ Object.keys(sounds).forEach(s => {
 
 function initPlayerSounds() {
   players.forEach(player => {
-    player.sound.src = `sound/speed${player.speed}.ogg`;
+    player.sound.src = `sound/speed1.ogg`;
     player.soundPromise = player.sound.play();
   });
 }
 
 function stopPlayerSounds() {
   players.forEach(player => {
-    player.sound.pause();
+    player.soundPromise.then(_ => {
+      player.sound.pause();
+    });
   });
 }
 
 function playBikeSound(player, bonus) {
+  //https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
   function _playBikeSound(player, src) {
     const currSrc = player.sound.src.split('/');
     const lastTwo = currSrc.slice(currSrc.length - 2, currSrc.length);
     if (src === lastTwo.join('/')) {
       return;
     }
-    player.soundPromise.then(_ => {
-      const newSound = new Audio(src);
-      newSound.oncanplay = _ => {
-        player.sound.pause();
-        player.sound = newSound;
-        player.soundPromise = player.sound.play();
-      };
-    });
+    if (sounds[src]) {
+      player.soundPromise.then(_ => {
+        try {
+          player.sound.src = src;
+          player.soundPromise = player.sound.play();
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    }
   }
   if (player.isAccelerating && !player.isBraking) {
     if (player.speed + bonus > maxSpeed) {
