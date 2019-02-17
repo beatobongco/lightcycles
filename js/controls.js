@@ -90,7 +90,10 @@ document.body.onkeydown = k => {
         enemy = initEnemy(enemy.wins, enemy.roundWins);
       }
       players = [user, enemy];
-      if (noEnemy) {
+      // debug
+      if (noPlayer === 1) {
+        players = [enemy];
+      } else if (noPlayer === 2) {
         players = [user];
       }
       startGame();

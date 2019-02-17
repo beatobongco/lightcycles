@@ -1,12 +1,13 @@
 const url = new URL(window.location.href);
 const params = url.searchParams;
-let noEnemy = false;
+let noPlayer = parseInt(params.get('noPlayer'));
 
 if (params.get('showStats')) {
   document.getElementById('fps').style.display = 'block';
 }
 
-if (params.get('noEnemy')) {
-  noEnemy = true;
+if (noPlayer === 1) {
+  players = [enemy];
+} else if (noPlayer === 2) {
   players = [user];
 }
