@@ -203,16 +203,16 @@ two.update();
 
 function checkCollision(player, lightTrailOffset = 2) {
   const trn = player.group.translation;
+  const hitboxRect = player.group._collection[1].getBoundingClientRect();
   if (
-    trn.x >= stageWidth - hitboxSize || // right limit
-    trn.x <= 0 + hitboxSize || // left limit
-    trn.y >= stageHeight - hitboxSize || // down limit
-    trn.y <= 0 + hitboxSize // up limit
+    hitboxRect.right >= stageWidth || // right limit
+    hitboxRect.left <= 0 || // left limit
+    hitboxRect.bottom >= stageHeight || // down limit
+    hitboxRect.top <= 0 // up limit
   ) {
     return true;
   }
 
-  const hitboxRect = player.group._collection[1].getBoundingClientRect();
   // Use for-loops instead for better performance
   // https://github.com/dg92/Performance-Analysis-JS
   const lt = player.lightTrails;
