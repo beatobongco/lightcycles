@@ -428,7 +428,6 @@ const gameInst = two.bind('update', frameCount => {
       'Press `R` to play next round.';
 
     players.some(p => {
-      let extraText = null;
       if (p.roundWins === 3) {
         if (user.alive && !enemy.alive) {
           user.wins += 1;
