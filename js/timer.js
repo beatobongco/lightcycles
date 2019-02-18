@@ -1,5 +1,5 @@
 let start = null;
-let roundTime = 60;
+let roundTime = 30;
 let timeLeft = 0;
 
 const createTimer = _ => {
