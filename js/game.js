@@ -35,7 +35,11 @@ for (let y = 0; y <= stageHeight; y += gridSize) {
 
 // create players
 const playerSize = 6;
-const hitboxSize = 6;
+
+// I have changed the hitbox size so much, but 5 seems like a real jackpot
+// Large enough so you won't phase through walls but small enough to stick
+// really close to lighttrails for some really interesting plays!
+const hitboxSize = 5;
 
 function createPlayerCircle(x, y, strokeColor, fillColor) {
   const circle = two.makeCircle(x, y, playerSize);
