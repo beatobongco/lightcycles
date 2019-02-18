@@ -23,7 +23,7 @@ const stage = two.makeRectangle(
 );
 stage.fill = '#2c3e50';
 stage.stroke = '#ecf0f1';
-stage.linewidth = 1;
+stage.linewidth = 3;
 
 // create grid
 for (let x = 0; x <= stageWidth; x += gridSize) {
