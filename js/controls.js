@@ -100,6 +100,12 @@ document.body.onkeydown = k => {
       }
       startGame();
     }
+  } else if (k.code === 'Pause' && pauseEnabled) {
+    if (gameInst.playing) {
+      gameInst.pause();
+    } else {
+      gameInst.play();
+    }
   } else if (!gameOver) {
     switch (k.code) {
       // user controls
