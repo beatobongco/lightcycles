@@ -215,7 +215,8 @@ function checkCollision(player, lightTrailOffset = 2) {
       player.name !== players[i].name &&
       _checkCollision(
         hitboxRect,
-        players[i].group._collection[1].getBoundingClientRect()
+        players[i].group._collection[1].getBoundingClientRect(),
+        lightTrailOffset
       )
     ) {
       return { didCollide: true, oppositeDir: null };
