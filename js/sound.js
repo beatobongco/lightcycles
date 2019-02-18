@@ -6,12 +6,12 @@ const sounds = {
   'sound/slipstream.ogg': false,
   'sound/shiftup.mp3': false,
   'sound/shiftdown.mp3': false,
-  'sound/derezz.mp3': false
+  'sound/derezz.mp3': false,
+  'sound/timertick.ogg': false
 };
 
 Object.keys(sounds).forEach(s => {
   var _sound = new Audio(s);
-  _sound.load();
   _sound.addEventListener('canplaythrough', () => {
     sounds[s] = true;
   });
@@ -41,13 +41,11 @@ function playBikeSound(player, bonus) {
     if (src === lastTwo.join('/')) {
       return;
     }
-    if (sounds[src]) {
-      await player.soundPromise;
-      player.sound.src = src;
-      player.soundPromise = player.sound.play().catch(_ => {
-        //catch DOMException errors
-      });
-    }
+    await player.soundPromise;
+    player.sound.src = src;
+    player.soundPromise = player.sound.play().catch(_ => {
+      //catch DOMException errors
+    });
   }
   if (player.isAccelerating && !player.isBraking) {
     if (player.speed + bonus > maxSpeed) {
@@ -67,16 +65,16 @@ function playShiftSound(gear) {
   if (gear > 0) {
     src = 'sound/shiftup.mp3';
   }
-  if (sounds[src]) {
-    let shiftSound = new Audio(src);
-    shiftSound.play();
-  }
+  let shiftSound = new Audio(src);
+  shiftSound.play();
 }
 
 function playDerezzSound() {
-  let src = 'sound/derezz.mp3';
-  if (sounds[src]) {
-    let derezz = new Audio(src);
-    derezz.play();
-  }
+  let derezz = new Audio('sound/derezz.mp3');
+  derezz.play();
+}
+
+function playTick() {
+  let tick = new Audio('sound/timertick.ogg');
+  tick.play();
 }

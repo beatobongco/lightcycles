@@ -15,9 +15,11 @@ const createTimer = _ => {
       gameOver = true;
       clearInterval(gameTimer);
     }
-    if (timeLeft <= 5 && !timer.classList.contains('time-low')) {
-      // play sound sound and turn red
-      timer.classList.add('time-low');
+    if (timeLeft <= 5) {
+      if (!timer.classList.contains('time-low')) {
+        timer.classList.add('time-low');
+      }
+      playTick();
     }
   }, 1000);
 };
