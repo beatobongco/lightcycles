@@ -183,21 +183,44 @@ let players = [user, enemy];
 two.update();
 
 function checkCollision(player, lightTrailOffset = 2) {
-  // tells us if player collided and in what direction to throw effects
-  const hitboxRect = player.group._collection[1].getBoundingClientRect();
-  if (hitboxRect.right >= stageWidth) {
-    return { didCollide: true, oppositeDir: leftVec };
-  } else if (hitboxRect.left <= 0) {
-    return { didCollide: true, oppositeDir: rightVec };
-  } else if (hitboxRect.bottom >= stageHeight) {
-    return { didCollide: true, oppositeDir: upVec };
-  } else if (hitboxRect.top <= 0) {
-    return { didCollide: true, oppositeDir: downVec };
+  function _checkCollision(a, b, offset = 0) {
+    if (
+      !(
+        a.right < b.left + offset ||
+        a.left > b.right - offset ||
+        a.bottom < b.top + offset ||
+        a.top > b.bottom - offset
+      )
+    ) {
+      return true;
+    }
   }
+  // Determines if player's hitbox collided with or is near collidable objects
+  // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
+  const hitboxRect = player.group._collection[1].getBoundingClientRect();
+  if (
+    hitboxRect.right >= stageWidth ||
+    hitboxRect.left <= 0 ||
+    hitboxRect.bottom >= stageHeight ||
+    hitboxRect.top <= 0
+  ) {
+    return { didCollide: true, oppositeDir: null };
+  }
+
   // Use for-loops instead for better performance
   // https://github.com/dg92/Performance-Analysis-JS
   const lt = player.lightTrails;
   for (let i = 0; i < players.length; i++) {
+    if (
+      player.name !== players[i].name &&
+      _checkCollision(
+        hitboxRect,
+        players[i].group._collection[1].getBoundingClientRect()
+      )
+    ) {
+      return { didCollide: true, oppositeDir: null };
+    }
+
     for (let j = 0; j < players[i].lightTrails.length; j++) {
       let trail = players[i].lightTrails[j];
       // should be immune to your last 2 created trails
@@ -209,14 +232,7 @@ function checkCollision(player, lightTrailOffset = 2) {
       }
 
       let trailHitbox = trail.getBoundingClientRect();
-      if (
-        !(
-          hitboxRect.right < trailHitbox.left + lightTrailOffset ||
-          hitboxRect.left > trailHitbox.right - lightTrailOffset ||
-          hitboxRect.bottom < trailHitbox.top + lightTrailOffset ||
-          hitboxRect.top > trailHitbox.bottom - lightTrailOffset
-        )
-      ) {
+      if (_checkCollision(hitboxRect, trailHitbox, lightTrailOffset)) {
         if (hitboxRect.right > trailHitbox.right) {
           return { didCollide: true, oppositeDir: rightVec };
         } else if (hitboxRect.left < trailHitbox.left) {
@@ -230,6 +246,26 @@ function checkCollision(player, lightTrailOffset = 2) {
     }
   }
   return { didCollide: false, oppositeDir: null };
+}
+
+function checkPlayerCollision(player, direction) {
+  const collision = checkCollision(player);
+  if (collision.didCollide) {
+    playDerezzSound();
+    player.alive = false;
+    two.remove(player.group);
+    const { oppX, oppY } = getOppositeDirection(direction);
+    player.corpse = createShards(
+      player.group.translation,
+      player.fillColor,
+      oppX,
+      oppY,
+      getRandomInt(3, 3 * player.speed),
+      playerSize * player.speed * (player.speed / 2),
+      2,
+      3
+    );
+  }
 }
 
 function createLightTrail(player) {
@@ -323,7 +359,6 @@ function getOppositeDirection(direction) {
 
 function generateMove(player, frameCount) {
   let bonus = 0;
-  // use 3 separate conditions so you can accelerate and brake at the same time
   if (player.isAccelerating) {
     if (
       player.speed < maxSpeed &&
@@ -402,33 +437,12 @@ function generateMove(player, frameCount) {
     }
   }
   playBikeSound(player, bonus);
-  // TODO: might want to only check collisions when both players move already
-  // P1 might have a slight advantage
-  const collision = checkCollision(player);
-  if (collision.didCollide) {
-    playDerezzSound();
-    player.alive = false;
-    two.remove(player.group);
-    const { oppX, oppY } = getOppositeDirection(direction);
-    player.corpse = createShards(
-      player.group.translation,
-      player.fillColor,
-      oppX,
-      oppY,
-      getRandomInt(3, 3 * player.speed),
-      playerSize * player.speed * (player.speed / 2),
-      2,
-      3
-    );
-    gameOver = true;
-    return;
-  }
   createLightTrail(player);
   two.remove(player.sparks);
   if (slipstream.didCollide) {
     // https://codepen.io/anon/pen/wNRegz
     const base = 1 + player.speed;
-    const { x, y } = slipstream.oppositeDir;
+    const { x, y } = slipstream.oppositeDir || { x: 0, y: 0 };
     const { oppX, oppY } = getOppositeDirection(direction);
     player.sparks = createShards(
       player.group.translation,
@@ -450,6 +464,7 @@ function generateMove(player, frameCount) {
     player.strokeColor,
     player.fillColor
   );
+  return direction;
 }
 
 let gameOver = true;
@@ -457,15 +472,24 @@ let gameOverText = null;
 const gameInst = two.bind('update', frameCount => {
   stats.begin();
   if (!gameOver) {
-    players.forEach(p => {
-      generateMove(p, frameCount);
-    });
+    const dirs = [];
+    for (let i = 0; i < players.length; i++) {
+      dirs.push(generateMove(players[i], frameCount));
+    }
+    for (let i = 0; i < players.length; i++) {
+      checkPlayerCollision(players[i], dirs[i]);
+      if (!players[i].alive) {
+        gameOver = true;
+      }
+    }
   } else {
     clearInterval(gameTimer);
 
     let subtext = 'Press `R` to play next round.';
 
-    if (user.alive && !enemy.alive) {
+    if (!user.alive && !enemy.alive) {
+      gameOverText = 'DRAW';
+    } else if (user.alive && !enemy.alive) {
       gameOverText = `${user.name} WINS`;
       user.roundWins += 1;
     } else if (enemy.alive && !user.alive) {
@@ -486,8 +510,6 @@ const gameInst = two.bind('update', frameCount => {
       } else {
         subtext = `DRAW. <p>${subtext} </p>`;
       }
-    } else {
-      gameOverText = 'DRAW';
     }
 
     document.getElementById('gameOverSubtext').innerHTML = subtext;
