@@ -5,11 +5,6 @@ function getBaseLog(x, y) {
   return Math.log(y) / Math.log(x);
 }
 const accelerationTime = [3, 5, 6, 14, 16];
-// [round(log(x,2) * 6) for x in range(2, 11)]
-// [6, 10, 12, 14, 16, 17, 18, 19, 20];
-// for (let i = 2; i < maxSpeed + 1; i++) {
-//   accelerationTime.push(Math.round(getBaseLog(2, i) * 6));
-// }
 const brakeTime = 3;
 // width and height of each grid box
 const gridSize = 16;
@@ -42,6 +37,7 @@ for (let y = 0; y <= stageHeight; y += gridSize) {
 }
 
 function getOffsets(direction, baseAmount) {
+  // Get x, y opposite of current direction
   let offsetX = 0;
   let offsetY = 0;
   switch (direction) {
@@ -65,7 +61,7 @@ function getOffsets(direction, baseAmount) {
 const playerSize = 6;
 const hitboxSize = 6;
 
-function createPlayerCircle(x, y, strokeColor, fillColor, direction) {
+function createPlayerCircle(x, y, strokeColor, fillColor) {
   const circle = two.makeCircle(x, y, playerSize);
   circle.stroke = strokeColor;
   circle.fill = fillColor;
@@ -112,6 +108,7 @@ function initPlayer(
   roundWins,
   strokeColor,
   fillColor,
+  turboColor,
   HUDelement
 ) {
   const p = {
@@ -149,11 +146,11 @@ function initPlayer(
     lastBrakeFrame: 0,
     alive: true,
     _wins: wins,
-    group: createPlayerCircle(x, y, strokeColor, fillColor, defaultDirection),
+    group: createPlayerCircle(x, y, strokeColor, fillColor),
     fillColor: fillColor,
     strokeColor: strokeColor,
-    originalFill: fillColor,
-    lightTrailColor: strokeColor,
+    originalStroke: strokeColor,
+    turboColor: turboColor,
     currentOrigin: new Two.Vector(x, y),
     lightTrails: [],
     corpse: null,
@@ -175,6 +172,7 @@ function initUser(wins, roundWins) {
     roundWins,
     '#3498db',
     '#ffffff',
+    '#67CBFF',
     'userHud'
   );
 }
@@ -191,6 +189,7 @@ function initEnemy(wins, roundWins) {
     roundWins,
     '#e67e22',
     '#000000',
+    '#FFB155',
     'enemyHud'
   );
 }
@@ -252,7 +251,7 @@ function createLightTrail(player) {
     player.group.translation.x,
     player.group.translation.y
   );
-  lightTrail.stroke = player.lightTrailColor;
+  lightTrail.stroke = player.strokeColor;
   lightTrail.linewidth = 6;
   lightTrail.opacity = 0.9;
   lightTrail.origin = player.currentOrigin;
@@ -260,7 +259,10 @@ function createLightTrail(player) {
   // If lines have same origin, remove them from the list
   if (player.lightTrails.length > 0) {
     const lastTrail = player.lightTrails[player.lightTrails.length - 1];
-    if (lastTrail.origin.equals(lightTrail.origin)) {
+    if (
+      lastTrail.origin.equals(lightTrail.origin) &&
+      lastTrail.stroke === lightTrail.stroke
+    ) {
       two.remove(player.lightTrails.pop());
     }
   }
@@ -301,11 +303,15 @@ function generateMove(player, frameCount) {
   }
 
   if (checkCollision(player, -3)) {
-    // TODO: add directional sparks here
-    player.fillColor = '#e74c3c';
     bonus = Math.ceil(player.speed * 0.5);
+    // TODO: add directional sparks here
+    if (player.speed + bonus > maxSpeed) {
+      // drop a new origin for turbo
+      player.strokeColor = player.turboColor;
+      player.currentOrigin = player.group.translation.clone();
+    }
   } else {
-    player.fillColor = player.originalFill;
+    player.strokeColor = player.originalStroke;
   }
 
   let cooldown = 6;
@@ -397,8 +403,7 @@ function generateMove(player, frameCount) {
     trn.x,
     trn.y,
     player.strokeColor,
-    player.fillColor,
-    direction
+    player.fillColor
   );
 }
 
