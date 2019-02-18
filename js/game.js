@@ -134,7 +134,8 @@ function initPlayer(
     corpse: null,
     sparks: null,
     sound: new Audio(),
-    soundPromise: null
+    soundPromise: null,
+    score: 0 // 1 per unit distance traveled
   };
   createHUD(HUDelement, name, wins, roundWins, 1);
 
@@ -371,6 +372,7 @@ function generateMove(player, frameCount) {
   const trn = player.group.translation;
 
   for (let i = 0; i < player.speed + bonus; i++) {
+    player.score += 1;
     if (
       player.direction !== player.prevDirection &&
       frameCount - player.lastMoveFrame > cooldown
@@ -461,17 +463,34 @@ const gameInst = two.bind('update', frameCount => {
   } else {
     clearInterval(gameTimer);
 
+    let subtext = 'Press `R` to play next round.';
+
     if (user.alive && !enemy.alive) {
       gameOverText = `${user.name} WINS`;
       user.roundWins += 1;
     } else if (enemy.alive && !user.alive) {
       gameOverText = `${enemy.name} WINS`;
       enemy.roundWins += 1;
+    } else if (timeLeft <= 0) {
+      gameOverText = 'TIME UP';
+      if (user.score > enemy.score) {
+        user.roundWins += 1;
+        subtext = `${user.name} WINS <p>${
+          user.name
+        } has a longer jetwall. </p> <p>${subtext} </p>`;
+      } else if (enemy.score > user.score) {
+        enemy.roundWins += 1;
+        subtext = `${enemy.name} WINS <p>${
+          enemy.name
+        } has a longer jetwall. </p> <p>${subtext} </p>`;
+      } else {
+        subtext = `DRAW. <p>${subtext} </p>`;
+      }
     } else {
       gameOverText = 'DRAW';
     }
-    document.getElementById('gameOverSubtext').innerText =
-      'Press `R` to play next round.';
+
+    document.getElementById('gameOverSubtext').innerHTML = subtext;
 
     players.some(p => {
       if (p.roundWins === 3) {
