@@ -343,17 +343,10 @@ function generateMove(player, frameCount) {
     player.currentOrigin = player.group.translation.clone();
   }
 
-  let cooldown = 6;
-  let newCoolDown = cooldown - player.speed - bonus;
-
-  if (newCoolDown > 0) {
-    cooldown = newCoolDown;
-  } else if (player.speed === maxSpeed) {
+  let cooldown = Math.max(0, 6 / Math.max(1, player.speed - bonus));
+  if (player.speed === maxSpeed) {
     cooldown = 0;
-  } else {
-    cooldown = 1;
   }
-
   // only register changes of directions every <cooldown> frames
   let direction = player.direction;
   const trn = player.group.translation;
