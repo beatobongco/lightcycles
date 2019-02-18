@@ -1,7 +1,7 @@
 const elem = document.getElementById('stage');
 let maxSpeed = 6;
 let decelerationTime = 3;
-const accelerationTime = [3, 5, 6, 14, 16];
+const accelerationTime = [3, 4, 6, 14, 16];
 const brakeTime = 3;
 // width and height of each grid box
 const gridSize = 16;
