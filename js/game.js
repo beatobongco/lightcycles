@@ -325,13 +325,22 @@ function generateMove(player, frameCount) {
   const slipstream = checkCollision(player, -3);
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
-    if (player.speed + bonus > maxSpeed) {
+    if (
+      player.strokeColor !== player.turboColor &&
+      player.speed + bonus > maxSpeed
+    ) {
       // drop a new origin for turbo
       player.strokeColor = player.turboColor;
       player.currentOrigin = player.group.translation.clone();
     }
-  } else {
+  }
+
+  if (
+    player.strokeColor === player.turboColor &&
+    player.speed + bonus <= maxSpeed
+  ) {
     player.strokeColor = player.originalStroke;
+    player.currentOrigin = player.group.translation.clone();
   }
 
   let cooldown = 6;
