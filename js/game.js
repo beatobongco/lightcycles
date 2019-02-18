@@ -85,6 +85,7 @@ function initPlayer(
   strokeColor,
   fillColor,
   turboColor,
+  sparkColor,
   HUDelement
 ) {
   const p = {
@@ -127,6 +128,7 @@ function initPlayer(
     strokeColor: strokeColor,
     originalStroke: strokeColor,
     turboColor: turboColor,
+    sparkColor: sparkColor,
     currentOrigin: new Two.Vector(x, y),
     lightTrails: [],
     corpse: null,
@@ -150,6 +152,7 @@ function initUser(wins, roundWins) {
     '#3498db',
     '#ffffff',
     '#67CBFF',
+    '#E7FFFF',
     'userHud'
   );
 }
@@ -167,6 +170,7 @@ function initEnemy(wins, roundWins) {
     '#e67e22',
     '#000000',
     '#FFB155',
+    '#FFFFD5',
     'enemyHud'
   );
 }
@@ -301,6 +305,21 @@ function createShards(
   return two.makeGroup(..._pieces);
 }
 
+function getOppositeDirection(direction) {
+  let oppX = 0,
+    oppY = 0;
+  if (direction === 'up') {
+    oppY = 1;
+  } else if (direction === 'down') {
+    oppY = -1;
+  } else if (direction === 'right') {
+    oppX = -1;
+  } else if (direction === 'left') {
+    oppX = 1;
+  }
+  return { oppX, oppY };
+}
+
 function generateMove(player, frameCount) {
   let bonus = 0;
   // use 3 separate conditions so you can accelerate and brake at the same time
@@ -343,10 +362,11 @@ function generateMove(player, frameCount) {
     player.currentOrigin = player.group.translation.clone();
   }
 
-  let cooldown = Math.max(0, 6 / Math.max(1, player.speed - bonus));
+  let cooldown = Math.round(Math.max(0, 6 / Math.max(1, player.speed - bonus)));
   if (player.speed === maxSpeed) {
     cooldown = 0;
   }
+  console.log(cooldown);
   // only register changes of directions every <cooldown> frames
   let direction = player.direction;
   const trn = player.group.translation;
@@ -388,12 +408,12 @@ function generateMove(player, frameCount) {
     playDerezzSound();
     player.alive = false;
     two.remove(player.group);
-    const { x, y } = collision.oppositeDir;
+    const { oppX, oppY } = getOppositeDirection(direction);
     player.corpse = createShards(
       player.group.translation,
       player.fillColor,
-      x,
-      y,
+      oppX,
+      oppY,
       getRandomInt(3, 3 * player.speed),
       playerSize * player.speed * (player.speed / 2),
       2,
@@ -403,6 +423,24 @@ function generateMove(player, frameCount) {
     return;
   }
   createLightTrail(player);
+  two.remove(player.sparks);
+  if (slipstream.didCollide) {
+    // https://codepen.io/anon/pen/wNRegz
+    const base = 1 + player.speed;
+    const { x, y } = slipstream.oppositeDir;
+    const { oppX, oppY } = getOppositeDirection(direction);
+    player.sparks = createShards(
+      player.group.translation,
+      player.sparkColor,
+      x + oppX * base,
+      y + oppY * base,
+      getRandomInt(3, 3 + player.speed),
+      1 + Math.round(player.speed * 2),
+      2,
+      2,
+      playerSize / 2
+    );
+  }
   // Make circle on top of trail
   two.remove(player.group);
   player.group = createPlayerCircle(
@@ -411,33 +449,6 @@ function generateMove(player, frameCount) {
     player.strokeColor,
     player.fillColor
   );
-  two.remove(player.sparks);
-  if (slipstream.didCollide) {
-    // https://codepen.io/anon/pen/wNRegz
-    const base = 1 + player.speed;
-    let offsetX = 0,
-      offsetY = 0;
-    if (direction === 'up') {
-      offsetY = base;
-    } else if (direction === 'down') {
-      offsetY = -base;
-    } else if (direction === 'right') {
-      offsetX = -base;
-    } else if (direction === 'left') {
-      offsetX = base;
-    }
-    const { x, y } = slipstream.oppositeDir;
-    player.sparks = createShards(
-      player.group.translation,
-      player.turboColor,
-      x + offsetX,
-      y + offsetY,
-      getRandomInt(3, 3 + player.speed),
-      base * player.speed,
-      1,
-      2
-    );
-  }
 }
 
 let gameOver = true;
