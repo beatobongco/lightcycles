@@ -75,6 +75,7 @@ document.body.onkeydown = k => {
       firstRun = false;
       startGame();
     } else if (gameOver) {
+      document.getElementById('timer').classList.remove('time-low');
       players.forEach(p => {
         two.remove(p.group);
         two.remove(p.corpse);

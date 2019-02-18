@@ -8,11 +8,16 @@ const createTimer = _ => {
   start = Date.now();
   return setInterval(function() {
     const delta = Date.now() - start;
+    const timer = document.getElementById('timer');
     timeLeft = roundTime - Math.floor(delta / 1000);
-    document.getElementById('timer').innerText = timeLeft;
+    timer.innerText = timeLeft;
     if (timeLeft <= 0) {
       gameOver = true;
       clearInterval(gameTimer);
+    }
+    if (timeLeft <= 5 && !timer.classList.contains('time-low')) {
+      // play sound sound and turn red
+      timer.classList.add('time-low');
     }
   }, 1000);
 };

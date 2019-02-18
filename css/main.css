@@ -126,3 +126,7 @@ a {
   font-size: 1.17em;
   margin: 5px 0;
 }
+
+.time-low {
+  color: #e74c3c;
+}
