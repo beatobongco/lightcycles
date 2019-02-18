@@ -35,7 +35,7 @@ for (let y = 0; y <= stageHeight; y += gridSize) {
 
 // create players
 const playerSize = 6;
-const hitboxSize = 4;
+const hitboxSize = 6;
 
 function createPlayerCircle(x, y, strokeColor, fillColor) {
   const circle = two.makeCircle(x, y, playerSize);
