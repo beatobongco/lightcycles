@@ -213,9 +213,9 @@ function checkCollision(player, lightTrailOffset = 2) {
         )
       ) {
         if (hitboxRect.right > trailHitbox.right) {
-          return { didCollide: true, oppositeDir: leftVec };
-        } else if (hitboxRect.left < trailHitbox.left) {
           return { didCollide: true, oppositeDir: rightVec };
+        } else if (hitboxRect.left < trailHitbox.left) {
+          return { didCollide: true, oppositeDir: leftVec };
         } else if (hitboxRect.bottom > trailHitbox.bottom) {
           return { didCollide: true, oppositeDir: downVec };
         } else if (hitboxRect.top < trailHitbox.top) {
