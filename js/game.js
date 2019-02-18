@@ -36,27 +36,6 @@ for (let y = 0; y <= stageHeight; y += gridSize) {
   two.makeLine(0, y, stageWidth, y).stroke = '#fff';
 }
 
-function getOffsets(direction, baseAmount) {
-  // Get x, y opposite of current direction
-  let offsetX = 0;
-  let offsetY = 0;
-  switch (direction) {
-    case 'up':
-      offsetY = -baseAmount;
-      break;
-    case 'down':
-      offsetY = baseAmount;
-      break;
-    case 'left':
-      offsetX = -baseAmount;
-      break;
-    case 'right':
-      offsetX = baseAmount;
-      break;
-  }
-  return { offsetX, offsetY };
-}
-
 // create players
 const playerSize = 6;
 const hitboxSize = 6;
@@ -201,23 +180,31 @@ let players = [user, enemy];
 two.update();
 
 function checkCollision(player, lightTrailOffset = 2) {
-  const trn = player.group.translation;
+  // tells us if player collided and in what direction to throw effects
   const hitboxRect = player.group._collection[1].getBoundingClientRect();
-  if (
-    hitboxRect.right >= stageWidth || // right limit
-    hitboxRect.left <= 0 || // left limit
-    hitboxRect.bottom >= stageHeight || // down limit
-    hitboxRect.top <= 0 // up limit
-  ) {
-    return true;
+  if (hitboxRect.right >= stageWidth) {
+    return { didCollide: true, oppositeDir: leftVec };
+  } else if (hitboxRect.left <= 0) {
+    return { didCollide: true, oppositeDir: rightVec };
+  } else if (hitboxRect.bottom >= stageHeight) {
+    return { didCollide: true, oppositeDir: upVec };
+  } else if (hitboxRect.top <= 0) {
+    return { didCollide: true, oppositeDir: downVec };
   }
-
   // Use for-loops instead for better performance
   // https://github.com/dg92/Performance-Analysis-JS
   const lt = player.lightTrails;
   for (let i = 0; i < players.length; i++) {
     for (let j = 0; j < players[i].lightTrails.length; j++) {
       let trail = players[i].lightTrails[j];
+      // should be immune to your last 2 created trails
+      if (
+        (lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
+        (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id)
+      ) {
+        continue;
+      }
+
       let trailHitbox = trail.getBoundingClientRect();
       if (
         !(
@@ -227,19 +214,19 @@ function checkCollision(player, lightTrailOffset = 2) {
           hitboxRect.top > trailHitbox.bottom - lightTrailOffset
         )
       ) {
-        // should be immune to your last 2 created trails
-        if (
-          (lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
-          (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id)
-        ) {
-          // skip
-        } else {
-          return true;
+        if (hitboxRect.right > trailHitbox.right) {
+          return { didCollide: true, oppositeDir: leftVec };
+        } else if (hitboxRect.left < trailHitbox.left) {
+          return { didCollide: true, oppositeDir: rightVec };
+        } else if (hitboxRect.bottom > trailHitbox.bottom) {
+          return { didCollide: true, oppositeDir: downVec };
+        } else if (hitboxRect.top < trailHitbox.top) {
+          return { didCollide: true, oppositeDir: upVec };
         }
       }
     }
   }
-  return false;
+  return { didCollide: false, oppositeDir: null };
 }
 
 function createLightTrail(player) {
@@ -302,9 +289,11 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
-  if (checkCollision(player, -3)) {
+  const slipstream = checkCollision(player, -3);
+  if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
     // TODO: add directional sparks here
+    // https://codepen.io/anon/pen/wNRegz
     if (player.speed + bonus > maxSpeed) {
       // drop a new origin for turbo
       player.strokeColor = player.turboColor;
@@ -361,13 +350,14 @@ function generateMove(player, frameCount) {
   playBikeSound(player, bonus);
   // TODO: might want to only check collisions when both players move already
   // P1 might have a slight advantage
-  if (checkCollision(player)) {
+  const collision = checkCollision(player);
+  if (collision.didCollide) {
     playDerezzSound();
     player.alive = false;
     two.remove(player.group);
     // create a corpse
     const pieces = [];
-    const { offsetX, offsetY } = getOffsets(direction, -1);
+    const { x, y } = collision.oppositeDir;
     // create a random amount of pieces that fly in the opposite direction
     // player is facing. Size, distance, and quantity affected by speed
     const momentum = playerSize * player.speed * (player.speed / 2);
@@ -379,14 +369,14 @@ function generateMove(player, frameCount) {
         getRandomInt(1, 3), //size
         3 // make triangles
       );
-      poly.fill = player.originalFill;
+      poly.fill = player.fillColor;
       poly.noStroke();
       poly.rotation = getRandomInt(-10, 10);
 
       poly.translation.addSelf(
         new Two.Vector(
-          getRandomInt(offsetX * playerSize, offsetX * momentum),
-          getRandomInt(offsetY * playerSize, offsetY * momentum)
+          getRandomInt(x * playerSize, x * momentum),
+          getRandomInt(y * playerSize, y * momentum)
         )
       );
       pieces.push(poly);
