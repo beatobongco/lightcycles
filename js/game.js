@@ -130,6 +130,7 @@ function initPlayer(
     currentOrigin: new Two.Vector(x, y),
     lightTrails: [],
     corpse: null,
+    sparks: null,
     sound: new Audio(),
     soundPromise: null
   };
@@ -212,9 +213,9 @@ function checkCollision(player, lightTrailOffset = 2) {
         )
       ) {
         if (hitboxRect.right > trailHitbox.right) {
-          return { didCollide: true, oppositeDir: leftVec };
-        } else if (hitboxRect.left < trailHitbox.left) {
           return { didCollide: true, oppositeDir: rightVec };
+        } else if (hitboxRect.left < trailHitbox.left) {
+          return { didCollide: true, oppositeDir: leftVec };
         } else if (hitboxRect.bottom > trailHitbox.bottom) {
           return { didCollide: true, oppositeDir: downVec };
         } else if (hitboxRect.top < trailHitbox.top) {
@@ -265,6 +266,41 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function createShards(
+  origin,
+  color,
+  offsetX,
+  offsetY,
+  pieces,
+  momentum,
+  minSize = 1,
+  maxSize = 3,
+  spreadFactor = playerSize
+) {
+  // creates a shards effect in a certain direction
+  const _pieces = [];
+  for (let i = 0; i < pieces; i++) {
+    const poly = two.makePolygon(
+      origin.x + getRandomInt(-spreadFactor, spreadFactor),
+      origin.y + getRandomInt(-spreadFactor, spreadFactor),
+      getRandomInt(minSize, maxSize), //size
+      3 // make triangles
+    );
+    poly.fill = color;
+    poly.noStroke();
+    poly.rotation = getRandomInt(-10, 10);
+
+    poly.translation.addSelf(
+      new Two.Vector(
+        getRandomInt(offsetX * spreadFactor, offsetX * momentum),
+        getRandomInt(offsetY * spreadFactor, offsetY * momentum)
+      )
+    );
+    _pieces.push(poly);
+  }
+  return two.makeGroup(..._pieces);
+}
+
 function generateMove(player, frameCount) {
   let bonus = 0;
   // use 3 separate conditions so you can accelerate and brake at the same time
@@ -289,8 +325,6 @@ function generateMove(player, frameCount) {
   const slipstream = checkCollision(player, -3);
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
-    // TODO: add directional sparks here
-    // https://codepen.io/anon/pen/wNRegz
     if (player.speed + bonus > maxSpeed) {
       // drop a new origin for turbo
       player.strokeColor = player.turboColor;
@@ -311,9 +345,9 @@ function generateMove(player, frameCount) {
     cooldown = 1;
   }
 
-  const trn = player.group.translation;
   // only register changes of directions every <cooldown> frames
   let direction = player.direction;
+  const trn = player.group.translation;
 
   for (let i = 0; i < player.speed + bonus; i++) {
     if (
@@ -352,34 +386,17 @@ function generateMove(player, frameCount) {
     playDerezzSound();
     player.alive = false;
     two.remove(player.group);
-    // create a corpse
-    const pieces = [];
     const { x, y } = collision.oppositeDir;
-    // create a random amount of pieces that fly in the opposite direction
-    // player is facing. Size, distance, and quantity affected by speed
-    const momentum = playerSize * player.speed * (player.speed / 2);
-    const spreadFactor = playerSize;
-    for (let i = 0; i < getRandomInt(6, 6 * (player.speed + 1)); i++) {
-      const poly = two.makePolygon(
-        trn.x + getRandomInt(-spreadFactor, spreadFactor),
-        trn.y + getRandomInt(-spreadFactor, spreadFactor),
-        getRandomInt(1, 3), //size
-        3 // make triangles
-      );
-      poly.fill = player.fillColor;
-      poly.noStroke();
-      poly.rotation = getRandomInt(-10, 10);
-
-      poly.translation.addSelf(
-        new Two.Vector(
-          getRandomInt(x * playerSize, x * momentum),
-          getRandomInt(y * playerSize, y * momentum)
-        )
-      );
-      pieces.push(poly);
-    }
-    const corpse = two.makeGroup(...pieces);
-    player.corpse = corpse;
+    player.corpse = createShards(
+      player.group.translation,
+      player.fillColor,
+      x,
+      y,
+      getRandomInt(3, 3 * player.speed),
+      playerSize * player.speed * (player.speed / 2),
+      2,
+      3
+    );
     gameOver = true;
     return;
   }
@@ -392,6 +409,33 @@ function generateMove(player, frameCount) {
     player.strokeColor,
     player.fillColor
   );
+  two.remove(player.sparks);
+  if (slipstream.didCollide) {
+    // https://codepen.io/anon/pen/wNRegz
+    const base = 1 + player.speed;
+    let offsetX = 0,
+      offsetY = 0;
+    if (direction === 'up') {
+      offsetY = base;
+    } else if (direction === 'down') {
+      offsetY = -base;
+    } else if (direction === 'right') {
+      offsetX = -base;
+    } else if (direction === 'left') {
+      offsetX = base;
+    }
+    const { x, y } = slipstream.oppositeDir;
+    player.sparks = createShards(
+      player.group.translation,
+      player.turboColor,
+      x + offsetX,
+      y + offsetY,
+      getRandomInt(3, 3 + player.speed),
+      base * player.speed,
+      1,
+      2
+    );
+  }
 }
 
 let gameOver = true;

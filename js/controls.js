@@ -79,6 +79,7 @@ document.body.onkeydown = k => {
       players.forEach(p => {
         two.remove(p.group);
         two.remove(p.corpse);
+        two.remove(p.sparks);
         p.lightTrails.forEach(l => {
           two.remove(l);
         });
