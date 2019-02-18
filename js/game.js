@@ -1,9 +1,6 @@
 const elem = document.getElementById('stage');
 let maxSpeed = 6;
 let decelerationTime = 3;
-function getBaseLog(x, y) {
-  return Math.log(y) / Math.log(x);
-}
 const accelerationTime = [3, 5, 6, 14, 16];
 const brakeTime = 3;
 // width and height of each grid box
