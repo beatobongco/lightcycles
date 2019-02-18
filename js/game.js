@@ -411,8 +411,6 @@ const gameInst = two.bind('update', frameCount => {
     } else if (enemy.alive && !user.alive) {
       gameOverText = `${enemy.name} WINS`;
       enemy.roundWins += 1;
-    } else if (timeLeft <= 0) {
-      gameOverText = 'TIME UP';
     } else {
       gameOverText = 'DRAW';
     }
