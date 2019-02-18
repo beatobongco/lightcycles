@@ -366,7 +366,6 @@ function generateMove(player, frameCount) {
   if (player.speed === maxSpeed) {
     cooldown = 0;
   }
-  console.log(cooldown);
   // only register changes of directions every <cooldown> frames
   let direction = player.direction;
   const trn = player.group.translation;
