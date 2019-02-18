@@ -362,7 +362,7 @@ function generateMove(player, frameCount) {
     player.currentOrigin = player.group.translation.clone();
   }
 
-  let cooldown = Math.round(Math.max(0, 6 / Math.max(1, player.speed - bonus)));
+  let cooldown = Math.round(Math.max(0, 6 / Math.max(1, player.speed + bonus)));
   if (player.speed === maxSpeed) {
     cooldown = 0;
   }
