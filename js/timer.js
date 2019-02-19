@@ -1,6 +1,7 @@
 let start = null;
 let roundTime = 30;
 let timeLeft = 0;
+let gameTimer = null;
 
 const createTimer = _ => {
   timeLeft = roundTime;
@@ -23,5 +24,3 @@ const createTimer = _ => {
     }
   }, 1000);
 };
-
-let gameTimer = null;
