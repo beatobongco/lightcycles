@@ -221,13 +221,8 @@ const gameInst = two.bind('update', frameCount => {
 
     players.some(p => {
       if (p.roundWins === 3) {
-        if (user.alive && !enemy.alive) {
-          user.wins += 1;
-          gameOverText = `${user.name} WINS THE MATCH`;
-        } else if (enemy.alive && !user.alive) {
-          enemy.wins += 1;
-          gameOverText = `${enemy.name} WINS THE MATCH`;
-        }
+        p.wins += 1;
+        gameOverText = `${p.name} WINS THE MATCH`;
         document.getElementById(
           'gameOverSubtext'
         ).innerText = `Press \`R\` for rematch.`;
