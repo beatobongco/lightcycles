@@ -12,9 +12,15 @@ const leftVec = new Two.Vector(-speedPerTick, 0);
 const rightVec = new Two.Vector(speedPerTick, 0);
 const upVec = new Two.Vector(0, -speedPerTick);
 const downVec = new Two.Vector(0, speedPerTick);
+let numPlayers = 2;
 let user = initUser(0, 0);
-let enemy = initEnemy(0, 0);
-let players = [user, enemy];
+let enemy = null;
+let players = [user];
+
+if (numPlayers === 2) {
+  enemy = initEnemy(0, 0);
+  players.push(enemy);
+}
 
 // Initial draw of grid and players
 two.update();
@@ -177,29 +183,38 @@ const gameInst = two.bind('update', frameCount => {
 
     let subtext = 'Press `R` to play next round.';
 
-    if (!user.alive && !enemy.alive) {
+    // If all players are dead, it's a draw
+    if (players.every(p => !p.alive)) {
       gameOverText = 'DRAW';
-    } else if (user.alive && !enemy.alive) {
-      gameOverText = `${user.name} WINS`;
-      user.roundWins += 1;
-    } else if (enemy.alive && !user.alive) {
-      gameOverText = `${enemy.name} WINS`;
-      enemy.roundWins += 1;
     } else if (timeLeft <= 0) {
+      // If timer is up, base it on score
       gameOverText = 'TIME UP';
-      if (user.score > enemy.score) {
-        user.roundWins += 1;
-        subtext = `${user.name} WINS <p>${
-          user.name
-        } has a longer jetwall. </p> <p>${subtext} </p>`;
-      } else if (enemy.score > user.score) {
-        enemy.roundWins += 1;
-        subtext = `${enemy.name} WINS <p>${
-          enemy.name
+      let winner = null;
+      let score = 0;
+      players.forEach(p => {
+        if (p.score > score) {
+          winner = p;
+        } else if (p.score === score) {
+          winner = null;
+        }
+      });
+      if (winner) {
+        winner.roundWins += 1;
+        subtext = `${winner.name} WINS <p>${
+          winner.name
         } has a longer jetwall. </p> <p>${subtext} </p>`;
       } else {
         subtext = `DRAW. <p>${subtext} </p>`;
       }
+    } else {
+      // If 1 player alive show his win
+      players.some(p => {
+        if (p.alive) {
+          gameOverText = `${p.name} WINS`;
+          p.roundWins += 1;
+          return true;
+        }
+      });
     }
 
     document.getElementById('gameOverSubtext').innerHTML = subtext;
