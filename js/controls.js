@@ -85,13 +85,11 @@ document.body.onkeydown = k => {
         });
       });
       if (players.some(p => p.roundWins === 3)) {
-        user = initUser(user.wins, 0);
-        enemy = initEnemy(enemy.wins, 0);
+        players = initPlayers(numPlayers);
       } else {
-        user = initUser(user.wins, user.roundWins);
-        enemy = initEnemy(enemy.wins, enemy.roundWins);
+        // init players, carrying over wins
+        players = initPlayers(numPlayers, true);
       }
-      players = [user, enemy];
       // debug
       if (noPlayer === 1) {
         players = [enemy];

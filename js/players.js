@@ -80,14 +80,14 @@ function initPlayer(
   return p;
 }
 
-function initUser(wins, roundWins) {
+function initUser(carryOverWins = false) {
   return initPlayer(
     'P1',
     Math.round(stageWidth / 2),
     gridSize * 8,
     'down',
-    wins,
-    roundWins,
+    user ? user.wins : 0,
+    carryOverWins ? user.roundWins : 0,
     '#3498db',
     '#ffffff',
     '#67CBFF',
@@ -96,18 +96,29 @@ function initUser(wins, roundWins) {
   );
 }
 
-function initEnemy(wins, roundWins) {
+function initEnemy(carryOverWins = false) {
   return initPlayer(
     'P2',
     Math.round(stageWidth / 2),
     stageHeight - gridSize * 8,
     'up',
-    wins,
-    roundWins,
+    enemy ? enemy.wins : 0,
+    carryOverWins ? enemy.roundWins : 0,
     '#e67e22',
     '#000000',
     '#FFB155',
     '#FFFFD5',
     'enemyHud'
   );
+}
+
+function initPlayers(numPlayers, carryOverWins = false) {
+  user = initUser(carryOverWins);
+  let players = [user];
+  if (numPlayers === 2) {
+    enemy = initEnemy(carryOverWins);
+    players.push(enemy);
+  }
+
+  return players;
 }
