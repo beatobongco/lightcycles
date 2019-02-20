@@ -1,0 +1,24 @@
+{
+  "name": "lightmagnets",
+  "version": "1.0.0",
+  "description": "![lightcycles](https://raw.githubusercontent.com/beatobongco/lightcycles/master/og.png)",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "rollup": "^1.2.2"
+  },
+  "scripts": {
+    "watch": "rollup src/js/main.js --format iife --file dist/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beatobongco/lightcycles.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/beatobongco/lightcycles/issues"
+  },
+  "homepage": "https://github.com/beatobongco/lightcycles#readme"
+}
