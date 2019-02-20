@@ -12,10 +12,9 @@ const leftVec = new Two.Vector(-speedPerTick, 0);
 const rightVec = new Two.Vector(speedPerTick, 0);
 const upVec = new Two.Vector(0, -speedPerTick);
 const downVec = new Two.Vector(0, speedPerTick);
-let numPlayers = 2;
 let user = null;
 let enemy = null;
-let players = initPlayers(numPlayers);
+let players = null;
 
 // Initial draw of grid and players
 two.update();

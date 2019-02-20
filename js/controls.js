@@ -52,8 +52,18 @@ function startGame() {
   gameTimer = createTimer();
   gameOver = false;
   document.getElementById('gameOverContainer').style.display = 'none';
-  gameInst.play();
+  if (!players || players.some(p => p.roundWins === 3)) {
+    players = initPlayers();
+  } else {
+    // init players, carrying over wins
+    players = initPlayers(true);
+  }
   initPlayerSounds();
+
+  if (noPlayer) {
+    generateBit();
+  }
+  gameInst.play();
 }
 let firstRun = true;
 document.body.onkeydown = k => {
@@ -84,18 +94,7 @@ document.body.onkeydown = k => {
           two.remove(l);
         });
       });
-      if (players.some(p => p.roundWins === 3)) {
-        players = initPlayers(numPlayers);
-      } else {
-        // init players, carrying over wins
-        players = initPlayers(numPlayers, true);
-      }
-      // debug
-      if (noPlayer === 1) {
-        players = [enemy];
-      } else if (noPlayer === 2) {
-        players = [user];
-      }
+
       startGame();
     }
   } else if (k.code === 'Pause' && pauseEnabled) {

@@ -1,5 +1,5 @@
-function checkCollision(player, lightTrailOffset = 2) {
-  function _checkCollision(a, b, offset = 0) {
+let checkCollision = (player, lightTrailOffset = 2) => {
+  const _checkCollision = (a, b, offset = 0) => {
     if (
       !(
         a.right < b.left + offset ||
@@ -10,10 +10,19 @@ function checkCollision(player, lightTrailOffset = 2) {
     ) {
       return true;
     }
-  }
+  };
+
   // Determines if player's hitbox collided with or is near collidable objects
   // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
   const hitboxRect = player.group._collection[1].getBoundingClientRect();
+
+  // BIT
+  if (bit && _checkCollision(hitboxRect, bit.getBoundingClientRect())) {
+    console.log(player.score);
+    generateBit();
+  }
+  // END BIT
+
   if (
     hitboxRect.right >= stageWidth ||
     hitboxRect.left <= 0 ||
@@ -63,7 +72,7 @@ function checkCollision(player, lightTrailOffset = 2) {
     }
   }
   return { didCollide: false, oppositeDir: null };
-}
+};
 
 function checkPlayerCollision(player, direction) {
   const collision = checkCollision(player);

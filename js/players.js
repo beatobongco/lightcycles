@@ -112,10 +112,15 @@ function initEnemy(carryOverWins = false) {
   );
 }
 
-function initPlayers(numPlayers, carryOverWins = false) {
-  user = initUser(carryOverWins);
+function initPlayers(carryOverWins = false) {
   let players = [user];
-  if (numPlayers === 2) {
+  if (noPlayer === 1) {
+    enemy = initEnemy(0, 0);
+    players = [enemy];
+  } else if (noPlayer === 2) {
+    user = initUser(0, 0);
+    players = [user];
+  } else {
     enemy = initEnemy(carryOverWins);
     players.push(enemy);
   }
