@@ -1,3 +1,4 @@
+import { maxSpeed } from './constants';
 // Preload sounds, keep them in an object to know if they are loaded
 const sounds = {
   'sound/speed1.ogg': false,
@@ -10,15 +11,17 @@ const sounds = {
   'sound/timertick.ogg': false
 };
 
-Object.keys(sounds).forEach(s => {
-  var _sound = new Audio(s);
-  _sound.addEventListener('canplaythrough', () => {
-    sounds[s] = true;
+function loadSounds() {
+  Object.keys(sounds).forEach(s => {
+    var _sound = new Audio(s);
+    _sound.addEventListener('canplaythrough', () => {
+      sounds[s] = true;
+    });
   });
-});
+}
 
 function initPlayerSounds() {
-  players.forEach(player => {
+  G.players.forEach(player => {
     player.sound.src = `sound/speed1.ogg`;
     player.soundPromise = player.sound.play().catch(_ => {
       //catch DOMException errors
@@ -27,7 +30,7 @@ function initPlayerSounds() {
 }
 
 function stopPlayerSounds() {
-  players.forEach(async function(player) {
+  G.players.forEach(async function(player) {
     await player.soundPromise;
     player.sound.pause();
   });
@@ -60,12 +63,8 @@ function playBikeSound(player, bonus) {
   }
 }
 
-function playShiftSound(gear) {
-  let src = 'sound/shiftdown.mp3';
-  if (gear > 0) {
-    src = 'sound/shiftup.mp3';
-  }
-  let shiftSound = new Audio(src);
+function playAccelerateSound() {
+  let shiftSound = new Audio('sound/shiftup.mp3');
   shiftSound.play();
 }
 
@@ -78,3 +77,13 @@ function playTick() {
   let tick = new Audio('sound/timertick.ogg');
   tick.play();
 }
+
+export {
+  playBikeSound,
+  playDerezzSound,
+  playTick,
+  loadSounds,
+  initPlayerSounds,
+  stopPlayerSounds,
+  playAccelerateSound
+};

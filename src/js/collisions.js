@@ -1,5 +1,18 @@
-let checkCollision = (player, lightTrailOffset = 2) => {
-  const _checkCollision = (a, b, offset = 0) => {
+import {
+  two,
+  stageHeight,
+  stageWidth,
+  upVec,
+  downVec,
+  leftVec,
+  rightVec,
+  playerSize
+} from './constants';
+import { playDerezzSound } from './sound';
+import { getOppositeDirection, createShards, getRandomInt } from './util';
+
+function checkCollision(player, lightTrailOffset = 2) {
+  function _checkCollision(a, b, offset = 0) {
     if (
       !(
         a.right < b.left + offset ||
@@ -10,14 +23,14 @@ let checkCollision = (player, lightTrailOffset = 2) => {
     ) {
       return true;
     }
-  };
+  }
 
   // Determines if player's hitbox collided with or is near collidable objects
   // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
   const hitboxRect = player.group._collection[1].getBoundingClientRect();
 
   // BIT
-  if (bit && _checkCollision(hitboxRect, bit.getBoundingClientRect())) {
+  if (G.bit && _checkCollision(hitboxRect, bit.getBoundingClientRect())) {
     console.log(player.score);
     generateBit();
   }
@@ -35,20 +48,20 @@ let checkCollision = (player, lightTrailOffset = 2) => {
   // Use for-loops instead for better performance
   // https://github.com/dg92/Performance-Analysis-JS
   const lt = player.lightTrails;
-  for (let i = 0; i < players.length; i++) {
+  for (let i = 0; i < G.players.length; i++) {
     if (
-      player.name !== players[i].name &&
+      player.name !== G.players[i].name &&
       _checkCollision(
         hitboxRect,
-        players[i].group._collection[1].getBoundingClientRect(),
+        G.players[i].group._collection[1].getBoundingClientRect(),
         lightTrailOffset
       )
     ) {
       return { didCollide: true, oppositeDir: null };
     }
 
-    for (let j = 0; j < players[i].lightTrails.length; j++) {
-      let trail = players[i].lightTrails[j];
+    for (let j = 0; j < G.players[i].lightTrails.length; j++) {
+      let trail = G.players[i].lightTrails[j];
       // should be immune to your last 2 created trails
       if (
         (lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
@@ -72,7 +85,7 @@ let checkCollision = (player, lightTrailOffset = 2) => {
     }
   }
   return { didCollide: false, oppositeDir: null };
-};
+}
 
 function checkPlayerCollision(player, direction) {
   const collision = checkCollision(player);
@@ -93,3 +106,5 @@ function checkPlayerCollision(player, direction) {
     );
   }
 }
+
+export { checkCollision, checkPlayerCollision };

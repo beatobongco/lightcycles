@@ -1,3 +1,5 @@
+import { playerSize, two } from './constants';
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -54,25 +56,4 @@ function getOppositeDirection(direction) {
   return { oppX, oppY };
 }
 
-function createHUD(el, name, wins, roundWins, speed) {
-  let winDots = [
-    '<span class="windot">&#9675;</span>',
-    '<span class="windot">&#9675;</span>',
-    '<span class="windot">&#9675;</span>'
-  ];
-
-  for (let i = 0; i < roundWins; i++) {
-    winDots[i] = '<span class="windot">&#9679;</span>';
-  }
-  winsHTML =
-    wins > 0 ? `WINS: <span id="${name}-wins">${wins}</span>` : '&nbsp;';
-  document.getElementById(el).innerHTML = `
-    <div class="hud">
-      <h3>${name}</h3>
-      <p><small>ROUND</small></p>
-      <div class="rounds">${winDots.join('')}</div>
-      <p><small>SPEED</small></p>
-      <h3 id="${name}-speed">${speed}</h3>
-      <small class="tiny">${winsHTML}</small>
-    </div>`;
-}
+export { getOppositeDirection, getRandomInt, createShards };

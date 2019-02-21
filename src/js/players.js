@@ -1,3 +1,35 @@
+import {
+  stageWidth,
+  gridSize,
+  two,
+  playerSize,
+  hitboxSize,
+  stageHeight
+} from './constants';
+
+function createHUD(el, name, wins, roundWins, speed) {
+  let winDots = [
+    '<span class="windot">&#9675;</span>',
+    '<span class="windot">&#9675;</span>',
+    '<span class="windot">&#9675;</span>'
+  ];
+
+  for (let i = 0; i < roundWins; i++) {
+    winDots[i] = '<span class="windot">&#9679;</span>';
+  }
+  let winsHTML =
+    wins > 0 ? `WINS: <span id="${name}-wins">${wins}</span>` : '&nbsp;';
+  document.getElementById(el).innerHTML = `
+    <div class="hud">
+      <h3>${name}</h3>
+      <p><small>ROUND</small></p>
+      <div class="rounds">${winDots.join('')}</div>
+      <p><small>SPEED</small></p>
+      <h3 id="${name}-speed">${speed}</h3>
+      <small class="tiny">${winsHTML}</small>
+    </div>`;
+}
+
 function createPlayerCircle(x, y, strokeColor, fillColor) {
   const circle = two.makeCircle(x, y, playerSize);
   circle.stroke = strokeColor;
@@ -86,8 +118,8 @@ function initUser(carryOverWins = false) {
     Math.round(stageWidth / 2),
     gridSize * 8,
     'down',
-    user ? user.wins : 0,
-    carryOverWins ? user.roundWins : 0,
+    G.user ? G.user.wins : 0,
+    carryOverWins && G.user ? G.user.roundWins : 0,
     '#3498db',
     '#ffffff',
     '#67CBFF',
@@ -102,8 +134,8 @@ function initEnemy(carryOverWins = false) {
     Math.round(stageWidth / 2),
     stageHeight - gridSize * 8,
     'up',
-    enemy ? enemy.wins : 0,
-    carryOverWins ? enemy.roundWins : 0,
+    G.enemy ? G.enemy.wins : 0,
+    carryOverWins && G.enemy ? G.enemy.roundWins : 0,
     '#e67e22',
     '#000000',
     '#FFB155',
@@ -113,17 +145,30 @@ function initEnemy(carryOverWins = false) {
 }
 
 function initPlayers(carryOverWins = false) {
-  let players = [user];
-  if (noPlayer === 1) {
-    enemy = initEnemy(0, 0);
-    players = [enemy];
-  } else if (noPlayer === 2) {
-    user = initUser(0, 0);
-    players = [user];
+  if (G.noPlayer === 1) {
+    G.enemy = initEnemy(0, 0);
+    G.players = [G.enemy];
+  } else if (G.noPlayer === 2) {
+    G.user = initUser(0, 0);
+    G.players = [G.user];
   } else {
-    enemy = initEnemy(carryOverWins);
-    players.push(enemy);
+    G.user = initUser(carryOverWins);
+    G.enemy = initEnemy(carryOverWins);
+    G.players = [G.user, G.enemy];
   }
-
-  return players;
 }
+
+function generateBit() {
+  if (bit) {
+    two.remove(bit);
+  }
+  bit = two.makeCircle(
+    getRandomInt(0, stageWidth),
+    getRandomInt(0, stageHeight),
+    5
+  );
+  bit.fill = 'white';
+  bit.noStroke();
+}
+
+export { initPlayers, generateBit, createPlayerCircle };

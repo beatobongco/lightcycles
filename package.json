@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "![lightcycles](https://raw.githubusercontent.com/beatobongco/lightcycles/master/og.png)",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "two.js": "^0.7.0-beta.3"
+  },
   "devDependencies": {
     "rollup": "^1.2.2"
   },
   "scripts": {
-    "watch": "rollup src/js/main.js --format iife --file dist/bundle.js"
+    "watch": "rollup src/js/main.js --watch --format iife --name 'lightcycles' --file dist/bundle.js"
   },
   "repository": {
     "type": "git",

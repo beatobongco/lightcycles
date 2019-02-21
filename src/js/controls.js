@@ -1,3 +1,11 @@
+import { createTimer } from './timer';
+import { initPlayers } from './players';
+import { two } from './constants';
+import { initPlayerSounds, playAccelerateSound } from './sound';
+
+const userKeyAcc = 'KeyT';
+const enemyKeyAcc = 'BracketRight';
+
 function playerMove(player, direction) {
   // dont allow movements in opposite directions
   if (
@@ -10,139 +18,119 @@ function playerMove(player, direction) {
   }
 }
 
-function pBrake(player) {
-  if (!player.isBraking) {
-    playShiftSound(-1);
-  }
-  player.isBraking = true;
-}
-
 function pAccelerate(player) {
   if (!player.isAccelerating) {
-    playShiftSound(1);
+    playAccelerateSound(1);
   }
   player.isAccelerating = true;
 }
 
-const userKeyAcc = 'KeyT';
-const userKeyBrake = null;
-
-const enemyKeyAcc = 'BracketRight';
-const enemyKeyBrake = null;
-
-document.body.onkeyup = k => {
-  switch (k.code) {
-    case userKeyAcc:
-      user.isAccelerating = false;
-      break;
-    case userKeyBrake:
-      user.isBraking = false;
-      break;
-    case enemyKeyAcc:
-      enemy.isAccelerating = false;
-      break;
-    case enemyKeyBrake:
-      enemy.isBraking = false;
-      break;
-  }
-};
-
 function startGame() {
-  gameOverText = null;
-  gameTimer = createTimer();
-  gameOver = false;
+  G.gameOverText = null;
+  G.gameTimer = createTimer();
+  G.gameOver = false;
   document.getElementById('gameOverContainer').style.display = 'none';
-  if (!players || players.some(p => p.roundWins === 3)) {
-    players = initPlayers();
+  if (!G.players || G.players.some(p => p.roundWins === 3)) {
+    initPlayers();
   } else {
     // init players, carrying over wins
-    players = initPlayers(true);
+    initPlayers(true);
   }
   initPlayerSounds();
 
-  if (noPlayer) {
+  if (G.noPlayer) {
     generateBit();
   }
-  gameInst.play();
+  G.instance.play();
 }
-let firstRun = true;
-document.body.onkeydown = k => {
-  if (k.code === 'KeyR') {
-    const docElem = document.documentElement;
-    if (docElem.requestFullscreen) {
-      docElem.requestFullscreen();
-    } else if (docElem.mozRequestFullScreen) {
-      /* Firefox */
-      docElem.mozRequestFullScreen();
-    } else if (docElem.webkitRequestFullscreen) {
-      /* Chrome, Safari and Opera */
-      docElem.webkitRequestFullscreen();
-    } else if (docElem.msRequestFullscreen) {
-      /* IE/Edge */
-      docElem.msRequestFullscreen();
-    }
-    if (firstRun) {
-      firstRun = false;
-      startGame();
-    } else if (gameOver) {
-      document.getElementById('timer').classList.remove('time-low');
-      players.forEach(p => {
-        two.remove(p.group);
-        two.remove(p.corpse);
-        two.remove(p.sparks);
-        p.lightTrails.forEach(l => {
-          two.remove(l);
-        });
-      });
 
-      startGame();
+function initControls() {
+  document.body.onkeydown = k => {
+    if (k.code === 'KeyR') {
+      const docElem = document.documentElement;
+      if (docElem.requestFullscreen) {
+        docElem.requestFullscreen();
+      } else if (docElem.mozRequestFullScreen) {
+        /* Firefox */
+        docElem.mozRequestFullScreen();
+      } else if (docElem.webkitRequestFullscreen) {
+        /* Chrome, Safari and Opera */
+        docElem.webkitRequestFullscreen();
+      } else if (docElem.msRequestFullscreen) {
+        /* IE/Edge */
+        docElem.msRequestFullscreen();
+      }
+      if (G.firstRun) {
+        G.firstRun = false;
+        startGame();
+      } else if (G.gameOver) {
+        document.getElementById('timer').classList.remove('time-low');
+        G.players.forEach(p => {
+          two.remove(p.group);
+          two.remove(p.corpse);
+          two.remove(p.sparks);
+          p.lightTrails.forEach(l => {
+            two.remove(l);
+          });
+        });
+
+        startGame();
+      }
+    } else if (k.code === 'Pause' && pauseEnabled) {
+      if (G.instance.playing) {
+        G.instance.pause();
+      } else {
+        G.instance.play();
+      }
+    } else if (!G.gameOver) {
+      switch (k.code) {
+        // user controls
+        case 'KeyS':
+          playerMove(G.user, 'down');
+          break;
+        case 'KeyW':
+          playerMove(G.user, 'up');
+          break;
+        case 'KeyA':
+          playerMove(G.user, 'left');
+          break;
+        case 'KeyD':
+          playerMove(G.user, 'right');
+          break;
+        case userKeyAcc:
+          pAccelerate(G.user);
+          break;
+        // enemy controls
+        case 'ArrowDown':
+          playerMove(G.enemy, 'down');
+          break;
+        case 'ArrowUp':
+          playerMove(G.enemy, 'up');
+          break;
+        case 'ArrowLeft':
+          playerMove(G.enemy, 'left');
+          break;
+        case 'ArrowRight':
+          playerMove(G.enemy, 'right');
+          break;
+        case enemyKeyAcc:
+          pAccelerate(G.enemy);
+          break;
+      }
     }
-  } else if (k.code === 'Pause' && pauseEnabled) {
-    if (gameInst.playing) {
-      gameInst.pause();
-    } else {
-      gameInst.play();
+  };
+  document.body.onkeyup = k => {
+    if (!G.gameOver) {
+      switch (k.code) {
+        case userKeyAcc:
+          G.user.isAccelerating = false;
+          break;
+        case enemyKeyAcc:
+          G.enemy.isAccelerating = false;
+          break;
+      }
     }
-  } else if (!gameOver) {
-    switch (k.code) {
-      // user controls
-      case 'KeyS':
-        playerMove(user, 'down');
-        break;
-      case 'KeyW':
-        playerMove(user, 'up');
-        break;
-      case 'KeyA':
-        playerMove(user, 'left');
-        break;
-      case 'KeyD':
-        playerMove(user, 'right');
-        break;
-      case userKeyAcc:
-        pAccelerate(user);
-        break;
-      case userKeyBrake:
-        pBrake(user);
-        break;
-      // enemy controls
-      case 'ArrowDown':
-        playerMove(enemy, 'down');
-        break;
-      case 'ArrowUp':
-        playerMove(enemy, 'up');
-        break;
-      case 'ArrowLeft':
-        playerMove(enemy, 'left');
-        break;
-      case 'ArrowRight':
-        playerMove(enemy, 'right');
-        break;
-      case enemyKeyAcc:
-        pAccelerate(enemy);
-        break;
-      case enemyKeyBrake:
-        pBrake(enemy);
-        break;
-    }
-  }
-};
+  };
+}
+
+export default initControls;
