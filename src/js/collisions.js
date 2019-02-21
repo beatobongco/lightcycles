@@ -5,13 +5,10 @@ import {
   upVec,
   downVec,
   leftVec,
-  rightVec,
-  playerSize
+  rightVec
 } from './constants';
-import { playDerezzSound } from './sound';
-import { getOppositeDirection, createShards, getRandomInt } from './util';
 
-function checkCollision(player, lightTrailOffset = 2) {
+function checkCollision(hitboxRect, player = null, lightTrailOffset = 2) {
   function _checkCollision(a, b, offset = 0) {
     if (
       !(
@@ -25,14 +22,12 @@ function checkCollision(player, lightTrailOffset = 2) {
     }
   }
 
-  // Determines if player's hitbox collided with or is near collidable objects
+  // Determines if an objects hitbox collided with or is near collidable objects
   // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
-  const hitboxRect = player.group._collection[1].getBoundingClientRect();
-
+  const result = { didCollide: false };
   // BIT
-  if (G.bit && _checkCollision(hitboxRect, bit.getBoundingClientRect())) {
-    console.log(player.score);
-    generateBit();
+  if (G.bit && _checkCollision(hitboxRect, G.bit.getBoundingClientRect())) {
+    result.obtainedBit = true;
   }
   // END BIT
 
@@ -42,14 +37,16 @@ function checkCollision(player, lightTrailOffset = 2) {
     hitboxRect.bottom >= stageHeight ||
     hitboxRect.top <= 0
   ) {
-    return { didCollide: true, oppositeDir: null };
+    result.didCollide = true;
+    return result;
   }
 
   // Use for-loops instead for better performance
   // https://github.com/dg92/Performance-Analysis-JS
-  const lt = player.lightTrails;
+  const lt = player ? player.lightTrails : [];
   for (let i = 0; i < G.players.length; i++) {
     if (
+      player &&
       player.name !== G.players[i].name &&
       _checkCollision(
         hitboxRect,
@@ -57,54 +54,45 @@ function checkCollision(player, lightTrailOffset = 2) {
         lightTrailOffset
       )
     ) {
-      return { didCollide: true, oppositeDir: null };
+      result.didCollide = true;
+      return result;
     }
 
     for (let j = 0; j < G.players[i].lightTrails.length; j++) {
       let trail = G.players[i].lightTrails[j];
       // should be immune to your last 2 created trails
       if (
-        (lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
-        (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id)
+        player &&
+        ((lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
+          (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id))
       ) {
         continue;
       }
 
       let trailHitbox = trail.getBoundingClientRect();
       if (_checkCollision(hitboxRect, trailHitbox, lightTrailOffset)) {
+        result.didCollide = true;
         if (hitboxRect.right > trailHitbox.right) {
-          return { didCollide: true, oppositeDir: rightVec };
+          result.oppositeDir = rightVec;
         } else if (hitboxRect.left < trailHitbox.left) {
-          return { didCollide: true, oppositeDir: leftVec };
+          result.oppositeDir = leftVec;
         } else if (hitboxRect.bottom > trailHitbox.bottom) {
-          return { didCollide: true, oppositeDir: downVec };
+          result.oppositeDir = downVec;
         } else if (hitboxRect.top < trailHitbox.top) {
-          return { didCollide: true, oppositeDir: upVec };
+          result.oppositeDir = upVec;
         }
       }
     }
   }
-  return { didCollide: false, oppositeDir: null };
+  return result;
 }
 
-function checkPlayerCollision(player, direction) {
-  const collision = checkCollision(player);
-  if (collision.didCollide) {
-    playDerezzSound();
-    player.alive = false;
-    two.remove(player.group);
-    const { oppX, oppY } = getOppositeDirection(direction);
-    player.corpse = createShards(
-      player.group.translation,
-      player.fillColor,
-      oppX,
-      oppY,
-      getRandomInt(3, 3 * player.speed),
-      playerSize * player.speed * (player.speed / 2),
-      2,
-      3
-    );
-  }
+function checkPlayerCollision(player, offset) {
+  return checkCollision(
+    player.group._collection[1].getBoundingClientRect(),
+    player,
+    offset
+  );
 }
 
 export { checkCollision, checkPlayerCollision };
