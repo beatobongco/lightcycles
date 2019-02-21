@@ -6,6 +6,8 @@ import {
   hitboxSize,
   stageHeight
 } from './constants';
+import { getRandomInt } from './util';
+import { checkCollision } from './collisions';
 
 function createHUD(el, name, wins, roundWins, speed) {
   let winDots = [
@@ -159,16 +161,33 @@ function initPlayers(carryOverWins = false) {
 }
 
 function generateBit() {
-  if (bit) {
-    two.remove(bit);
+  // Generates a little guy you can get for points
+  if (G.bit) {
+    two.remove(G.bit);
   }
-  bit = two.makeCircle(
+  let group, inner, outer, x, y;
+  outer = two.makeCircle(0, 0, 6);
+  outer.fill = '#16a085';
+  outer.noStroke();
+  outer.opacity = 0.5;
+  inner = two.makeCircle(0, 0, 4);
+  inner.fill = '#1abc9c';
+  inner.noStroke();
+  group = two.makeGroup(outer, inner);
+  group.center();
+  group.translation.set(
     getRandomInt(0, stageWidth),
-    getRandomInt(0, stageHeight),
-    5
+    getRandomInt(0, stageHeight)
   );
-  bit.fill = 'white';
-  bit.noStroke();
-}
+  G.bit = group;
 
+  if (checkCollision(G.bit).didCollide) {
+    console.log('bit collided');
+    G.bit.translation.set(
+      getRandomInt(0, stageWidth),
+      getRandomInt(0, stageHeight)
+    );
+  }
+}
+window.generateBit = generateBit;
 export { initPlayers, generateBit, createPlayerCircle };
