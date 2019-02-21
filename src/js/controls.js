@@ -1,5 +1,5 @@
 import { createTimer } from './timer';
-import { initPlayers } from './players';
+import { initPlayers, generateBit } from './players';
 import { two } from './constants';
 import { initPlayerSounds, playAccelerateSound } from './sound';
 
@@ -76,7 +76,7 @@ function initControls() {
 
         startGame();
       }
-    } else if (k.code === 'Pause' && pauseEnabled) {
+    } else if (k.code === 'Pause' && G.pauseEnabled) {
       if (G.instance.playing) {
         G.instance.pause();
       } else {
