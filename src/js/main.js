@@ -7,14 +7,16 @@ import {
   accelerationTime,
   decelerationTime,
   maxSpeed,
-  playerSize
+  playerSize,
+  hitboxSize
 } from './constants';
 import initGrid from './grid';
-import { checkCollision, checkPlayerCollision } from './collisions';
+import { checkPlayerCollision } from './collisions';
 import { playBikeSound, stopPlayerSounds } from './sound';
 import { getOppositeDirection, createShards, getRandomInt } from './util';
 import initControls from './controls';
-import { createPlayerCircle } from './players';
+import { createPlayerCircle, generateBit } from './players';
+import { playDerezzSound } from './sound';
 
 initGrid();
 initControls();
@@ -66,7 +68,7 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
-  const slipstream = checkCollision(player, -3);
+  const slipstream = checkPlayerCollision(player, -3);
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
     if (
@@ -124,6 +126,28 @@ function generateMove(player, frameCount) {
         trn.addSelf(downVec);
         break;
     }
+    if (hitboxSize % (i + 1) === 0) {
+      const collision = checkPlayerCollision(player);
+      if (collision.didCollide) {
+        playDerezzSound();
+        player.alive = false;
+        two.remove(player.group);
+        const { oppX, oppY } = getOppositeDirection(direction);
+        player.corpse = createShards(
+          player.group.translation,
+          player.fillColor,
+          oppX,
+          oppY,
+          getRandomInt(3, 3 * player.speed),
+          playerSize * player.speed * (player.speed / 2),
+          2,
+          3
+        );
+      } else if (collision.obtainedBit) {
+        player.score += 250;
+        generateBit();
+      }
+    }
   }
   playBikeSound(player, bonus);
   createLightTrail(player);
@@ -161,10 +185,9 @@ G.instance = two.bind('update', frameCount => {
   if (!G.gameOver) {
     const dirs = [];
     for (let i = 0; i < G.players.length; i++) {
-      dirs.push(generateMove(G.players[i], frameCount));
+      generateMove(G.players[i], frameCount);
     }
     for (let i = 0; i < G.players.length; i++) {
-      checkPlayerCollision(G.players[i], dirs[i]);
       if (!G.players[i].alive) {
         G.gameOver = true;
       }
