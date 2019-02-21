@@ -1,7 +1,7 @@
 import { playTick } from './sound';
 
 let start = null;
-let roundTime = 5;
+let roundTime = 30;
 
 const createTimer = _ => {
   G.timeLeft = roundTime;
