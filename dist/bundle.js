@@ -41,6 +41,93 @@
     two.update();
   }
 
+  function checkCollision(hitboxRect, player = null, lightTrailOffset = 2) {
+    function _checkCollision(a, b, offset = 0) {
+      if (
+        !(
+          a.right < b.left + offset ||
+          a.left > b.right - offset ||
+          a.bottom < b.top + offset ||
+          a.top > b.bottom - offset
+        )
+      ) {
+        return true;
+      }
+    }
+
+    // Determines if an objects hitbox collided with or is near collidable objects
+    // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
+    const result = { didCollide: false };
+    // BIT
+    if (G.bit && _checkCollision(hitboxRect, G.bit.getBoundingClientRect())) {
+      result.obtainedBit = true;
+    }
+    // END BIT
+
+    if (
+      hitboxRect.right >= stageWidth ||
+      hitboxRect.left <= 0 ||
+      hitboxRect.bottom >= stageHeight ||
+      hitboxRect.top <= 0
+    ) {
+      result.didCollide = true;
+      return result;
+    }
+
+    // Use for-loops instead for better performance
+    // https://github.com/dg92/Performance-Analysis-JS
+    const lt = player ? player.lightTrails : [];
+    for (let i = 0; i < G.players.length; i++) {
+      if (
+        player &&
+        player.name !== G.players[i].name &&
+        _checkCollision(
+          hitboxRect,
+          G.players[i].group._collection[1].getBoundingClientRect(),
+          lightTrailOffset
+        )
+      ) {
+        result.didCollide = true;
+        return result;
+      }
+
+      for (let j = 0; j < G.players[i].lightTrails.length; j++) {
+        let trail = G.players[i].lightTrails[j];
+        // should be immune to your last 2 created trails
+        if (
+          player &&
+          ((lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
+            (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id))
+        ) {
+          continue;
+        }
+
+        let trailHitbox = trail.getBoundingClientRect();
+        if (_checkCollision(hitboxRect, trailHitbox, lightTrailOffset)) {
+          result.didCollide = true;
+          if (hitboxRect.right > trailHitbox.right) {
+            result.oppositeDir = rightVec;
+          } else if (hitboxRect.left < trailHitbox.left) {
+            result.oppositeDir = leftVec;
+          } else if (hitboxRect.bottom > trailHitbox.bottom) {
+            result.oppositeDir = downVec;
+          } else if (hitboxRect.top < trailHitbox.top) {
+            result.oppositeDir = upVec;
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  function checkPlayerCollision(player, offset) {
+    return checkCollision(
+      player.group._collection[1].getBoundingClientRect(),
+      player,
+      offset
+    );
+  }
+
   function initPlayerSounds() {
     G.players.forEach(player => {
       player.sound.src = `sound/speed1.ogg`;
@@ -155,104 +242,8 @@
     return { oppX, oppY };
   }
 
-  function checkCollision(player, lightTrailOffset = 2) {
-    function _checkCollision(a, b, offset = 0) {
-      if (
-        !(
-          a.right < b.left + offset ||
-          a.left > b.right - offset ||
-          a.bottom < b.top + offset ||
-          a.top > b.bottom - offset
-        )
-      ) {
-        return true;
-      }
-    }
-
-    // Determines if player's hitbox collided with or is near collidable objects
-    // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
-    const hitboxRect = player.group._collection[1].getBoundingClientRect();
-
-    // BIT
-    if (G.bit && _checkCollision(hitboxRect, bit.getBoundingClientRect())) {
-      console.log(player.score);
-      generateBit();
-    }
-    // END BIT
-
-    if (
-      hitboxRect.right >= stageWidth ||
-      hitboxRect.left <= 0 ||
-      hitboxRect.bottom >= stageHeight ||
-      hitboxRect.top <= 0
-    ) {
-      return { didCollide: true, oppositeDir: null };
-    }
-
-    // Use for-loops instead for better performance
-    // https://github.com/dg92/Performance-Analysis-JS
-    const lt = player.lightTrails;
-    for (let i = 0; i < G.players.length; i++) {
-      if (
-        player.name !== G.players[i].name &&
-        _checkCollision(
-          hitboxRect,
-          G.players[i].group._collection[1].getBoundingClientRect(),
-          lightTrailOffset
-        )
-      ) {
-        return { didCollide: true, oppositeDir: null };
-      }
-
-      for (let j = 0; j < G.players[i].lightTrails.length; j++) {
-        let trail = G.players[i].lightTrails[j];
-        // should be immune to your last 2 created trails
-        if (
-          (lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
-          (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id)
-        ) {
-          continue;
-        }
-
-        let trailHitbox = trail.getBoundingClientRect();
-        if (_checkCollision(hitboxRect, trailHitbox, lightTrailOffset)) {
-          if (hitboxRect.right > trailHitbox.right) {
-            return { didCollide: true, oppositeDir: rightVec };
-          } else if (hitboxRect.left < trailHitbox.left) {
-            return { didCollide: true, oppositeDir: leftVec };
-          } else if (hitboxRect.bottom > trailHitbox.bottom) {
-            return { didCollide: true, oppositeDir: downVec };
-          } else if (hitboxRect.top < trailHitbox.top) {
-            return { didCollide: true, oppositeDir: upVec };
-          }
-        }
-      }
-    }
-    return { didCollide: false, oppositeDir: null };
-  }
-
-  function checkPlayerCollision(player, direction) {
-    const collision = checkCollision(player);
-    if (collision.didCollide) {
-      playDerezzSound();
-      player.alive = false;
-      two.remove(player.group);
-      const { oppX, oppY } = getOppositeDirection(direction);
-      player.corpse = createShards(
-        player.group.translation,
-        player.fillColor,
-        oppX,
-        oppY,
-        getRandomInt(3, 3 * player.speed),
-        playerSize * player.speed * (player.speed / 2),
-        2,
-        3
-      );
-    }
-  }
-
   let start = null;
-  let roundTime = 5;
+  let roundTime = 30;
 
   const createTimer = _ => {
     G.timeLeft = roundTime;
@@ -427,6 +418,37 @@
     }
   }
 
+  function generateBit() {
+    // Generates a little guy you can get for points
+    if (G.bit) {
+      two.remove(G.bit);
+    }
+    let group, inner, outer;
+    outer = two.makeCircle(0, 0, 6);
+    outer.fill = '#16a085';
+    outer.noStroke();
+    outer.opacity = 0.5;
+    inner = two.makeCircle(0, 0, 4);
+    inner.fill = '#1abc9c';
+    inner.noStroke();
+    group = two.makeGroup(outer, inner);
+    group.center();
+    group.translation.set(
+      getRandomInt(0, stageWidth),
+      getRandomInt(0, stageHeight)
+    );
+    G.bit = group;
+
+    if (checkCollision(G.bit).didCollide) {
+      console.log('bit collided');
+      G.bit.translation.set(
+        getRandomInt(0, stageWidth),
+        getRandomInt(0, stageHeight)
+      );
+    }
+  }
+  window.generateBit = generateBit;
+
   const userKeyAcc = 'KeyT';
   const enemyKeyAcc = 'BracketRight';
 
@@ -500,7 +522,7 @@
 
           startGame();
         }
-      } else if (k.code === 'Pause' && pauseEnabled) {
+      } else if (k.code === 'Pause' && G.pauseEnabled) {
         if (G.instance.playing) {
           G.instance.pause();
         } else {
@@ -607,7 +629,7 @@
       player.lastDecelerateFrame = frameCount;
     }
 
-    const slipstream = checkCollision(player, -3);
+    const slipstream = checkPlayerCollision(player, -3);
     if (slipstream.didCollide) {
       bonus = Math.ceil(player.speed * 0.5);
       if (
@@ -665,6 +687,28 @@
           trn.addSelf(downVec);
           break;
       }
+      if (hitboxSize % (i + 1) === 0) {
+        const collision = checkPlayerCollision(player);
+        if (collision.didCollide) {
+          playDerezzSound();
+          player.alive = false;
+          two.remove(player.group);
+          const { oppX, oppY } = getOppositeDirection(direction);
+          player.corpse = createShards(
+            player.group.translation,
+            player.fillColor,
+            oppX,
+            oppY,
+            getRandomInt(3, 3 * player.speed),
+            playerSize * player.speed * (player.speed / 2),
+            2,
+            3
+          );
+        } else if (collision.obtainedBit) {
+          player.score += 250;
+          generateBit();
+        }
+      }
     }
     playBikeSound(player, bonus);
     createLightTrail(player);
@@ -700,12 +744,10 @@
   G.instance = two.bind('update', frameCount => {
     stats.begin();
     if (!G.gameOver) {
-      const dirs = [];
       for (let i = 0; i < G.players.length; i++) {
-        dirs.push(generateMove(G.players[i], frameCount));
+        generateMove(G.players[i], frameCount);
       }
       for (let i = 0; i < G.players.length; i++) {
-        checkPlayerCollision(G.players[i], dirs[i]);
         if (!G.players[i].alive) {
           G.gameOver = true;
         }
