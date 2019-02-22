@@ -68,8 +68,8 @@ function startGame() {
   stopPlayerSounds();
 
   playRezzinSound();
-  G.gameTimer = createTimer(3, () => {
-    G.gameTimer = createTimer(G.roundTime, () => {
+  createTimer(3, () => {
+    createTimer(G.roundTime, () => {
       G.gameOver = true;
     });
     if (G.noPlayer) {

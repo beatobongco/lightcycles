@@ -21,14 +21,13 @@ const createTimer = (time, callback) => {
   document.getElementById('timer').innerText = time;
   start = Date.now();
   setTimerColor();
-  return setInterval(function() {
+  G.gameTimer = setInterval(() => {
     const delta = Date.now() - start;
     const timer = document.getElementById('timer');
     G.timeLeft = time - Math.floor(delta / 1000);
     timer.innerText = G.timeLeft;
     if (G.timeLeft <= 0 && callback) {
       callback();
-      clearInterval(G.gameTimer);
     }
     setTimerColor();
   }, 1000);
