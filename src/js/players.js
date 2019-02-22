@@ -4,7 +4,8 @@ import {
   two,
   playerSize,
   hitboxSize,
-  stageHeight
+  stageHeight,
+  scoreKey
 } from './constants';
 import { getRandomInt } from './util';
 import { checkCollision } from './collisions';
@@ -35,6 +36,11 @@ function createHUD(player) {
   } else if (G.mode === '1P') {
     scoreHTML = `<p><small>SCORE</small></p>
     <p><small>${score}</small></p>`;
+    const hiscore = localStorage.getItem(scoreKey);
+    if (hiscore > 0) {
+      scoreHTML += `<p><small>RECORD</small></p>
+    <p><small>${hiscore}</small></p>`;
+    }
   }
   document.getElementById(el).innerHTML = `
     <div class="hud">
@@ -42,8 +48,8 @@ function createHUD(player) {
       ${roundsHTML}
       <p><small>SPEED</small></p>
       <h3 id="${name}-speed">${speed}</h3>
-      ${scoreHTML}
       ${winsHTML}
+      ${scoreHTML}
     </div>`;
 }
 

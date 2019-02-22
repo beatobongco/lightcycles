@@ -11,6 +11,7 @@ const leftVec = new Two.Vector(-speedPerTick, 0);
 const rightVec = new Two.Vector(speedPerTick, 0);
 const upVec = new Two.Vector(0, -speedPerTick);
 const downVec = new Two.Vector(0, speedPerTick);
+const scoreKey = 'lightcycles/HISCORE';
 const two = new Two({
   width: stageWidth,
   height: stageHeight
@@ -29,5 +30,6 @@ export {
   rightVec,
   upVec,
   downVec,
-  two
+  two,
+  scoreKey
 };

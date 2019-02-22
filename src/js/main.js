@@ -8,7 +8,8 @@ import {
   decelerationTime,
   maxSpeed,
   playerSize,
-  hitboxSize
+  hitboxSize,
+  scoreKey
 } from './constants';
 import initGrid from './grid';
 import { checkPlayerCollision } from './collisions';
@@ -203,16 +204,23 @@ G.instance = two.bind('update', frameCount => {
     clearInterval(G.gameTimer);
 
     let subtext = 'Press `R` to play next round.';
-
+    if (G.mode === '1P') {
+      let score = G.players[0].score;
+      let hiscore = localStorage.getItem(scoreKey) || 0;
+      if (score > hiscore) {
+        localStorage.setItem(scoreKey, score);
+        subtext = `You set a new record, ${score} pts!`;
+      } else {
+        subtext = `You got ${score} pts!`;
+      }
+      subtext += '<p>Press `R` to try again. </p>';
+    }
     // If all players are dead, it's a draw
     if (G.players.every(p => !p.alive)) {
       if (G.mode === '2P') {
         G.gameOverText = 'DRAW';
       } else {
         G.gameOverText = 'YOU DEREZZED';
-        subtext = `You got ${
-          G.players[0].score
-        } pts! <p>Press \`R\` to try again. </p>`;
       }
     } else if (G.timeLeft <= 0) {
       // If timer is up, base it on score
@@ -241,10 +249,6 @@ G.instance = two.bind('update', frameCount => {
         } else {
           subtext = `DRAW. <p>${subtext} </p>`;
         }
-      } else {
-        subtext = `You got ${
-          G.players[0].score
-        } pts! <p>Press \`R\` to try again. </p>`;
       }
     } else {
       // If 1 player alive show his win
