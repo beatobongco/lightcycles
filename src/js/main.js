@@ -126,7 +126,7 @@ function generateMove(player, frameCount) {
         trn.addSelf(downVec);
         break;
     }
-    if (hitboxSize % (i + 1) === 0) {
+    if ((i + 1) % hitboxSize === 0) {
       const collision = checkPlayerCollision(player);
       if (collision.didCollide) {
         playDerezzSound();
@@ -143,6 +143,7 @@ function generateMove(player, frameCount) {
           2,
           3
         );
+        return;
       } else if (collision.obtainedBit) {
         player.score += 250;
         generateBit();
