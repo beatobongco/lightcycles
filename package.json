@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "![lightcycles](https://raw.githubusercontent.com/beatobongco/lightcycles/master/og.png)",
   "main": "index.js",
-  "dependencies": {
-    "two.js": "^0.7.0-beta.3"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "rollup": "^1.2.2"
+    "rollup": "^1.2.2",
+    "rollup-plugin-terser": "^4.0.4"
   },
   "scripts": {
-    "watch": "rollup src/js/main.js --watch --format iife --name 'lightcycles' --file dist/bundle.js"
+    "watch": "rollup -c --watch",
+    "build": "rollup -c --environment BUILD:production"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "CC BY-NC-SA",
   "bugs": {
     "url": "https://github.com/beatobongco/lightcycles/issues"
   },
