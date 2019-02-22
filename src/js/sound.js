@@ -6,6 +6,7 @@ const sounds = {
   'sound/speed3.ogg': false,
   'sound/slipstream.ogg': false,
   'sound/shiftup.mp3': false,
+  'sound/rezzin.ogg': false,
   'sound/bit_spawn.ogg': false,
   'sound/playerjoin.ogg': false,
   'sound/derezz.mp3': false,
@@ -89,6 +90,11 @@ function playBitSpawnSound() {
   sound.play();
 }
 
+function playRezzinSound() {
+  let sound = new Audio('sound/rezzin.ogg');
+  sound.play();
+}
+
 export {
   playBikeSound,
   playDerezzSound,
@@ -98,5 +104,6 @@ export {
   stopPlayerSounds,
   playAccelerateSound,
   playJoinSound,
-  playBitSpawnSound
+  playBitSpawnSound,
+  playRezzinSound
 };

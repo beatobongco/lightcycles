@@ -5,7 +5,8 @@ import {
   initPlayerSounds,
   playAccelerateSound,
   stopPlayerSounds,
-  playJoinSound
+  playJoinSound,
+  playRezzinSound
 } from './sound';
 
 const userKeyAcc = 'KeyT';
@@ -41,6 +42,7 @@ function playerJoin() {
 }
 
 function startGame() {
+  two.pause();
   if (G.players.length > 0) {
     G.players.forEach(p => {
       two.remove(p.group);
@@ -62,9 +64,10 @@ function startGame() {
     // init players, carrying over wins
     initPlayers(true);
   }
-  two.update();
+  two.update(); // to draw
   stopPlayerSounds();
 
+  playRezzinSound();
   G.gameTimer = createTimer(3, () => {
     G.gameTimer = createTimer(G.roundTime, () => {
       G.gameOver = true;
