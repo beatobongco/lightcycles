@@ -98,7 +98,9 @@ function generateMove(player, frameCount) {
   const trn = player.group.translation;
 
   for (let i = 1; i <= player.speed + bonus; i++) {
-    player.score += 1;
+    if (!G.noPlayer) {
+      player.score += 1;
+    }
     if (
       player.direction !== player.prevDirection &&
       frameCount - player.lastMoveFrame > cooldown
