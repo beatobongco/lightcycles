@@ -12,11 +12,11 @@ import {
 } from './constants';
 import initGrid from './grid';
 import { checkPlayerCollision } from './collisions';
-import { playBikeSound, stopPlayerSounds } from './sound';
+import { playDerezzSound, playBikeSound, stopPlayerSounds } from './sound';
 import { getOppositeDirection, createShards, getRandomInt } from './util';
 import initControls from './controls';
 import { createPlayerCircle, generateBit } from './players';
-import { playDerezzSound } from './sound';
+import { setTime } from './timer';
 
 initGrid();
 initControls();
@@ -147,6 +147,8 @@ function generateMove(player, frameCount) {
         );
         return;
       } else if (collision.obtainedBit) {
+        // addTime(5);
+        setTime(10);
         player.score += 250;
         generateBit();
       }
