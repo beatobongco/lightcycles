@@ -57,6 +57,7 @@ h1 {
 
 .hud {
   text-align: center;
+  width: 75px;
 }
 
 #gameOverContainer {
