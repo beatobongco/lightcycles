@@ -10,6 +10,17 @@ import {
 import { getRandomInt } from './util';
 import { checkCollision } from './collisions';
 
+function renderJoinUI(el, playerName, control) {
+  document.getElementById(el).innerHTML = `
+    <h3>${playerName}</h3>
+    <div class="blink">
+      <p><small class="tiny">PRESS</small></p>
+      <p class="centered">${control}</p>
+      <p><small class="tiny">TO JOIN</small></p>
+    </div>
+  `;
+}
+
 function renderHUD(player) {
   const n = '';
   const { el, name, wins, roundWins, speed, score } = player;
@@ -43,7 +54,7 @@ function renderHUD(player) {
     }
   }
   document.getElementById(el).innerHTML = `
-    <div class="hud">
+    <div>
       <h3>${name}</h3>
       ${roundsHTML}
       <p><small>SPEED</small></p>
@@ -179,9 +190,15 @@ function initPlayers(carryOverWins = false) {
   if (G.noPlayer === 1) {
     G.enemy = initEnemy(0, 0);
     G.players = [G.enemy];
+    renderJoinUI('userHud', 'P1', 'W');
   } else if (G.noPlayer === 2) {
     G.user = initUser(0, 0);
     G.players = [G.user];
+    renderJoinUI(
+      'enemyHud',
+      'P2',
+      '<span>UP</span> <small class="tiny">ARROW<small>'
+    );
   } else {
     G.user = initUser(carryOverWins);
     G.enemy = initEnemy(carryOverWins);

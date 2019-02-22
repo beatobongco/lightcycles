@@ -1,7 +1,11 @@
 import { createTimer } from './timer';
 import { initPlayers, generateBit } from './players';
 import { two } from './constants';
-import { initPlayerSounds, playAccelerateSound } from './sound';
+import {
+  initPlayerSounds,
+  playAccelerateSound,
+  stopPlayerSounds
+} from './sound';
 
 const userKeyAcc = 'KeyT';
 const enemyKeyAcc = 'BracketRight';
@@ -25,7 +29,27 @@ function pAccelerate(player) {
   player.isAccelerating = true;
 }
 
+function playerJoin() {
+  G.firstRun = true;
+  G.noPlayer = null;
+  G.mode = '2P';
+  G.roundTime = 30;
+  two.remove(G.bit);
+  startGame();
+}
+
 function startGame() {
+  if (G.players.length > 0) {
+    G.players.forEach(p => {
+      two.remove(p.group);
+      two.remove(p.corpse);
+      two.remove(p.sparks);
+      p.lightTrails.forEach(l => {
+        two.remove(l);
+      });
+    });
+    stopPlayerSounds();
+  }
   G.gameOverText = null;
   G.gameTimer = createTimer();
   G.gameOver = false;
@@ -60,20 +84,7 @@ function initControls() {
         /* IE/Edge */
         docElem.msRequestFullscreen();
       }
-      if (G.firstRun) {
-        G.firstRun = false;
-        startGame();
-      } else if (G.gameOver) {
-        document.getElementById('timer').classList.remove('time-low');
-        G.players.forEach(p => {
-          two.remove(p.group);
-          two.remove(p.corpse);
-          two.remove(p.sparks);
-          p.lightTrails.forEach(l => {
-            two.remove(l);
-          });
-        });
-
+      if (G.gameOver) {
         startGame();
       }
     } else if (k.code === 'Pause' && G.pauseEnabled) {
@@ -102,6 +113,10 @@ function initControls() {
             pAccelerate(G.user);
             break;
         }
+
+        if (!G.enemy && k.code === 'ArrowUp') {
+          playerJoin();
+        }
       }
 
       if (G.enemy) {
@@ -122,6 +137,10 @@ function initControls() {
           case enemyKeyAcc:
             pAccelerate(G.enemy);
             break;
+        }
+
+        if (!G.user && k.code === 'KeyW') {
+          playerJoin();
         }
       }
     }

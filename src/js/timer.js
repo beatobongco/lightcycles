@@ -5,6 +5,7 @@ let start = null;
 const createTimer = () => {
   clearInterval(G.gameTimer);
   G.timeLeft = G.roundTime;
+  document.getElementById('timer').classList.remove('time-low');
   document.getElementById('timer').innerText = G.roundTime;
   start = Date.now();
   return setInterval(function() {
