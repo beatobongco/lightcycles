@@ -83,39 +83,46 @@ function initControls() {
         G.instance.play();
       }
     } else if (!G.gameOver) {
-      switch (k.code) {
-        // user controls
-        case 'KeyS':
-          playerMove(G.user, 'down');
-          break;
-        case 'KeyW':
-          playerMove(G.user, 'up');
-          break;
-        case 'KeyA':
-          playerMove(G.user, 'left');
-          break;
-        case 'KeyD':
-          playerMove(G.user, 'right');
-          break;
-        case userKeyAcc:
-          pAccelerate(G.user);
-          break;
-        // enemy controls
-        case 'ArrowDown':
-          playerMove(G.enemy, 'down');
-          break;
-        case 'ArrowUp':
-          playerMove(G.enemy, 'up');
-          break;
-        case 'ArrowLeft':
-          playerMove(G.enemy, 'left');
-          break;
-        case 'ArrowRight':
-          playerMove(G.enemy, 'right');
-          break;
-        case enemyKeyAcc:
-          pAccelerate(G.enemy);
-          break;
+      if (G.user) {
+        switch (k.code) {
+          // user controls
+          case 'KeyS':
+            playerMove(G.user, 'down');
+            break;
+          case 'KeyW':
+            playerMove(G.user, 'up');
+            break;
+          case 'KeyA':
+            playerMove(G.user, 'left');
+            break;
+          case 'KeyD':
+            playerMove(G.user, 'right');
+            break;
+          case userKeyAcc:
+            pAccelerate(G.user);
+            break;
+        }
+      }
+
+      if (G.enemy) {
+        switch (k.code) {
+          // enemy controls
+          case 'ArrowDown':
+            playerMove(G.enemy, 'down');
+            break;
+          case 'ArrowUp':
+            playerMove(G.enemy, 'up');
+            break;
+          case 'ArrowLeft':
+            playerMove(G.enemy, 'left');
+            break;
+          case 'ArrowRight':
+            playerMove(G.enemy, 'right');
+            break;
+          case enemyKeyAcc:
+            pAccelerate(G.enemy);
+            break;
+        }
       }
     }
   };
@@ -123,10 +130,14 @@ function initControls() {
     if (!G.gameOver) {
       switch (k.code) {
         case userKeyAcc:
-          G.user.isAccelerating = false;
+          if (G.user) {
+            G.user.isAccelerating = false;
+          }
           break;
         case enemyKeyAcc:
-          G.enemy.isAccelerating = false;
+          if (G.enemy) {
+            G.enemy.isAccelerating = false;
+          }
           break;
       }
     }
