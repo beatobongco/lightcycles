@@ -131,3 +131,13 @@ a {
 .time-low {
   color: #e74c3c;
 }
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
