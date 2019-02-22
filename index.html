@@ -108,7 +108,7 @@
     <script>
       const url = new URL(window.location.href);
       const params = url.searchParams;
-      const noPlayer = parseInt(params.get('noPlayer'));
+      const noPlayer = parseInt(params.get('noPlayer')) || 2;
       const G = {
         user: null,
         enemy: null,
