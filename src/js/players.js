@@ -12,11 +12,10 @@ import { checkCollision } from './collisions';
 function createHUD(player) {
   const n = '';
   const { el, name, wins, roundWins, speed, score } = player;
-  let mode = G.noPlayer ? '1P' : '2P';
   let roundsHTML = n,
     winsHTML = n,
     scoreHTML = n;
-  if (mode === '2P') {
+  if (G.mode === '2P') {
     let roundDots = [
       '<span class="windot">&#9675;</span>',
       '<span class="windot">&#9675;</span>',
@@ -33,7 +32,7 @@ function createHUD(player) {
             WINS: <span id="${name}-wins">${wins}</span>
           </small>`
         : n;
-  } else if (mode === '1P') {
+  } else if (G.mode === '1P') {
     scoreHTML = `<p><small>SCORE</small></p>
     <p><small>${score}</small></p>`;
   }
