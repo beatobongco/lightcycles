@@ -54,8 +54,11 @@ function startGame() {
     });
     stopPlayerSounds();
   }
+  if (G.bit) {
+    two.remove(G.bit);
+    G.bit = null;
+  }
   G.gameOverText = null;
-
   G.gameOver = false;
   document.getElementById('gameOverContainer').style.display = 'none';
   if (!G.players || G.players.some(p => p.roundWins === 3)) {
