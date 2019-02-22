@@ -53,7 +53,7 @@ function startGame() {
     stopPlayerSounds();
   }
   G.gameOverText = null;
-  G.gameTimer = createTimer();
+
   G.gameOver = false;
   document.getElementById('gameOverContainer').style.display = 'none';
   if (!G.players || G.players.some(p => p.roundWins === 3)) {
@@ -62,12 +62,19 @@ function startGame() {
     // init players, carrying over wins
     initPlayers(true);
   }
-  initPlayerSounds();
+  two.update();
+  stopPlayerSounds();
 
-  if (G.noPlayer) {
-    generateBit();
-  }
-  G.instance.play();
+  G.gameTimer = createTimer(3, () => {
+    G.gameTimer = createTimer(G.roundTime, () => {
+      G.gameOver = true;
+    });
+    if (G.noPlayer) {
+      generateBit();
+    }
+    initPlayerSounds();
+    G.instance.play();
+  });
 }
 
 function initControls() {
