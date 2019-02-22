@@ -165,13 +165,13 @@ function generateBit() {
   if (G.bit) {
     two.remove(G.bit);
   }
-  let group, inner, outer, x, y;
+  let group, inner, outer;
   outer = two.makeCircle(0, 0, 6);
-  outer.fill = '#16a085';
+  outer.fill = '#1abc9c';
   outer.noStroke();
-  outer.opacity = 0.5;
+  outer.opacity = 0.9;
   inner = two.makeCircle(0, 0, 4);
-  inner.fill = '#1abc9c';
+  inner.fill = '#E6FFFF';
   inner.noStroke();
   group = two.makeGroup(outer, inner);
   group.center();
@@ -181,13 +181,10 @@ function generateBit() {
   );
   G.bit = group;
 
-  if (checkCollision(G.bit).didCollide) {
+  if (checkCollision(G.bit.getBoundingClientRect()).didCollide) {
+    // Generate bit at random position until it doesn't collide with anything
     console.log('bit collided');
-    G.bit.translation.set(
-      getRandomInt(0, stageWidth),
-      getRandomInt(0, stageHeight)
-    );
+    generateBit();
   }
 }
-window.generateBit = generateBit;
 export { initPlayers, generateBit, createPlayerCircle };
