@@ -6,7 +6,8 @@ const sounds = {
   'sound/speed3.ogg': false,
   'sound/slipstream.ogg': false,
   'sound/shiftup.mp3': false,
-  'sound/shiftdown.mp3': false,
+  'sound/bit_spawn.ogg': false,
+  'sound/playerjoin.ogg': false,
   'sound/derezz.mp3': false,
   'sound/timertick.ogg': false
 };
@@ -78,6 +79,16 @@ function playTick() {
   tick.play();
 }
 
+function playJoinSound() {
+  let sound = new Audio('sound/playerjoin.ogg');
+  sound.play();
+}
+
+function playBitSpawnSound() {
+  let sound = new Audio('sound/bit_spawn.ogg');
+  sound.play();
+}
+
 export {
   playBikeSound,
   playDerezzSound,
@@ -85,5 +96,7 @@ export {
   loadSounds,
   initPlayerSounds,
   stopPlayerSounds,
-  playAccelerateSound
+  playAccelerateSound,
+  playJoinSound,
+  playBitSpawnSound
 };

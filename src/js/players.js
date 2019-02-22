@@ -9,6 +9,7 @@ import {
 } from './constants';
 import { getRandomInt } from './util';
 import { checkCollision } from './collisions';
+import { playBitSpawnSound } from './sound';
 
 function renderJoinUI(el, playerName, control) {
   document.getElementById(el).innerHTML = `
@@ -231,6 +232,8 @@ function generateBit() {
     // Generate bit at random position until it doesn't collide with anything
     console.log('bit collided');
     generateBit();
+  } else {
+    playBitSpawnSound();
   }
 }
 export { initPlayers, generateBit, createPlayerCircle };

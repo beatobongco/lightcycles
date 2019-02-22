@@ -4,7 +4,8 @@ import { two } from './constants';
 import {
   initPlayerSounds,
   playAccelerateSound,
-  stopPlayerSounds
+  stopPlayerSounds,
+  playJoinSound
 } from './sound';
 
 const userKeyAcc = 'KeyT';
@@ -30,6 +31,7 @@ function pAccelerate(player) {
 }
 
 function playerJoin() {
+  playJoinSound();
   G.firstRun = true;
   G.noPlayer = null;
   G.mode = '2P';

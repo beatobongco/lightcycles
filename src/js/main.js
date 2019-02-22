@@ -13,12 +13,19 @@ import {
 } from './constants';
 import initGrid from './grid';
 import { checkPlayerCollision } from './collisions';
-import { playDerezzSound, playBikeSound, stopPlayerSounds } from './sound';
+import {
+  playDerezzSound,
+  playBikeSound,
+  stopPlayerSounds,
+  playBitSpawnSound,
+  loadSounds
+} from './sound';
 import { getOppositeDirection, createShards, getRandomInt } from './util';
 import initControls from './controls';
 import { createPlayerCircle, generateBit } from './players';
 import { setTime } from './timer';
 
+loadSounds();
 initGrid();
 initControls();
 
@@ -153,6 +160,7 @@ function generateMove(player, frameCount) {
         // addTime(5);
         setTime(10);
         player.score += 250;
+        playBitSpawnSound();
         generateBit();
       }
     }
