@@ -9,7 +9,8 @@ import {
 import { getRandomInt } from './util';
 import { checkCollision } from './collisions';
 
-function createHUD(el, name, wins, roundWins, speed) {
+function createHUD(player) {
+  const { el, name, wins, roundWins, speed } = player;
   let winDots = [
     '<span class="windot">&#9675;</span>',
     '<span class="windot">&#9675;</span>',
@@ -61,6 +62,7 @@ function initPlayer(
   HUDelement
 ) {
   const p = {
+    el: HUDelement,
     name: name,
     prevDirection: defaultDirection,
     direction: defaultDirection,
@@ -78,7 +80,7 @@ function initPlayer(
     },
     set wins(wns) {
       this._wins = wns;
-      createHUD(HUDelement, name, wns, this.roundWins, this._speed);
+      createHUD(this);
     },
     _roundWins: roundWins,
     get roundWins() {
@@ -86,7 +88,7 @@ function initPlayer(
     },
     set roundWins(rnd) {
       this._roundWins = rnd;
-      createHUD(HUDelement, name, this.wins, rnd, this._speed);
+      createHUD(this);
     },
     isAccelerating: false,
     isBraking: false,
@@ -109,7 +111,7 @@ function initPlayer(
     soundPromise: null,
     score: 0 // 1 per unit distance traveled
   };
-  createHUD(HUDelement, name, wins, roundWins, 1);
+  createHUD(p);
 
   return p;
 }
