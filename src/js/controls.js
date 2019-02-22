@@ -93,6 +93,11 @@ function initControls() {
       } else {
         G.instance.play();
       }
+    } else if (
+      (!G.enemy && k.code === 'ArrowUp') ||
+      (!G.user && k.code === 'KeyW')
+    ) {
+      playerJoin();
     } else if (!G.gameOver) {
       if (G.user) {
         switch (k.code) {
@@ -112,10 +117,6 @@ function initControls() {
           case userKeyAcc:
             pAccelerate(G.user);
             break;
-        }
-
-        if (!G.enemy && k.code === 'ArrowUp') {
-          playerJoin();
         }
       }
 
@@ -137,10 +138,6 @@ function initControls() {
           case enemyKeyAcc:
             pAccelerate(G.enemy);
             break;
-        }
-
-        if (!G.user && k.code === 'KeyW') {
-          playerJoin();
         }
       }
     }
