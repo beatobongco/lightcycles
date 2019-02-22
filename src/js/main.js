@@ -206,31 +206,45 @@ G.instance = two.bind('update', frameCount => {
 
     // If all players are dead, it's a draw
     if (G.players.every(p => !p.alive)) {
-      G.gameOverText = 'DRAW';
+      if (G.mode === '2P') {
+        G.gameOverText = 'DRAW';
+      } else {
+        G.gameOverText = 'YOU DEREZZED';
+        subtext = `You got ${
+          G.players[0].score
+        } pts! <p>Press \`R\` to try again. </p>`;
+      }
     } else if (G.timeLeft <= 0) {
       // If timer is up, base it on score
       G.gameOverText = 'TIME UP';
-      let winner = null;
-      let score = 0;
-      let pointsText = '';
-      G.players.forEach(p => {
-        pointsText += `<p>${p.name}: ${p.score} pts</p>`;
-        if (p.score > score) {
-          score = p.score;
-          winner = p;
-        } else if (p.score === score) {
-          winner = null;
+
+      if (G.mode === '2P') {
+        let winner = null;
+        let score = 0;
+        let pointsText = '';
+        G.players.forEach(p => {
+          pointsText += `<p>${p.name}: ${p.score} pts</p>`;
+          if (p.score > score) {
+            score = p.score;
+            winner = p;
+          } else if (p.score === score) {
+            winner = null;
+          }
+        });
+        if (winner) {
+          winner.roundWins += 1;
+          subtext = `${winner.name} WINS <p>${
+            winner.name
+          } has a longer jetwall. </p>
+          ${pointsText}
+          <p>${subtext}</p>`;
+        } else {
+          subtext = `DRAW. <p>${subtext} </p>`;
         }
-      });
-      if (winner) {
-        winner.roundWins += 1;
-        subtext = `${winner.name} WINS <p>${
-          winner.name
-        } has a longer jetwall. </p>
-        ${pointsText}
-        <p>${subtext}</p>`;
       } else {
-        subtext = `DRAW. <p>${subtext} </p>`;
+        subtext = `You got ${
+          G.players[0].score
+        } pts! <p>Press \`R\` to try again. </p>`;
       }
     } else {
       // If 1 player alive show his win
