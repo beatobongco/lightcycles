@@ -230,7 +230,6 @@ function generateBit() {
 
   if (checkCollision(G.bit.getBoundingClientRect()).didCollide) {
     // Generate bit at random position until it doesn't collide with anything
-    console.log('bit collided');
     generateBit();
   } else {
     playBitSpawnSound();
