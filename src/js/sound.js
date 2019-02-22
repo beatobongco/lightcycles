@@ -15,10 +15,11 @@ const sounds = {
 
 function loadSounds() {
   Object.keys(sounds).forEach(s => {
-    var _sound = new Audio(s);
+    var _sound = new Audio();
     _sound.addEventListener('canplaythrough', () => {
       sounds[s] = true;
     });
+    _sound.src = s;
   });
 }
 
