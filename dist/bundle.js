@@ -8,7 +8,7 @@
   const decelerationTime = 3;
   const accelerationTime = [3, 4, 6, 14, 16];
   const playerSize = 6;
-  const hitboxSize = 5;
+  const hitboxSize = 4;
   const speedPerTick = 1;
   const leftVec = new Two.Vector(-speedPerTick, 0);
   const rightVec = new Two.Vector(speedPerTick, 0);
@@ -687,7 +687,7 @@
           trn.addSelf(downVec);
           break;
       }
-      if (hitboxSize % (i + 1) === 0) {
+      if ((i + 1) % hitboxSize === 0) {
         const collision = checkPlayerCollision(player);
         if (collision.didCollide) {
           playDerezzSound();
@@ -704,6 +704,7 @@
             2,
             3
           );
+          return;
         } else if (collision.obtainedBit) {
           player.score += 250;
           generateBit();
