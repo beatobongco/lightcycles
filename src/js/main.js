@@ -106,7 +106,7 @@ function generateMove(player, frameCount) {
   const trn = player.group.translation;
 
   for (let i = 1; i <= player.speed + bonus; i++) {
-    if (G.mode === 'P2') {
+    if (G.mode === '2P') {
       player.score += 1;
     }
     if (
