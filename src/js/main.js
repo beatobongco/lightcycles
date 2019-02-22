@@ -97,7 +97,7 @@ function generateMove(player, frameCount) {
   let direction = player.direction;
   const trn = player.group.translation;
 
-  for (let i = 0; i < player.speed + bonus; i++) {
+  for (let i = 1; i <= player.speed + bonus; i++) {
     player.score += 1;
     if (
       player.direction !== player.prevDirection &&
@@ -126,7 +126,9 @@ function generateMove(player, frameCount) {
         trn.addSelf(downVec);
         break;
     }
-    if ((i + 1) % hitboxSize === 0) {
+    // Always check collision at least once per turn
+    // If going fast, check for collision multiple times depending on hitbox size
+    if (i === 1 || i % hitboxSize === 0) {
       const collision = checkPlayerCollision(player);
       if (collision.didCollide) {
         playDerezzSound();
