@@ -10,7 +10,7 @@ import {
 import { getRandomInt } from './util';
 import { checkCollision } from './collisions';
 
-function createHUD(player) {
+function renderHUD(player) {
   const n = '';
   const { el, name, wins, roundWins, speed, score } = player;
   let roundsHTML = n,
@@ -100,7 +100,7 @@ function initPlayer(
     },
     set wins(wns) {
       this._wins = wns;
-      createHUD(this);
+      renderHUD(this);
     },
     _roundWins: roundWins,
     get roundWins() {
@@ -108,7 +108,7 @@ function initPlayer(
     },
     set roundWins(rnd) {
       this._roundWins = rnd;
-      createHUD(this);
+      renderHUD(this);
     },
     _score: 0, // 1 per unit distance traveled
     get score() {
@@ -116,7 +116,7 @@ function initPlayer(
     },
     set score(s) {
       this._score = s;
-      createHUD(this);
+      renderHUD(this);
     },
     isAccelerating: false,
     isBraking: false,
@@ -138,7 +138,7 @@ function initPlayer(
     sound: new Audio(),
     soundPromise: null
   };
-  createHUD(p);
+  renderHUD(p);
 
   return p;
 }
