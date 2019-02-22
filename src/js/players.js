@@ -10,26 +10,41 @@ import { getRandomInt } from './util';
 import { checkCollision } from './collisions';
 
 function createHUD(player) {
-  const { el, name, wins, roundWins, speed } = player;
-  let winDots = [
-    '<span class="windot">&#9675;</span>',
-    '<span class="windot">&#9675;</span>',
-    '<span class="windot">&#9675;</span>'
-  ];
-
-  for (let i = 0; i < roundWins; i++) {
-    winDots[i] = '<span class="windot">&#9679;</span>';
+  const n = '';
+  const { el, name, wins, roundWins, speed, score } = player;
+  let mode = G.noPlayer ? '1P' : '2P';
+  let roundsHTML = n,
+    winsHTML = n,
+    scoreHTML = n;
+  if (mode === '2P') {
+    let roundDots = [
+      '<span class="windot">&#9675;</span>',
+      '<span class="windot">&#9675;</span>',
+      '<span class="windot">&#9675;</span>'
+    ];
+    for (let i = 0; i < roundWins; i++) {
+      roundDots[i] = '<span class="windot">&#9679;</span>';
+    }
+    roundsHTML = `<p><small>ROUND</small></p>
+    <div class="rounds">${roundDots.join('')}</div>`;
+    winsHTML =
+      wins > 0
+        ? `<small class="tiny">
+            WINS: <span id="${name}-wins">${wins}</span>
+          </small>`
+        : n;
+  } else if (mode === '1P') {
+    scoreHTML = `<p><small>SCORE</small></p>
+    <p><small>${score}</small></p>`;
   }
-  let winsHTML =
-    wins > 0 ? `WINS: <span id="${name}-wins">${wins}</span>` : '&nbsp;';
   document.getElementById(el).innerHTML = `
     <div class="hud">
       <h3>${name}</h3>
-      <p><small>ROUND</small></p>
-      <div class="rounds">${winDots.join('')}</div>
+      ${roundsHTML}
       <p><small>SPEED</small></p>
       <h3 id="${name}-speed">${speed}</h3>
-      <small class="tiny">${winsHTML}</small>
+      ${scoreHTML}
+      ${winsHTML}
     </div>`;
 }
 
@@ -90,6 +105,14 @@ function initPlayer(
       this._roundWins = rnd;
       createHUD(this);
     },
+    _score: 0, // 1 per unit distance traveled
+    get score() {
+      return this._score;
+    },
+    set score(s) {
+      this._score = s;
+      createHUD(this);
+    },
     isAccelerating: false,
     isBraking: false,
     lastDecelerateFrame: 0,
@@ -108,8 +131,7 @@ function initPlayer(
     corpse: null,
     sparks: null,
     sound: new Audio(),
-    soundPromise: null,
-    score: 0 // 1 per unit distance traveled
+    soundPromise: null
   };
   createHUD(p);
 
