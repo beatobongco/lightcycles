@@ -198,7 +198,7 @@ function initPlayers(carryOverWins = false) {
     renderJoinUI(
       'enemyHud',
       'P2',
-      '<span>UP</span> <small class="tiny">ARROW<small>'
+      '<span>UP</span> <small class="tiny">ARROW</small>'
     );
   } else {
     G.user = initUser(carryOverWins);
