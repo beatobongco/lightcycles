@@ -76,7 +76,7 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
-  const slipstream = checkPlayerCollision(player, -3);
+  const slipstream = checkPlayerCollision(player, -4);
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
     if (
