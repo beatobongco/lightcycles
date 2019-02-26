@@ -79,7 +79,9 @@ function generateMove(player, frameCount) {
 
   const slipstream = checkCollision(
     player.group._collection[0].getBoundingClientRect(),
-    player
+    player,
+    0,
+    true
   );
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
