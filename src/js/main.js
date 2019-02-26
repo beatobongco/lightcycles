@@ -163,7 +163,9 @@ function generateMove(player, frameCount) {
   }
   playBikeSound(player, bonus);
 
-  if (player.isAccelerating) {
+  if (G.toggleTrails) {
+    createLightTrail(player);
+  } else if (player.isAccelerating) {
     createLightTrail(player);
   } else {
     player.currentOrigin = player.group.translation.clone();
