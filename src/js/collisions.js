@@ -5,10 +5,15 @@ import {
   downVec,
   leftVec,
   rightVec,
-  hitboxSize
+  playerSize
 } from './constants';
 
-function checkCollision(hitboxRect, player = null, lightTrailOffset) {
+function checkCollision(
+  hitboxRect,
+  player = null,
+  lightTrailOffset = 0,
+  ignoreWalls = false
+) {
   // TODO: need to refactor this, maybe for bit
   function _checkCollision(a, b, offset = 0) {
     // Depending on the direction you're going
@@ -21,13 +26,13 @@ function checkCollision(hitboxRect, player = null, lightTrailOffset) {
       rightOffset = 0;
     if (player) {
       if (player.direction === 'up') {
-        topOffset = hitboxSize;
+        topOffset = playerSize;
       } else if (player.direction === 'down') {
-        bottomOffset = hitboxSize;
+        bottomOffset = playerSize;
       } else if (player.direction === 'left') {
-        leftOffset = hitboxSize;
+        leftOffset = playerSize;
       } else if (player.direction === 'right') {
-        rightOffset = hitboxSize;
+        rightOffset = playerSize;
       }
     }
     if (
@@ -50,15 +55,16 @@ function checkCollision(hitboxRect, player = null, lightTrailOffset) {
     result.obtainedBit = true;
   }
   // END BIT
-
-  if (
-    hitboxRect.right >= stageWidth ||
-    hitboxRect.left <= 0 ||
-    hitboxRect.bottom >= stageHeight ||
-    hitboxRect.top <= 0
-  ) {
-    result.didCollide = true;
-    return result;
+  if (!ignoreWalls) {
+    if (
+      hitboxRect.right >= stageWidth ||
+      hitboxRect.left <= 0 ||
+      hitboxRect.bottom >= stageHeight ||
+      hitboxRect.top <= 0
+    ) {
+      result.didCollide = true;
+      return result;
+    }
   }
 
   // Use for-loops instead for better performance
@@ -103,12 +109,4 @@ function checkCollision(hitboxRect, player = null, lightTrailOffset) {
   return result;
 }
 
-function checkPlayerCollision(player, offset) {
-  return checkCollision(
-    player.group._collection[1].getBoundingClientRect(),
-    player,
-    offset
-  );
-}
-
-export { checkCollision, checkPlayerCollision };
+export { checkCollision };
