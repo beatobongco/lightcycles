@@ -12,7 +12,7 @@ import {
   scoreKey
 } from './constants';
 import initGrid from './grid';
-import { checkPlayerCollision } from './collisions';
+import { checkCollision } from './collisions';
 import {
   playDerezzSound,
   playBikeSound,
@@ -77,13 +77,15 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
-  const slipstream = checkPlayerCollision(player, -hitboxSize);
-  const turboSpeed = Math.floor(maxSpeed * 1.5);
+  const slipstream = checkCollision(
+    player.group._collection[0].getBoundingClientRect(),
+    player
+  );
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
     if (
       player.strokeColor !== player.turboColor &&
-      player.speed + bonus >= turboSpeed
+      player.speed + bonus > maxSpeed
     ) {
       // drop a new origin for turbo
       player.strokeColor = player.turboColor;
@@ -93,38 +95,28 @@ function generateMove(player, frameCount) {
 
   if (
     player.strokeColor === player.turboColor &&
-    player.speed + bonus < turboSpeed
+    player.speed + bonus <= maxSpeed
   ) {
     player.strokeColor = player.originalStroke;
     player.currentOrigin = player.group.translation.clone();
   }
 
-  let cooldown = Math.round(Math.max(0, 6 / Math.max(1, player.speed + bonus)));
-  if (player.speed === maxSpeed) {
-    cooldown = 0;
-  }
-  // only register changes of directions every <cooldown> frames
-  let direction = player.direction;
   const trn = player.group.translation;
 
   for (let i = 1; i <= player.speed + bonus; i++) {
     if (G.mode === '2P') {
       player.score += 1;
     }
-    if (
-      player.direction !== player.prevDirection &&
-      frameCount - player.lastMoveFrame > cooldown
-    ) {
+    if (player.direction !== player.prevDirection) {
       // set a new origin for the light trail
       player.currentOrigin = player.group.translation.clone();
-      player.prevDirection = direction;
+      player.prevDirection = player.direction;
       player.lastMoveFrame = frameCount;
       // reset sound when turning
       player.sound.currentTime = 0;
-    } else {
-      direction = player.prevDirection;
     }
-    switch (direction) {
+
+    switch (player.direction) {
       case 'left':
         trn.addSelf(leftVec);
         break;
@@ -138,33 +130,32 @@ function generateMove(player, frameCount) {
         trn.addSelf(downVec);
         break;
     }
-    // Always check collision at least once per turn
-    // If going fast, check for collision multiple times depending on hitbox size
-    if (i === 1 || i % hitboxSize === 0) {
-      const collision = checkPlayerCollision(player, hitboxSize / 2);
-      if (collision.didCollide) {
-        playDerezzSound();
-        player.alive = false;
-        two.remove(player.group);
-        const { oppX, oppY } = getOppositeDirection(direction);
-        player.corpse = createShards(
-          player.group.translation,
-          player.fillColor,
-          oppX,
-          oppY,
-          getRandomInt(3, 3 * player.speed),
-          playerSize * player.speed * (player.speed / 2),
-          2,
-          3
-        );
-        return;
-      } else if (collision.obtainedBit) {
-        // addTime(5);
-        setTime(10);
-        player.score += 250;
-        playBitSpawnSound();
-        generateBit();
-      }
+    const collision = checkCollision(
+      player.group._collection[1].getBoundingClientRect(),
+      player,
+      hitboxSize / 2
+    );
+    if (collision.didCollide) {
+      playDerezzSound();
+      player.alive = false;
+      two.remove(player.group);
+      const { oppX, oppY } = getOppositeDirection(player.direction);
+      player.corpse = createShards(
+        player.group.translation,
+        player.fillColor,
+        oppX,
+        oppY,
+        getRandomInt(3, 3 * player.speed),
+        playerSize * player.speed * (player.speed / 2),
+        2,
+        3
+      );
+      return;
+    } else if (collision.obtainedBit) {
+      setTime(10);
+      player.score += 250;
+      playBitSpawnSound();
+      generateBit();
     }
   }
   playBikeSound(player, bonus);
@@ -180,7 +171,7 @@ function generateMove(player, frameCount) {
     // https://codepen.io/anon/pen/wNRegz
     const base = 1 + player.speed;
     const { x, y } = slipstream.oppositeDir || { x: 0, y: 0 };
-    const { oppX, oppY } = getOppositeDirection(direction);
+    const { oppX, oppY } = getOppositeDirection(player.direction);
     player.sparks = createShards(
       player.group.translation,
       player.sparkColor,
@@ -201,13 +192,11 @@ function generateMove(player, frameCount) {
     player.strokeColor,
     player.fillColor
   );
-  return direction;
 }
 
 G.instance = two.bind('update', frameCount => {
   stats.begin();
   if (!G.gameOver) {
-    const dirs = [];
     for (let i = 0; i < G.players.length; i++) {
       generateMove(G.players[i], frameCount);
     }
