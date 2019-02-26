@@ -33,10 +33,6 @@ const createTimer = (time, callback) => {
     G.gameTimer.timeLeft = G.gameTimer.totalTime - Math.floor(delta / 1000);
     timer.innerText = G.gameTimer.timeLeft;
     if (G.gameTimer.timeLeft <= 0 && callback) {
-<<<<<<< 2c5f19c0c673fa7f1842984288f4b33ad46385a5
-      console.log('howdy');
-=======
->>>>>>> Make bit roundtime decrease based on score, refactor timer
       callback();
     }
     setTimerColor();
