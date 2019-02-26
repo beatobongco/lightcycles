@@ -154,8 +154,9 @@ function generateMove(player, frameCount) {
       );
       return;
     } else if (collision.obtainedBit) {
-      setTime(10);
       player.score += 250;
+      // TODO: Make bit move around after certain thresholds
+      setTime(Math.max(10 - Math.floor(player.score / 1000), 5));
       playBitSpawnSound();
       generateBit();
     }
@@ -208,7 +209,7 @@ G.instance = two.bind('update', frameCount => {
       }
     }
   } else {
-    clearInterval(G.gameTimer);
+    clearInterval(G.gameTimer.id);
 
     let subtext = 'Press `R` to play next round.';
     if (G.mode === '1P') {
@@ -229,7 +230,7 @@ G.instance = two.bind('update', frameCount => {
       } else {
         G.gameOverText = 'YOU DEREZZED';
       }
-    } else if (G.timeLeft <= 0) {
+    } else if (G.gameTimer.timeLeft <= 0) {
       // If timer is up, base it on score
       G.gameOverText = 'TIME UP';
 

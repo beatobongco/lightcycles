@@ -115,13 +115,12 @@
         players: [],
         gameOver: true,
         gameOverText: null,
-        gameTimer: null,
+        gameTimer: {},
         noPlayer: noPlayer,
         pauseEnabled: params.get('enablePause'),
         instance: null,
         firstRun: true,
         bit: null,
-        timeLeft: null,
         roundTime: noPlayer ? 10 : 30,
         mode: noPlayer ? '1P' : '2P'
       };
