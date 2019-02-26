@@ -32,6 +32,7 @@ initControls();
 function createLightTrail(player) {
   // TODO: find a way to fill in the line without causing crashes
   // due to excess hitbox
+
   const lightTrail = two.makeLine(
     player.currentOrigin.x,
     player.currentOrigin.y,
@@ -76,12 +77,13 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
-  const slipstream = checkPlayerCollision(player, -4);
+  const slipstream = checkPlayerCollision(player, -hitboxSize);
+  const turboSpeed = Math.floor(maxSpeed * 1.5);
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
     if (
       player.strokeColor !== player.turboColor &&
-      player.speed + bonus > maxSpeed
+      player.speed + bonus >= turboSpeed
     ) {
       // drop a new origin for turbo
       player.strokeColor = player.turboColor;
@@ -91,7 +93,7 @@ function generateMove(player, frameCount) {
 
   if (
     player.strokeColor === player.turboColor &&
-    player.speed + bonus <= maxSpeed
+    player.speed + bonus < turboSpeed
   ) {
     player.strokeColor = player.originalStroke;
     player.currentOrigin = player.group.translation.clone();
@@ -139,7 +141,7 @@ function generateMove(player, frameCount) {
     // Always check collision at least once per turn
     // If going fast, check for collision multiple times depending on hitbox size
     if (i === 1 || i % hitboxSize === 0) {
-      const collision = checkPlayerCollision(player);
+      const collision = checkPlayerCollision(player, hitboxSize / 2);
       if (collision.didCollide) {
         playDerezzSound();
         player.alive = false;
@@ -166,7 +168,13 @@ function generateMove(player, frameCount) {
     }
   }
   playBikeSound(player, bonus);
-  createLightTrail(player);
+
+  if (player.isAccelerating) {
+    createLightTrail(player);
+  } else {
+    player.currentOrigin = player.group.translation.clone();
+  }
+
   two.remove(player.sparks);
   if (slipstream.didCollide) {
     // https://codepen.io/anon/pen/wNRegz

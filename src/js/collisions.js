@@ -1,21 +1,41 @@
 import {
-  two,
   stageHeight,
   stageWidth,
   upVec,
   downVec,
   leftVec,
-  rightVec
+  rightVec,
+  hitboxSize
 } from './constants';
 
-function checkCollision(hitboxRect, player = null, lightTrailOffset = 2) {
+function checkCollision(hitboxRect, player = null, lightTrailOffset) {
+  // TODO: need to refactor this, maybe for bit
   function _checkCollision(a, b, offset = 0) {
+    // Depending on the direction you're going
+    // Make sure collision on your butt has a buffer
+    // so (1) you dont derezz yourself
+    // and (2) you dont get a speed boost
+    let bottomOffset = 0,
+      topOffset = 0,
+      leftOffset = 0,
+      rightOffset = 0;
+    if (player) {
+      if (player.direction === 'up') {
+        topOffset = hitboxSize;
+      } else if (player.direction === 'down') {
+        bottomOffset = hitboxSize;
+      } else if (player.direction === 'left') {
+        leftOffset = hitboxSize;
+      } else if (player.direction === 'right') {
+        rightOffset = hitboxSize;
+      }
+    }
     if (
       !(
-        a.right < b.left + offset ||
-        a.left > b.right - offset ||
-        a.bottom < b.top + offset ||
-        a.top > b.bottom - offset
+        a.right < b.left + offset + leftOffset ||
+        a.left > b.right - offset - rightOffset ||
+        a.bottom < b.top + offset + topOffset ||
+        a.top > b.bottom - offset - bottomOffset
       )
     ) {
       return true;
@@ -43,7 +63,6 @@ function checkCollision(hitboxRect, player = null, lightTrailOffset = 2) {
 
   // Use for-loops instead for better performance
   // https://github.com/dg92/Performance-Analysis-JS
-  const lt = player ? player.lightTrails : [];
   for (let i = 0; i < G.players.length; i++) {
     if (
       player &&
@@ -60,12 +79,9 @@ function checkCollision(hitboxRect, player = null, lightTrailOffset = 2) {
 
     for (let j = 0; j < G.players[i].lightTrails.length; j++) {
       let trail = G.players[i].lightTrails[j];
-      // should be immune to your last 2 created trails
-      if (
-        player &&
-        ((lt[lt.length - 1] && lt[lt.length - 1].id === trail.id) ||
-          (lt[lt.length - 2] && lt[lt.length - 2].id === trail.id))
-      ) {
+
+      // Immune to the last trail if player hasn't yet detached from it
+      if (player && trail.origin.equals(player.currentOrigin)) {
         continue;
       }
 
