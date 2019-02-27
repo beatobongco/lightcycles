@@ -164,7 +164,7 @@ function generateMove(player, frameCount) {
   }
   playBikeSound(player, bonus);
 
-  if (G.toggleTrails) {
+  if (!G.toggleTrails) {
     createLightTrail(player);
   } else if (player.isAccelerating) {
     createLightTrail(player);
