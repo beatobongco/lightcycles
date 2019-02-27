@@ -14,7 +14,7 @@ function checkCollision(
   lightTrailOffset = 0,
   ignoreWalls = false
 ) {
-  // TODO: need to refactor this, maybe for bit
+  // TODO: need to refactor this, for the cases of player, slipstream and bit
   function _checkCollision(a, b, offset = 0) {
     // Depending on the direction you're going
     // Make sure collision on your butt has a buffer
@@ -24,15 +24,18 @@ function checkCollision(
       topOffset = 0,
       leftOffset = 0,
       rightOffset = 0;
+    // If offset is any smaller, when turning you will get zebra lighttrails
+    // from speed bonus from the collision with your tail
+    const invulnOffset = playerSize;
     if (player) {
       if (player.direction === 'up') {
-        topOffset = playerSize;
+        topOffset = invulnOffset;
       } else if (player.direction === 'down') {
-        bottomOffset = playerSize;
+        bottomOffset = invulnOffset;
       } else if (player.direction === 'left') {
-        leftOffset = playerSize;
+        leftOffset = invulnOffset;
       } else if (player.direction === 'right') {
-        rightOffset = playerSize;
+        rightOffset = invulnOffset;
       }
     }
     if (
