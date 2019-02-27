@@ -208,11 +208,13 @@ function rollBitDirection() {
 function checkBitMoveLegal() {
   const newVec = G.bit.group.translation.clone();
   newVec.addSelf(G.bit.direction);
+  // TODO: removed padding for now since it causes hangs
+  // Add back when bit spawning has padding too
   if (
-    newVec.x > stageWidth - 10 ||
-    newVec.x < 10 ||
-    newVec.y > stageHeight - 10 ||
-    newVec.y < 10
+    newVec.x > stageWidth - 0 ||
+    newVec.x < 0 ||
+    newVec.y > stageHeight - 0 ||
+    newVec.y < 0
   ) {
     return false;
   }
