@@ -31,6 +31,18 @@ loadSounds();
 initGrid();
 initControls();
 
+function checkMoveLegal(newDirection, player) {
+  if (
+    (newDirection === 'up' && player.direction === 'down') ||
+    (newDirection === 'down' && player.direction === 'up') ||
+    (newDirection === 'left' && player.direction === 'right') ||
+    (newDirection === 'right' && player.direction === 'left')
+  ) {
+    return false;
+  }
+  return true;
+}
+
 function createLightTrail(player) {
   // TODO: find a way to fill in the line without causing crashes
   // due to excess hitbox
@@ -82,7 +94,7 @@ function generateMove(player, frameCount) {
   const slipstream = checkCollision(
     player.group._collection[0].getBoundingClientRect(),
     player,
-    0,
+    2,
     true
   );
   if (slipstream.didCollide) {
@@ -106,19 +118,29 @@ function generateMove(player, frameCount) {
   }
 
   const trn = player.group.translation;
-
-  for (let i = 1; i <= player.speed + bonus; i++) {
+  // EXPLANATION FOR COOLDOWN:
+  // If you draw hitbox of size 4 and lighttrail of width 6, it takes 4 units of distance
+  // to visually clear the lighttrail's path if going for a U-turn
+  const cooldown = playerSize / 2 + 1;
+  for (let i = 0; i < player.speed + bonus; i++) {
     if (G.mode === '2P') {
       player.score += 1;
     }
-    if (player.direction !== player.prevDirection) {
+    // If not on cooldown and move is legal, apply the buffer
+    if (
+      player.directionBuffer.length > 0 &&
+      player.lastMoveDist > cooldown &&
+      checkMoveLegal(player.directionBuffer[0], player)
+    ) {
+      player.direction = player.directionBuffer.shift();
+      player.lastMoveDist = 0;
       // set a new origin for the light trail
       player.currentOrigin = player.group.translation.clone();
-      player.prevDirection = player.direction;
-      player.lastMoveFrame = frameCount;
       // reset sound when turning
       player.sound.currentTime = 0;
     }
+
+    player.lastMoveDist += 1;
 
     switch (player.direction) {
       case 'left':

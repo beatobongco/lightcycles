@@ -96,9 +96,9 @@ function initPlayer(
   const p = {
     el: HUDelement,
     name: name,
-    prevDirection: defaultDirection,
     direction: defaultDirection,
-    lastMoveFrame: 0,
+    directionBuffer: [],
+    lastMoveDist: 0,
     _speed: 1,
     get speed() {
       return this._speed;
@@ -131,10 +131,8 @@ function initPlayer(
       renderHUD(this);
     },
     isAccelerating: false,
-    isBraking: false,
     lastDecelerateFrame: 0,
     lastAccelerateFrame: 0,
-    lastBrakeFrame: 0,
     alive: true,
     _wins: wins,
     group: createPlayerCircle(x, y, strokeColor, fillColor),

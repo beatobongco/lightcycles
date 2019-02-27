@@ -13,14 +13,12 @@ const userKeyAcc = 'KeyT';
 const enemyKeyAcc = 'BracketRight';
 
 function playerMove(player, direction) {
-  // dont allow movements in opposite directions
-  if (
-    (direction === 'down' && player.prevDirection !== 'up') ||
-    (direction === 'up' && player.prevDirection !== 'down') ||
-    (direction === 'right' && player.prevDirection !== 'left') ||
-    (direction === 'left' && player.prevDirection !== 'right')
-  ) {
-    player.direction = direction;
+  const d = player.directionBuffer;
+  if (d.length < 2) {
+    d.push(direction);
+  } else {
+    d.shift();
+    d.push(direction);
   }
 }
 
