@@ -37,7 +37,6 @@ function playerJoin() {
   G.noPlayer = null;
   G.mode = '2P';
   G.roundTime = 30;
-  two.remove(G.bit);
   startGame();
 }
 
@@ -55,7 +54,7 @@ function startGame() {
     stopPlayerSounds();
   }
   if (G.bit) {
-    two.remove(G.bit);
+    two.remove(G.bit.group);
     G.bit = null;
   }
   G.gameOverText = null;

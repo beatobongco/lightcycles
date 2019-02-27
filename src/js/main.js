@@ -9,7 +9,9 @@ import {
   maxSpeed,
   playerSize,
   hitboxSize,
-  scoreKey
+  scoreKey,
+  stageWidth,
+  stageHeight
 } from './constants';
 import initGrid from './grid';
 import { checkCollision } from './collisions';
@@ -155,8 +157,7 @@ function generateMove(player, frameCount) {
       return;
     } else if (collision.obtainedBit) {
       player.score += 250;
-      // TODO: Make bit move around after certain thresholds
-      setTime(Math.max(10 - Math.floor(player.score / 1000), 5));
+      setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
       playBitSpawnSound();
       generateBit();
     }
@@ -199,11 +200,41 @@ function generateMove(player, frameCount) {
   );
 }
 
+function rollBitDirection() {
+  const direction = [upVec, downVec, leftVec, rightVec][getRandomInt(0, 3)];
+  G.bit.direction = direction;
+}
+
+function checkBitMoveLegal() {
+  const newVec = G.bit.group.translation.clone();
+  newVec.addSelf(G.bit.direction);
+  if (
+    newVec.x > stageWidth - 10 ||
+    newVec.x < 10 ||
+    newVec.y > stageHeight - 10 ||
+    newVec.y < 10
+  ) {
+    return false;
+  }
+  return true;
+}
+
 G.instance = two.bind('update', frameCount => {
   stats.begin();
   if (!G.gameOver) {
     for (let i = 0; i < G.players.length; i++) {
       generateMove(G.players[i], frameCount);
+      if (G.mode === '1P' && G.bit) {
+        const chance = getRandomInt(0, G.players[i].score / 500);
+
+        if (!G.bit.direction || chance === 0) {
+          rollBitDirection();
+        }
+        while (!checkBitMoveLegal()) {
+          rollBitDirection();
+        }
+        G.bit.group.translation.addSelf(G.bit.direction);
+      }
     }
     for (let i = 0; i < G.players.length; i++) {
       if (!G.players[i].alive) {

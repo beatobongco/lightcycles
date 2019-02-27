@@ -210,7 +210,7 @@ function initPlayers(carryOverWins = false) {
 function generateBit() {
   // Generates a little guy you can get for points
   if (G.bit) {
-    two.remove(G.bit);
+    two.remove(G.bit.group);
   }
   let group, inner, outer;
   outer = two.makeCircle(0, 0, 6);
@@ -226,9 +226,9 @@ function generateBit() {
     getRandomInt(0, stageWidth),
     getRandomInt(0, stageHeight)
   );
-  G.bit = group;
+  G.bit = { group: group, direction: null };
 
-  if (checkCollision(G.bit.getBoundingClientRect()).didCollide) {
+  if (checkCollision(G.bit.group.getBoundingClientRect()).didCollide) {
     // Generate bit at random position until it doesn't collide with anything
     generateBit();
   } else {

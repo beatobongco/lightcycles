@@ -51,7 +51,10 @@ function checkCollision(
   // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
   const result = { didCollide: false };
   // BIT
-  if (G.bit && _checkCollision(hitboxRect, G.bit.getBoundingClientRect())) {
+  if (
+    G.bit &&
+    _checkCollision(hitboxRect, G.bit.group.getBoundingClientRect())
+  ) {
     result.obtainedBit = true;
   }
   // END BIT
