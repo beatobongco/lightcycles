@@ -11,7 +11,8 @@ import {
   hitboxSize,
   scoreKey,
   stageWidth,
-  stageHeight
+  stageHeight,
+  lightTrailWidth
 } from './constants';
 import initGrid from './grid';
 import { checkCollision } from './collisions';
@@ -46,15 +47,16 @@ function checkMoveLegal(newDirection, player) {
 function createLightTrail(player) {
   // TODO: find a way to fill in the line without causing crashes
   // due to excess hitbox
-
+  const { oppX, oppY } = getOppositeDirection(player.direction);
+  const fillWidth = lightTrailWidth / 2;
   const lightTrail = two.makeLine(
-    player.currentOrigin.x,
-    player.currentOrigin.y,
+    player.currentOrigin.x + oppX * fillWidth,
+    player.currentOrigin.y + oppY * fillWidth,
     player.group.translation.x,
     player.group.translation.y
   );
   lightTrail.stroke = player.strokeColor;
-  lightTrail.linewidth = 6;
+  lightTrail.linewidth = lightTrailWidth;
   lightTrail.opacity = 0.9;
   lightTrail.origin = player.currentOrigin;
 
