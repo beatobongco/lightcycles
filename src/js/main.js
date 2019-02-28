@@ -20,7 +20,6 @@ import {
   playDerezzSound,
   playBikeSound,
   stopPlayerSounds,
-  playBitSpawnSound,
   loadSounds
 } from './sound';
 import { getOppositeDirection, createShards, getRandomInt } from './util';
@@ -47,11 +46,11 @@ function checkMoveLegal(newDirection, player) {
 function createLightTrail(player) {
   // TODO: find a way to fill in the line without causing crashes
   // due to excess hitbox
-  const { oppX, oppY } = getOppositeDirection(player.direction);
+  // const { oppX, oppY } = getOppositeDirection(player.direction);
   const fillWidth = lightTrailWidth / 2;
   const lightTrail = two.makeLine(
-    player.currentOrigin.x + oppX * fillWidth,
-    player.currentOrigin.y + oppY * fillWidth,
+    player.currentOrigin.x, //+ oppX * fillWidth,
+    player.currentOrigin.y, //+ oppY * fillWidth,
     player.group.translation.x,
     player.group.translation.y
   );
@@ -182,7 +181,6 @@ function generateMove(player, frameCount) {
     } else if (collision.obtainedBit) {
       player.score += 250;
       setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
-      playBitSpawnSound();
       generateBit();
     }
   }
@@ -249,9 +247,15 @@ G.instance = two.bind('update', frameCount => {
   stats.begin();
   if (!G.gameOver) {
     for (let i = 0; i < G.players.length; i++) {
-      generateMove(G.players[i], frameCount);
+      const player = G.players[i];
+      generateMove(player, frameCount);
       if (G.mode === '1P' && G.bit) {
-        const chance = getRandomInt(0, G.players[i].score / 500);
+        if (checkCollision(G.bit.group.getBoundingClientRect()).didCollide) {
+          player.score += 250;
+          setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
+          generateBit();
+        }
+        const chance = 0; //getRandomInt(0, player.score / 500);
 
         if (!G.bit.direction || chance === 0) {
           rollBitDirection();
