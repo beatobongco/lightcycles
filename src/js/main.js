@@ -255,7 +255,7 @@ G.instance = two.bind('update', frameCount => {
           setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
           generateBit();
         }
-        const chance = 0; //getRandomInt(0, player.score / 500);
+        const chance = getRandomInt(0, player.score / 2000); //
 
         if (!G.bit.direction || chance === 0) {
           rollBitDirection();
