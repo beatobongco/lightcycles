@@ -33,10 +33,10 @@ initControls();
 
 function checkMoveLegal(newDirection, player) {
   if (
-    (newDirection === 'up' && player.direction === 'down') ||
-    (newDirection === 'down' && player.direction === 'up') ||
-    (newDirection === 'left' && player.direction === 'right') ||
-    (newDirection === 'right' && player.direction === 'left')
+    ((newDirection === 'up' || newDirection === 'down') &&
+      (player.direction === 'up' || player.direction === 'down')) ||
+    ((newDirection === 'left' || newDirection === 'right') &&
+      (player.direction === 'left' || player.direction === 'right'))
   ) {
     return false;
   }
@@ -128,17 +128,16 @@ function generateMove(player, frameCount) {
       player.score += 1;
     }
     // If not on cooldown and move is legal, apply the buffer
-    if (
-      player.directionBuffer.length > 0 &&
-      player.lastMoveDist > cooldown &&
-      checkMoveLegal(player.directionBuffer[0], player)
-    ) {
-      player.direction = player.directionBuffer.shift();
-      player.lastMoveDist = 0;
-      // set a new origin for the light trail
-      player.currentOrigin = player.group.translation.clone();
-      // reset sound when turning
-      player.sound.currentTime = 0;
+    if (player.directionBuffer.length > 0 && player.lastMoveDist > cooldown) {
+      const direction = player.directionBuffer.shift();
+      if (checkMoveLegal(direction, player)) {
+        player.direction = direction;
+        player.lastMoveDist = 0;
+        // set a new origin for the light trail
+        player.currentOrigin = player.group.translation.clone();
+        // reset sound when turning
+        player.sound.currentTime = 0;
+      }
     }
 
     player.lastMoveDist += 1;
