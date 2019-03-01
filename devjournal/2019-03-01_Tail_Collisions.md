@@ -82,4 +82,5 @@ Hope you enjoyed this little war story!
 Other notable problems that might get their own journal pages:
 
 * "zebra" lines when turning (solved by butt offset)
-* lighttrails reverting to original color after turbo
+* how lighttrails are made 
+* lighttrails reverting to original color after turbo (solved by dropping a new point)
