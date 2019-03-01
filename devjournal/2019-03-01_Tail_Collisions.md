@@ -47,7 +47,7 @@ LIGHT BLUE | slipstream hitbox
 
 #### Distance, not frames
 
-The first solution which sounds really simple but wasn't obvious to me before drawing the problem on paper was not to use `frames` as cooldowns but rather `distance` moved. 
+The first solution which sounds really simple (but wasn't obvious to me before drawing the problem on paper) was that the player moved multiple units of distance per frame so it was not right to use `frames` as cooldowns but rather `distance` moved. 
 
 ![Solution diagram](https://github.com/beatobongco/lightcycles/blob/master/devjournal/img/solution_diagram.png)
 
