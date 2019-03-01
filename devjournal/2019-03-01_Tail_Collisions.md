@@ -78,3 +78,8 @@ If the player was not on cooldown and there were items in the array he would con
 Hope you enjoyed this little war story!
 
 ![Bit image](https://vignette.wikia.nocookie.net/tron/images/1/1a/TRON_Wiki_-_NAVI_Bit1.jpg/revision/latest?cb=20150626055445)
+
+Other notable problems that might get their own journal pages:
+
+* "zebra" lines when turning (solved by butt offset)
+* lighttrails reverting to original color after turbo
