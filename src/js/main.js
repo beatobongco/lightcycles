@@ -275,7 +275,13 @@ G.instance = two.bind('update', frameCount => {
 
     let subtext = 'Press `R` to play next round.';
     if (G.mode === '1P') {
-      let score = G.players[0].score;
+      const player = G.players[0];
+      if (!player.alive) {
+        G.gameOverText = 'YOU DEREZZED';
+      } else if (G.gameTimer.timeLeft <= 0) {
+        G.gameOverText = 'TIME UP!';
+      }
+      let score = player.score;
       let hiscore = localStorage.getItem(scoreKey) || 0;
       if (score > hiscore) {
         localStorage.setItem(scoreKey, score);
@@ -284,19 +290,14 @@ G.instance = two.bind('update', frameCount => {
         subtext = `You got ${score} pts!`;
       }
       subtext += '<p>Press `R` to try again. </p>';
-    }
-    // If all players are dead, it's a draw
-    if (G.players.every(p => !p.alive)) {
-      if (G.mode === '2P') {
+    } else if (G.mode === '2P') {
+      // If all players are dead, it's a draw
+      if (G.players.every(p => !p.alive)) {
         G.gameOverText = 'DRAW';
-      } else {
-        G.gameOverText = 'YOU DEREZZED';
-      }
-    } else if (G.gameTimer.timeLeft <= 0) {
-      // If timer is up, base it on score
-      G.gameOverText = 'TIME UP';
+      } else if (G.gameTimer.timeLeft <= 0) {
+        // If timer is up, base it on score
+        G.gameOverText = 'TIME UP';
 
-      if (G.mode === '2P') {
         let winner = null;
         let score = 0;
         let pointsText = '';
@@ -309,6 +310,7 @@ G.instance = two.bind('update', frameCount => {
             winner = null;
           }
         });
+
         if (winner) {
           winner.roundWins += 1;
           subtext = `${winner.name} WINS <p>${
@@ -319,16 +321,16 @@ G.instance = two.bind('update', frameCount => {
         } else {
           subtext = `DRAW. <p>${subtext} </p>`;
         }
+      } else {
+        // If 1 player alive show his win
+        G.players.some(p => {
+          if (p.alive) {
+            G.gameOverText = `${p.name} WINS`;
+            p.roundWins += 1;
+            return true;
+          }
+        });
       }
-    } else {
-      // If 1 player alive show his win
-      G.players.some(p => {
-        if (p.alive) {
-          G.gameOverText = `${p.name} WINS`;
-          p.roundWins += 1;
-          return true;
-        }
-      });
     }
 
     document.getElementById('gameOverSubtext').innerHTML = subtext;
