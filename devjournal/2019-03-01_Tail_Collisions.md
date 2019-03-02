@@ -62,8 +62,8 @@ So I took a page from Tekken and other fighting games.
 In Tekken you can "buffer" or queue commands even when it looks like your character isn't accepting any inputs. I implemented an array for each player that would store up to 2 commands (overwriting the oldest one).
 
 ```js
-const d = player.directionBuffer; // Array
-if (d.length >= 2) {
+const d = player.directionBuffer;
+if (d.length === 2) {
   d.shift();
 }
 d.push(direction);

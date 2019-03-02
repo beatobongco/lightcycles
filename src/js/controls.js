@@ -14,12 +14,10 @@ const enemyKeyAcc = 'BracketRight';
 
 function playerMove(player, direction) {
   const d = player.directionBuffer;
-  if (d.length < 2) {
-    d.push(direction);
-  } else {
+  if (d.length === 2) {
     d.shift();
-    d.push(direction);
   }
+  d.push(direction);
 }
 
 function pAccelerate(player) {
