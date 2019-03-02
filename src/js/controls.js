@@ -37,6 +37,7 @@ function playerJoin() {
 }
 
 function startGame() {
+  document.getElementsByClassName('controls')[0].style.display = 'none';
   two.pause();
   if (G.players.length > 0) {
     G.players.forEach(p => {

@@ -271,6 +271,7 @@ G.instance = two.bind('update', frameCount => {
       }
     }
   } else {
+    document.getElementsByClassName('controls')[0].style.display = 'block';
     clearInterval(G.gameTimer.id);
 
     let subtext = 'Press `R` to play next round.';
