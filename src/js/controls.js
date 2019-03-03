@@ -11,6 +11,7 @@ import {
 
 const userKeyAcc = 'KeyT';
 const enemyKeyAcc = 'BracketRight';
+const altEnemyKeyAcc = 'Numpad1';
 
 function playerMove(player, direction) {
   const d = player.directionBuffer;
@@ -147,6 +148,7 @@ function initControls() {
             playerMove(G.enemy, 'right');
             break;
           case enemyKeyAcc:
+          case altEnemyKeyAcc:
             pAccelerate(G.enemy);
             break;
         }
@@ -162,6 +164,7 @@ function initControls() {
           }
           break;
         case enemyKeyAcc:
+        case altEnemyKeyAcc:
           if (G.enemy) {
             G.enemy.isAccelerating = false;
           }
