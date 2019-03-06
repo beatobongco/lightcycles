@@ -15,7 +15,11 @@ import {
   lightTrailWidth
 } from './constants';
 import initGrid from './grid';
-import { checkPlayerCollision, checkLightTrailCollision } from './collisions';
+import {
+  checkPlayerCollision,
+  checkLightTrailCollision,
+  checkCollision
+} from './collisions';
 import {
   playDerezzSound,
   playBikeSound,
@@ -262,12 +266,21 @@ G.instance = two.bind('update', frameCount => {
       generateMove(player, frameCount);
     }
     if (G.mode === '1P' && G.bit) {
-      const chance = getRandomInt(0, G.players[0].score / 2000);
+      const player = G.players[0];
+      const chance = getRandomInt(0, player.score / 2000);
 
       if (!G.bit.direction || chance === 0 || !checkBitMoveLegal()) {
         rollBitDirection();
       }
       G.bit.group.translation.addSelf(G.bit.direction);
+
+      if (
+        checkCollision(G.bit.group._collection[0].getBoundingClientRect())
+          .didCollide
+      ) {
+        player.score += 250;
+        generateBit();
+      }
     } else {
       // chance that powerup spawns
     }
