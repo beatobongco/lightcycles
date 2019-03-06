@@ -15,7 +15,7 @@ import {
   lightTrailWidth
 } from './constants';
 import initGrid from './grid';
-import { checkCollision } from './collisions';
+import { checkPlayerCollision, checkLightTrailCollision } from './collisions';
 import {
   playDerezzSound,
   playBikeSound,
@@ -47,7 +47,6 @@ function createLightTrail(player) {
   // TODO: find a way to fill in the line without causing crashes
   // due to excess hitbox
   // const { oppX, oppY } = getOppositeDirection(player.direction);
-  const fillWidth = lightTrailWidth / 2;
   const lightTrail = two.makeLine(
     player.currentOrigin.x, //+ oppX * fillWidth,
     player.currentOrigin.y, //+ oppY * fillWidth,
@@ -92,12 +91,8 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
-  const slipstream = checkCollision(
-    player.group._collection[0].getBoundingClientRect(),
-    player,
-    2,
-    true
-  );
+  const slipstream = checkLightTrailCollision(player, 2, true);
+
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
     if (
@@ -123,6 +118,9 @@ function generateMove(player, frameCount) {
   // If you draw hitbox of size 4 and lighttrail of width 6, it takes 4 units of distance
   // to visually clear the lighttrail's path if going for a U-turn
   const cooldown = playerSize / 2 + 1;
+
+  let usedShield = false;
+
   for (let i = 0; i < player.speed + bonus; i++) {
     // if (G.mode === '2P') {
     //   player.score += 1;
@@ -156,34 +154,47 @@ function generateMove(player, frameCount) {
         trn.addSelf(downVec);
         break;
     }
-    const collision = checkCollision(
-      player.group._collection[1].getBoundingClientRect(),
-      player,
-      hitboxSize / 2
-    );
+    const collision = checkPlayerCollision(player, hitboxSize / 2);
     if (collision.didCollide) {
       playDerezzSound();
       player.alive = false;
       two.remove(player.group);
       const { oppX, oppY } = getOppositeDirection(player.direction);
-      player.corpse = createShards(
-        player.group.translation,
-        player.fillColor,
-        oppX,
-        oppY,
-        getRandomInt(3, 3 * player.speed),
-        playerSize * player.speed * (player.speed / 2),
-        2,
-        3
+      player.corpses.push(
+        createShards(
+          player.group.translation,
+          player.fillColor,
+          oppX,
+          oppY,
+          getRandomInt(3, 3 * player.speed),
+          playerSize * player.speed * (player.speed / 2),
+          2,
+          3
+        )
       );
       return;
     } else if (collision.obtainedBit) {
-      player.score += 250;
       if (G.mode === '1P') {
+        player.score += 250;
         setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
+        generateBit();
+      } else {
+        console.log('got shield');
+        player.hasShield = true;
+        // TODO: make this a chance or remove it
+        generateBit();
       }
-      generateBit();
     }
+    if (collision.usedShield) {
+      console.log('used shield!!');
+      usedShield = true;
+      // TODO: create corpse in color of the usedShield variable
+    }
+  }
+
+  if (usedShield) {
+    console.log('used shield');
+    player.hasShield = false;
   }
   playBikeSound(player, bonus);
 
@@ -197,6 +208,7 @@ function generateMove(player, frameCount) {
 
   two.remove(player.sparks);
   if (slipstream.didCollide) {
+    // We create sparks here at the bottom because we need to know the current direction
     // https://codepen.io/anon/pen/wNRegz
     const base = 1 + player.speed;
     const { x, y } = slipstream.oppositeDir || { x: 0, y: 0 };
@@ -251,19 +263,15 @@ G.instance = two.bind('update', frameCount => {
       const player = G.players[i];
       generateMove(player, frameCount);
     }
-    if (G.bit) {
-      // TODO: make it dependent on scores in 1P mode
-      // was: player.score / 2000
-      const chance = getRandomInt(0, 1);
+    if (G.mode === '1P' && G.bit) {
+      const chance = getRandomInt(0, G.players[0].score / 2000);
 
-      if (!G.bit.direction || chance === 0) {
-        rollBitDirection();
-      }
-
-      while (!checkBitMoveLegal()) {
+      if (!G.bit.direction || chance === 0 || !checkBitMoveLegal()) {
         rollBitDirection();
       }
       G.bit.group.translation.addSelf(G.bit.direction);
+    } else {
+      // chance that powerup spawns
     }
     for (let i = 0; i < G.players.length; i++) {
       if (!G.players[i].alive) {
