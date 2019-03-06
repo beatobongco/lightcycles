@@ -212,11 +212,13 @@ function generateBit(type) {
   // Generates a little guy you can get for points
   if (G.bit) {
     two.remove(G.bit.group);
+    G.bit = null;
   }
   let outerFill = '#1abc9c';
   let innerFill = '#E6FFFF';
   if (type === 'shield') {
-    // TODO:
+    innerFill = '#1B1464';
+    outerFill = '#0652DD';
   }
   let group, inner, outer;
   outer = two.makeCircle(0, 0, 6);
@@ -232,11 +234,11 @@ function generateBit(type) {
     getRandomInt(0, stageWidth),
     getRandomInt(0, stageHeight)
   );
-  G.bit = { group: group, direction: null };
+  G.bit = { group: group, direction: null, spawnedAt: G.gameTimer.timeLeft };
 
   if (checkCollision(G.bit.group.getBoundingClientRect()).didCollide) {
     // Generate bit at random position until it doesn't collide with anything
-    generateBit();
+    generateBit(type);
   } else {
     playBitSpawnSound();
   }
