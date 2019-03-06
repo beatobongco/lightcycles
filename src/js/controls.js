@@ -86,14 +86,16 @@ function startGame() {
 
         if (timeLeft % 5 === 0 && !G.bit) {
           // every 5 seconds 25% chance to spawn shield bit
-          const chance = getRandomInt(0, 3);
-          if (chance === 0) {
-            generateBit('shield');
-          }
+          // const chance = getRandomInt(0, 3);
+          // if (chance === 0) {
+          generateBit('shield');
+          // }
         }
       });
       if (G.noPlayer) {
         generateBit();
+      } else {
+        generateBit('shield');
       }
       initPlayerSounds();
       G.instance.play();
