@@ -146,7 +146,6 @@ function checkPlayerCollision(player) {
     // It might trigger for the next pixel collision check which would
     // render the shield useless if the conditions are right
     if (player.hasShield) {
-      const { oppX, oppY } = getOppositeDirection(player.direction);
       player.corpses.push(
         createShards(
           player.group.translation,
