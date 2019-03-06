@@ -141,6 +141,7 @@ function initPlayer(
     fillColor: fillColor,
     strokeColor: strokeColor,
     originalStroke: strokeColor,
+    originalFill: fillColor,
     turboColor: turboColor,
     sparkColor: sparkColor,
     currentOrigin: new Two.Vector(x, y),
