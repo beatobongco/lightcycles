@@ -32,9 +32,7 @@ const createTimer = (time, callback) => {
     const timer = document.getElementById('timer');
     G.gameTimer.timeLeft = G.gameTimer.totalTime - Math.floor(delta / 1000);
     timer.innerText = G.gameTimer.timeLeft;
-    if (G.gameTimer.timeLeft <= 0 && callback) {
-      callback();
-    }
+    callback(G.gameTimer.timeLeft);
     setTimerColor();
   }, 1000);
 };
