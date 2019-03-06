@@ -127,9 +127,9 @@ function generateMove(player, frameCount) {
   let usedShield = false;
 
   for (let i = 0; i < player.speed + bonus; i++) {
-    if (G.mode === '2P') {
-      player.score += 1;
-    }
+    // if (G.mode === '2P') {
+    //   player.score += 1;
+    // }
     // If not on cooldown and move is legal, apply the buffer
     if (player.directionBuffer.length > 0 && player.lastMoveDist > cooldown) {
       const direction = player.directionBuffer.shift();
