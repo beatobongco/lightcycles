@@ -128,8 +128,8 @@ function checkPlayerCollision(player) {
   for (let i = 0; i < G.players.length; i++) {
     if (
       player.name !== G.players[i].name &&
-      _playerCollision(
-        player,
+      _regularCollision(
+        player.group._collection[1].getBoundingClientRect(),
         G.players[i].group._collection[1].getBoundingClientRect()
       )
     ) {
