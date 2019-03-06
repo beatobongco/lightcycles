@@ -207,18 +207,23 @@ function initPlayers(carryOverWins = false) {
   }
 }
 
-function generateBit() {
+function generateBit(type) {
   // Generates a little guy you can get for points
   if (G.bit) {
     two.remove(G.bit.group);
   }
+  let outerFill = '#1abc9c';
+  let innerFill = '#E6FFFF';
+  if (type === 'shield') {
+    // TODO:
+  }
   let group, inner, outer;
   outer = two.makeCircle(0, 0, 6);
-  outer.fill = '#1abc9c';
+  outer.fill = outerFill;
   outer.noStroke();
   outer.opacity = 0.9;
   inner = two.makeCircle(0, 0, 4);
-  inner.fill = '#E6FFFF';
+  inner.fill = innerFill;
   inner.noStroke();
   group = two.makeGroup(outer, inner);
   group.center();
