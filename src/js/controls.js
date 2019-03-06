@@ -43,7 +43,9 @@ function startGame() {
   if (G.players.length > 0) {
     G.players.forEach(p => {
       two.remove(p.group);
-      two.remove(p.corpse);
+      p.corpses.forEach(c => {
+        two.remove(c);
+      });
       two.remove(p.sparks);
       p.lightTrails.forEach(l => {
         two.remove(l);

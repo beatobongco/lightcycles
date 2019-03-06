@@ -131,6 +131,7 @@ function initPlayer(
       this._score = s;
       renderHUD(this);
     },
+    type: 'player',
     isAccelerating: false,
     lastDecelerateFrame: 0,
     lastAccelerateFrame: 0,
@@ -144,7 +145,7 @@ function initPlayer(
     sparkColor: sparkColor,
     currentOrigin: new Two.Vector(x, y),
     lightTrails: [],
-    corpse: null,
+    corpses: [],
     sparks: null,
     sound: new Audio(),
     soundPromise: null
