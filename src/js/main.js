@@ -8,7 +8,6 @@ import {
   decelerationTime,
   maxSpeed,
   playerSize,
-  hitboxSize,
   scoreKey,
   stageWidth,
   stageHeight,
@@ -95,6 +94,8 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
+  // Might be able to make deceleration more responsive by putting everything inside a while loop
+
   const slipstream = checkLightTrailCollision(player, true);
 
   if (slipstream.didCollide) {
@@ -126,9 +127,9 @@ function generateMove(player, frameCount) {
   let usedShield = false;
 
   for (let i = 0; i < player.speed + bonus; i++) {
-    // if (G.mode === '2P') {
-    //   player.score += 1;
-    // }
+    if (G.mode === '2P') {
+      player.score += 1;
+    }
     // If not on cooldown and move is legal, apply the buffer
     if (player.directionBuffer.length > 0 && player.lastMoveDist > cooldown) {
       const direction = player.directionBuffer.shift();
@@ -167,7 +168,7 @@ function generateMove(player, frameCount) {
       player.corpses.push(
         createShards(
           player.group.translation,
-          player.fillColor,
+          player.originalFill,
           oppX,
           oppY,
           getRandomInt(3, 3 * player.speed),
@@ -183,10 +184,11 @@ function generateMove(player, frameCount) {
         setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
         generateBit();
       } else {
+        player.score += 1000;
         player.hasShield = true;
         player.fillColor = '#0652DD';
-        // TODO: make this a chance or remove it
-        generateBit();
+        two.remove(G.bit.group);
+        G.bit = null;
       }
     }
     if (collision.usedShield) {
