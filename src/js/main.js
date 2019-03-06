@@ -124,9 +124,9 @@ function generateMove(player, frameCount) {
   // to visually clear the lighttrail's path if going for a U-turn
   const cooldown = playerSize / 2 + 1;
   for (let i = 0; i < player.speed + bonus; i++) {
-    if (G.mode === '2P') {
-      player.score += 1;
-    }
+    // if (G.mode === '2P') {
+    //   player.score += 1;
+    // }
     // If not on cooldown and move is legal, apply the buffer
     if (player.directionBuffer.length > 0 && player.lastMoveDist > cooldown) {
       const direction = player.directionBuffer.shift();
@@ -179,7 +179,9 @@ function generateMove(player, frameCount) {
       return;
     } else if (collision.obtainedBit) {
       player.score += 250;
-      setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
+      if (G.mode === '1P') {
+        setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
+      }
       generateBit();
     }
   }
@@ -248,22 +250,20 @@ G.instance = two.bind('update', frameCount => {
     for (let i = 0; i < G.players.length; i++) {
       const player = G.players[i];
       generateMove(player, frameCount);
-      if (G.mode === '1P' && G.bit) {
-        if (checkCollision(G.bit.group.getBoundingClientRect()).didCollide) {
-          player.score += 250;
-          setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
-          generateBit();
-        }
-        const chance = getRandomInt(0, player.score / 2000); //
+    }
+    if (G.bit) {
+      // TODO: make it dependent on scores in 1P mode
+      // was: player.score / 2000
+      const chance = getRandomInt(0, 1);
 
-        if (!G.bit.direction || chance === 0) {
-          rollBitDirection();
-        }
-        while (!checkBitMoveLegal()) {
-          rollBitDirection();
-        }
-        G.bit.group.translation.addSelf(G.bit.direction);
+      if (!G.bit.direction || chance === 0) {
+        rollBitDirection();
       }
+
+      while (!checkBitMoveLegal()) {
+        rollBitDirection();
+      }
+      G.bit.group.translation.addSelf(G.bit.direction);
     }
     for (let i = 0; i < G.players.length; i++) {
       if (!G.players[i].alive) {
@@ -311,17 +311,13 @@ G.instance = two.bind('update', frameCount => {
             winner = null;
           }
         });
-
         if (winner) {
           winner.roundWins += 1;
-          subtext = `${winner.name} WINS <p>${
-            winner.name
-          } has a longer jetwall. </p>
-          ${pointsText}
-          <p>${subtext}</p>`;
+          pointsText += `<p> ${winner.name} WINS </p>`;
         } else {
-          subtext = `DRAW. <p>${subtext} </p>`;
+          pointsText = `<p>DRAW.</p>`;
         }
+        subtext = `${pointsText} ${subtext}`;
       } else {
         // If 1 player alive show his win
         G.players.some(p => {

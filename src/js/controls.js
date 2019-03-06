@@ -72,9 +72,9 @@ function startGame() {
     createTimer(G.roundTime, () => {
       G.gameOver = true;
     });
-    if (G.noPlayer) {
-      generateBit();
-    }
+    // if (G.noPlayer) {
+    generateBit();
+    // }
     initPlayerSounds();
     G.instance.play();
   });

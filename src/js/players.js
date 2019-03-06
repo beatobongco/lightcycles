@@ -45,9 +45,10 @@ function renderHUD(player) {
             WINS: <span id="${name}-wins">${wins}</span>
           </small>`
         : n;
-  } else if (G.mode === '1P') {
-    scoreHTML = `<p><small>SCORE</small></p>
-    <p><small>${score}</small></p>`;
+  }
+  scoreHTML = `<p><small>SCORE</small></p>
+  <p><small>${score}</small></p>`;
+  if (G.mode === '1P') {
     const hiscore = localStorage.getItem(scoreKey);
     if (hiscore > 0) {
       scoreHTML += `<p><small>RECORD</small></p>
@@ -60,8 +61,8 @@ function renderHUD(player) {
       ${roundsHTML}
       <p><small>SPEED</small></p>
       <h3 id="${name}-speed">${speed}</h3>
-      ${winsHTML}
       ${scoreHTML}
+      ${winsHTML}
     </div>`;
 }
 
