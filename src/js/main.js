@@ -180,6 +180,7 @@ function generateMove(player, frameCount) {
         generateBit();
       } else {
         player.hasShield = true;
+        player.fillColor = '#0652DD';
         // TODO: make this a chance or remove it
         generateBit();
       }
@@ -191,6 +192,7 @@ function generateMove(player, frameCount) {
 
   if (usedShield) {
     player.hasShield = false;
+    player.fillColor = player.originalFill;
   }
   playBikeSound(player, bonus);
 
