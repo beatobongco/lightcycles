@@ -64,21 +64,19 @@ function _regularCollision(a, b, offset = 0) {
   }
 }
 
-function checkLightTrailCollision(
-  obj,
-  lightTrailOffset = 0,
-  slipstream = false
-) {
+function checkLightTrailCollision(obj, slipstream = false) {
   // TODO: can be optimized by using regions
   let hitbox = obj;
   let player = null;
   let collisionFunc = _regularCollision;
+  let lightTrailOffset = hitboxSize / 2;
   if (obj.type && obj.type === 'player') {
     player = obj;
     hitbox = player.group._collection[1].getBoundingClientRect();
     // use the big circle for slipstreams
     if (slipstream) {
       hitbox = player.group._collection[0].getBoundingClientRect();
+      lightTrailOffset = -4;
     }
     collisionFunc = _playerCollision;
   }
@@ -113,7 +111,7 @@ function checkLightTrailCollision(
   return result;
 }
 
-function checkPlayerCollision(player, lightTrailOffset = hitboxSize / 2) {
+function checkPlayerCollision(player) {
   const result = { didCollide: false };
   const hitbox = player.group._collection[1].getBoundingClientRect();
   // WALLS
@@ -140,10 +138,7 @@ function checkPlayerCollision(player, lightTrailOffset = hitboxSize / 2) {
     }
   }
   // LIGHTTRAILS
-  const lightTrailCollision = checkLightTrailCollision(
-    player,
-    lightTrailOffset
-  );
+  const lightTrailCollision = checkLightTrailCollision(player, false);
   if (lightTrailCollision.didCollide) {
     // We check for shield collision here but we dont deactivate it just yet
     // because we want it to last a whole turn / update call
@@ -156,12 +151,13 @@ function checkPlayerCollision(player, lightTrailOffset = hitboxSize / 2) {
         createShards(
           player.group.translation,
           lightTrailCollision.color,
-          oppX,
-          oppY,
+          0,
+          0,
           getRandomInt(3, 3 * player.speed),
           playerSize * player.speed,
           2,
-          3
+          3,
+          playerSize * 2
         )
       );
       result.didCollide = false;
@@ -178,7 +174,7 @@ function checkPlayerCollision(player, lightTrailOffset = hitboxSize / 2) {
   return result;
 }
 
-function checkCollision(hitbox, lightTrailOffset = 0) {
+function checkCollision(hitbox) {
   // Determines if an objects hitbox collided with or is near collidable objects (so far just light trails and walls)
   // mostly used for non-player objects like bit or powerups
   // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
@@ -194,7 +190,7 @@ function checkCollision(hitbox, lightTrailOffset = 0) {
     return result;
   }
   // LIGHTTRAILS
-  return checkLightTrailCollision(hitbox, lightTrailOffset);
+  return checkLightTrailCollision(hitbox);
 }
 
 export { checkCollision, checkLightTrailCollision, checkPlayerCollision };

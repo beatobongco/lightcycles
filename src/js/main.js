@@ -91,7 +91,7 @@ function generateMove(player, frameCount) {
     player.lastDecelerateFrame = frameCount;
   }
 
-  const slipstream = checkLightTrailCollision(player, 2, true);
+  const slipstream = checkLightTrailCollision(player, true);
 
   if (slipstream.didCollide) {
     bonus = Math.ceil(player.speed * 0.5);
@@ -154,7 +154,7 @@ function generateMove(player, frameCount) {
         trn.addSelf(downVec);
         break;
     }
-    const collision = checkPlayerCollision(player, hitboxSize / 2);
+    const collision = checkPlayerCollision(player);
     if (collision.didCollide) {
       playDerezzSound();
       player.alive = false;
@@ -179,21 +179,17 @@ function generateMove(player, frameCount) {
         setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
         generateBit();
       } else {
-        console.log('got shield');
         player.hasShield = true;
         // TODO: make this a chance or remove it
         generateBit();
       }
     }
     if (collision.usedShield) {
-      console.log('used shield!!');
       usedShield = true;
-      // TODO: create corpse in color of the usedShield variable
     }
   }
 
   if (usedShield) {
-    console.log('used shield');
     player.hasShield = false;
   }
   playBikeSound(player, bonus);
