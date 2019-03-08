@@ -289,17 +289,18 @@ G.instance = two.bind('update', frameCount => {
 
       // If bit collides with anything, make it respawn
       // so players have to explicitly get it
-      if (
-        checkCollision(G.bit.group._collection[0].getBoundingClientRect())
-          .didCollide
-      ) {
-        // player.score += 250;
-        // setTime(10);
-        // generateBit(true);
-        rollBitDirection();
+      for (let i = 0; i < 4; i++) {
+        if (
+          checkCollision(G.bit.group._collection[0].getBoundingClientRect())
+            .didCollide
+        ) {
+          // player.score += 250;
+          // setTime(10);
+          // generateBit(true);
+          rollBitDirection();
+          break;
+        }
       }
-    } else {
-      // chance that powerup spawns
     }
     for (let i = 0; i < G.players.length; i++) {
       if (!G.players[i].alive) {
