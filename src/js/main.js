@@ -129,9 +129,9 @@ function generateMove(player, frameCount) {
   let usedShield = false;
 
   for (let i = 0; i < player.speed + bonus; i++) {
-    // if (G.mode === '2P') {
-    //   player.score += 1;
-    // }
+    if (G.mode === '2P') {
+      player.score += 1;
+    }
     // If not on cooldown and move is legal, apply the buffer
     if (player.directionBuffer.length > 0 && player.lastMoveDist > cooldown) {
       const direction = player.directionBuffer.shift();
@@ -190,7 +190,7 @@ function generateMove(player, frameCount) {
         player.hasShield = true;
         player.fillColor = '#0652DD';
       }
-      player.score += 250;
+      player.score += 1000;
       two.remove(G.bit.group);
       G.bit = null;
       if (G.mode === '1P') {
