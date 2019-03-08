@@ -23,7 +23,9 @@ import {
   playDerezzSound,
   playBikeSound,
   stopPlayerSounds,
-  loadSounds
+  loadSounds,
+  playBitSpawnSound,
+  playShieldPickupSound
 } from './sound';
 import { getOppositeDirection, createShards, getRandomInt } from './util';
 import initControls from './controls';
@@ -179,16 +181,21 @@ function generateMove(player, frameCount) {
       );
       return;
     } else if (collision.obtainedBit) {
-      if (G.mode === '1P') {
-        player.score += 250;
-        setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
-        generateBit();
+      if (G.bit.type === 'shield') {
+        playShieldPickupSound();
       } else {
-        player.score += 1000;
+        playBitSpawnSound();
+      }
+      if (G.bit.type === 'shield') {
         player.hasShield = true;
         player.fillColor = '#0652DD';
-        two.remove(G.bit.group);
-        G.bit = null;
+      }
+      player.score += 250;
+      two.remove(G.bit.group);
+      G.bit = null;
+      if (G.mode === '1P') {
+        setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
+        generateBit();
       }
     }
     if (collision.usedShield) {
@@ -267,21 +274,24 @@ G.instance = two.bind('update', frameCount => {
       const player = G.players[i];
       generateMove(player, frameCount);
     }
-    if (G.mode === '1P' && G.bit) {
-      const player = G.players[0];
-      const chance = getRandomInt(0, player.score / 2000);
+    if (G.bit) {
+      // const player = G.players[0];
+      // player.score / 2000
+      const chance = getRandomInt(0, 1);
 
       if (!G.bit.direction || chance === 0 || !checkBitMoveLegal()) {
         rollBitDirection();
       }
       G.bit.group.translation.addSelf(G.bit.direction);
 
+      // If bit collides with anything, make it respawn
+      // so players have to explicitly get it
       if (
         checkCollision(G.bit.group._collection[0].getBoundingClientRect())
           .didCollide
       ) {
-        player.score += 250;
-        generateBit();
+        // player.score += 250;
+        generateBit(true);
       }
     } else {
       // chance that powerup spawns
