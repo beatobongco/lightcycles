@@ -12,6 +12,7 @@ const sounds = {
   'sound/derezz.mp3': false,
   'sound/timertick.ogg': false,
   'sound/shield.ogg': false,
+  'sound/shield_spawn.ogg': false,
   'sound/shield_pickup.ogg': false
 };
 
@@ -103,6 +104,11 @@ function playShieldSound() {
   sound.play();
 }
 
+function playShieldSpawnSound() {
+  let sound = new Audio('sound/shield_spawn.ogg');
+  sound.play();
+}
+
 function playShieldPickupSound() {
   let sound = new Audio('sound/shield_pickup.ogg');
   sound.play();
@@ -120,5 +126,6 @@ export {
   playBitSpawnSound,
   playRezzinSound,
   playShieldSound,
+  playShieldSpawnSound,
   playShieldPickupSound
 };

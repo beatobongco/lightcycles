@@ -9,7 +9,7 @@ import {
 } from './constants';
 import { getRandomInt } from './util';
 import { checkCollision } from './collisions';
-import { playBitSpawnSound, playShieldPickupSound } from './sound';
+import { playBitSpawnSound, playShieldSpawnSound } from './sound';
 
 function renderJoinUI(el, playerName, control) {
   document.getElementById(el).innerHTML = `
@@ -253,7 +253,7 @@ function generateBit(sameAsLast) {
     // Generate bit at random position until it doesn't collide with anything
     generateBit();
   } else if (type === 'shield') {
-    playShieldPickupSound();
+    playShieldSpawnSound();
   } else {
     playBitSpawnSound();
   }
