@@ -194,7 +194,9 @@ function generateMove(player, frameCount) {
       two.remove(G.bit.group);
       G.bit = null;
       if (G.mode === '1P') {
-        setTime(Math.max(10 - Math.floor(player.score / 2000), 5));
+        // was Math.max(10 - Math.floor(player.score / 2000), 5)
+        player.score += G.gameTimer.timeLeft * 25;
+        setTime(10);
         generateBit();
       }
     }
@@ -291,6 +293,7 @@ G.instance = two.bind('update', frameCount => {
           .didCollide
       ) {
         // player.score += 250;
+        setTime(10);
         generateBit(true);
       }
     } else {
