@@ -3,7 +3,8 @@ const stageWidth = 36 * gridSize; // x limit
 const stageHeight = 36 * gridSize; // y limit
 const maxSpeed = 6;
 const decelerationTime = 3;
-const accelerationTime = [3, 4, 6, 14, 16];
+// was 14, 16
+const accelerationTime = [3, 4, 6, 9, 13];
 const playerSize = 6;
 const hitboxSize = 4;
 const speedPerTick = 1;
