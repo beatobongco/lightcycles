@@ -8,7 +8,6 @@ import {
   playJoinSound,
   playRezzinSound
 } from './sound';
-import { getRandomInt } from './util';
 
 const userKeyAcc = 'KeyT';
 const enemyKeyAcc = 'BracketRight';
@@ -85,18 +84,10 @@ function startGame() {
         }
 
         if (timeLeft % 5 === 0 && !G.bit) {
-          // every 5 seconds 25% chance to spawn shield bit
-          // const chance = getRandomInt(0, 3);
-          // if (chance === 0) {
-          generateBit('shield');
-          // }
+          generateBit();
         }
       });
-      if (G.noPlayer) {
-        generateBit();
-      } else {
-        generateBit('shield');
-      }
+      generateBit();
       initPlayerSounds();
       G.instance.play();
     }
