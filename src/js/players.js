@@ -9,7 +9,7 @@ import {
 } from './constants';
 import { getRandomInt } from './util';
 import { checkCollision } from './collisions';
-import { playBitSpawnSound } from './sound';
+import { playBitSpawnSound, playShieldPickupSound } from './sound';
 
 function renderJoinUI(el, playerName, control) {
   document.getElementById(el).innerHTML = `
@@ -208,8 +208,16 @@ function initPlayers(carryOverWins = false) {
   }
 }
 
-function generateBit(type) {
+function generateBit(sameAsLast) {
   // Generates a little guy you can get for points
+  // every 5 seconds 20% chance to spawn shield bit
+  let type = 'normal';
+  if (sameAsLast) {
+    type = G.bit.type;
+  } else if (getRandomInt(0, 4) === 0) {
+    type = 'shield';
+  }
+
   if (G.bit) {
     two.remove(G.bit.group);
     G.bit = null;
@@ -221,11 +229,11 @@ function generateBit(type) {
     outerFill = '#0652DD';
   }
   let group, inner, outer;
-  outer = two.makeCircle(0, 0, 6);
+  outer = two.makeCircle(0, 0, 7);
   outer.fill = outerFill;
   outer.noStroke();
   outer.opacity = 0.9;
-  inner = two.makeCircle(0, 0, 4);
+  inner = two.makeCircle(0, 0, 5);
   inner.fill = innerFill;
   inner.noStroke();
   group = two.makeGroup(outer, inner);
@@ -234,11 +242,18 @@ function generateBit(type) {
     getRandomInt(0, stageWidth),
     getRandomInt(0, stageHeight)
   );
-  G.bit = { group: group, direction: null, spawnedAt: G.gameTimer.timeLeft };
+  G.bit = {
+    group: group,
+    direction: null,
+    spawnedAt: G.gameTimer.timeLeft,
+    type: type
+  };
 
   if (checkCollision(G.bit.group.getBoundingClientRect()).didCollide) {
     // Generate bit at random position until it doesn't collide with anything
-    generateBit(type);
+    generateBit();
+  } else if (type === 'shield') {
+    playShieldPickupSound();
   } else {
     playBitSpawnSound();
   }
