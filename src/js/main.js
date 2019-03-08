@@ -128,10 +128,11 @@ function generateMove(player, frameCount) {
 
   let usedShield = false;
 
+  if (G.mode === '2P') {
+    player.score += Math.ceil((player.speed + bonus) / 2);
+  }
+
   for (let i = 0; i < player.speed + bonus; i++) {
-    if (G.mode === '2P') {
-      player.score += 1;
-    }
     // If not on cooldown and move is legal, apply the buffer
     if (player.directionBuffer.length > 0 && player.lastMoveDist > cooldown) {
       const direction = player.directionBuffer.shift();
@@ -293,8 +294,9 @@ G.instance = two.bind('update', frameCount => {
           .didCollide
       ) {
         // player.score += 250;
-        setTime(10);
-        generateBit(true);
+        // setTime(10);
+        // generateBit(true);
+        rollBitDirection();
       }
     } else {
       // chance that powerup spawns
