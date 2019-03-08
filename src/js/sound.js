@@ -10,7 +10,9 @@ const sounds = {
   'sound/bit_spawn.ogg': false,
   'sound/playerjoin.ogg': false,
   'sound/derezz.mp3': false,
-  'sound/timertick.ogg': false
+  'sound/timertick.ogg': false,
+  'sound/shield.ogg': false,
+  'sound/shield_pickup.ogg': false
 };
 
 function loadSounds() {
@@ -96,6 +98,16 @@ function playRezzinSound() {
   sound.play();
 }
 
+function playShieldSound() {
+  let sound = new Audio('sound/shield.ogg');
+  sound.play();
+}
+
+function playShieldPickupSound() {
+  let sound = new Audio('sound/shield_pickup.ogg');
+  sound.play();
+}
+
 export {
   playBikeSound,
   playDerezzSound,
@@ -106,5 +118,7 @@ export {
   playAccelerateSound,
   playJoinSound,
   playBitSpawnSound,
-  playRezzinSound
+  playRezzinSound,
+  playShieldSound,
+  playShieldPickupSound
 };

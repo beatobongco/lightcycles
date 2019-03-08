@@ -8,7 +8,8 @@ import {
   playerSize,
   hitboxSize
 } from './constants';
-import { createShards, getOppositeDirection, getRandomInt } from './util';
+import { createShards, getRandomInt } from './util';
+import { playShieldSound } from './sound';
 
 // A NOTE ON PLAYER COLLECTIONS
 // 0: big player circle
@@ -85,6 +86,10 @@ function checkLightTrailCollision(obj, slipstream = false) {
 
   for (let i = 0; i < G.players.length; i++) {
     for (let j = 0; j < G.players[i].lightTrails.length; j++) {
+      //Immune to own lighttrails for slipstream
+      if (slipstream && player.name === G.players[i].name) {
+        continue;
+      }
       let trail = G.players[i].lightTrails[j];
 
       // Immune to the last trail if player hasn't yet detached from it
@@ -146,6 +151,7 @@ function checkPlayerCollision(player) {
     // It might trigger for the next pixel collision check which would
     // render the shield useless if the conditions are right
     if (player.hasShield) {
+      playShieldSound();
       player.corpses.push(
         createShards(
           player.group.translation,
