@@ -54,8 +54,7 @@ function startGame() {
     stopPlayerSounds();
   }
   if (G.bit) {
-    two.remove(G.bit.group);
-    G.bit = null;
+    G.bit.remove();
   }
   G.gameOverText = null;
   G.gameOver = false;
@@ -73,12 +72,15 @@ function startGame() {
   createTimer(3, timeLeft => {
     if (timeLeft <= 0) {
       createTimer(G.roundTime, timeLeft => {
+        // show smaller timer near bit
+        G.bit.timeLeft -= 1;
+        G.bit.updateText();
+
         if (timeLeft <= 0) {
           G.gameOver = true;
-        }
-        if (timeLeft % 5 === 0 && !G.bit) {
+        } else if (timeLeft % 5 === 0 && !G.bit) {
           generateBit();
-        } else if (G.bit && G.bit.spawnedAt - timeLeft >= 10) {
+        } else if (G.bit && G.bit.timeLeft <= 0) {
           // after 10 seconds bit will try to spawn elsewhere
           generateBit(true);
         }
