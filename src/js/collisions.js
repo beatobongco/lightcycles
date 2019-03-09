@@ -197,6 +197,16 @@ function checkCollision(hitbox) {
     hitbox.top <= 0
   ) {
     result.didCollide = true;
+    // TODO: this could be buggy, race conditions
+    if (hitbox.right >= stageWidth) {
+      result.oppositeDir = leftVec;
+    } else if (hitbox.left <= 0) {
+      result.oppositeDir = rightVec;
+    } else if (hitbox.bottom >= stageHeight) {
+      result.oppositeDir = upVec;
+    } else if (hitbox.top <= 0) {
+      result.oppositeDir = downVec;
+    }
     return result;
   }
   // LIGHTTRAILS
