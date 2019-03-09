@@ -71,7 +71,7 @@ function checkLightTrailCollision(obj, slipstream = false) {
   let player = null;
   let collisionFunc = _regularCollision;
   // was: hitboxSize / 2 to allow players to really stick to lighttrails
-  // it was reduced to 0 to prevent bugs where you would collid with enemy while
+  // it was reduced to 0 to prevent bugs where you would collide with enemy while
   // slipstreaming
   let lightTrailOffset = 0;
   if (obj.type && obj.type === 'player') {
