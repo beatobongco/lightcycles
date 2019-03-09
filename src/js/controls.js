@@ -76,15 +76,11 @@ function startGame() {
         if (timeLeft <= 0) {
           G.gameOver = true;
         }
-
-        // after 10 seconds bit will try to spawn elsewhere
-        if (G.bit && G.bit.spawnedAt - timeLeft >= 10) {
-          two.remove(G.bit.group);
-          G.bit = null;
-        }
-
         if (timeLeft % 5 === 0 && !G.bit) {
           generateBit();
+        } else if (G.bit && G.bit.spawnedAt - timeLeft >= 10) {
+          // after 10 seconds bit will try to spawn elsewhere
+          generateBit(true);
         }
       });
       generateBit();
