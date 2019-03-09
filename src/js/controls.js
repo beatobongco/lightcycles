@@ -73,8 +73,10 @@ function startGame() {
     if (timeLeft <= 0) {
       createTimer(G.roundTime, timeLeft => {
         // show smaller timer near bit
-        G.bit.timeLeft -= 1;
-        G.bit.updateText();
+        if (G.bit) {
+          G.bit.timeLeft -= 1;
+          G.bit.updateText();
+        }
 
         if (timeLeft <= 0) {
           G.gameOver = true;
@@ -111,7 +113,7 @@ function initControls() {
       if (G.gameOver) {
         startGame();
       }
-    } else if (k.code === 'Pause' && G.pauseEnabled) {
+    } else if ((k.code === 'Pause' || k.code === 'KeyP') && G.pauseEnabled) {
       if (G.instance.playing) {
         G.instance.pause();
       } else {
