@@ -11,7 +11,8 @@ import {
   scoreKey,
   stageWidth,
   stageHeight,
-  lightTrailWidth
+  lightTrailWidth,
+  hitboxSize
 } from './constants';
 import initGrid from './grid';
 import {
@@ -122,9 +123,10 @@ function generateMove(player, frameCount) {
 
   const trn = player.group.translation;
   // EXPLANATION FOR COOLDOWN:
-  // If you draw hitbox of size 4 and lighttrail of width 6, it takes 4 units of distance
+  // If you draw hitbox of size 4 and lighttrail of width 6, it takes 5 units of distance
   // to visually clear the lighttrail's path if going for a U-turn
-  const cooldown = playerSize / 2 + 1;
+  // note this does not include offsets
+  const cooldown = hitboxSize / 2 + lightTrailWidth / 2;
 
   let usedShield = false;
 
