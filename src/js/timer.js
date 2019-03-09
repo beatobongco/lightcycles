@@ -40,8 +40,16 @@ const createTimer = (time, callback) => {
 function setTime(s) {
   G.gameTimer.start = Date.now();
   G.gameTimer.totalTime = s;
+  G.gameTimer.timeLeft = s;
   document.getElementById('timer').innerText = s;
   setTimerColor();
 }
 
-export { createTimer, setTime };
+function addTime(s) {
+  G.gameTimer.totalTime += s;
+  G.gameTimer.timeLeft += s;
+  // document.getElementById('timer').innerText = s;
+  // setTimerColor();
+}
+
+export { createTimer, setTime, addTime };

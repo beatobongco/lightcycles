@@ -30,7 +30,7 @@ import {
 import { getOppositeDirection, createShards, getRandomInt } from './util';
 import initControls from './controls';
 import { createPlayerCircle, generateBit } from './players';
-import { setTime } from './timer';
+import { addTime } from './timer';
 
 loadSounds();
 initGrid();
@@ -128,9 +128,7 @@ function generateMove(player, frameCount) {
 
   let usedShield = false;
 
-  if (G.mode === '2P') {
-    player.score += Math.ceil((player.speed + bonus) / 2);
-  }
+  player.score += Math.ceil((player.speed + bonus) / 2);
 
   for (let i = 0; i < player.speed + bonus; i++) {
     // If not on cooldown and move is legal, apply the buffer
@@ -195,9 +193,7 @@ function generateMove(player, frameCount) {
       two.remove(G.bit.group);
       G.bit = null;
       if (G.mode === '1P') {
-        // was Math.max(10 - Math.floor(player.score / 2000), 5)
-        player.score += G.gameTimer.timeLeft * 25;
-        setTime(10);
+        addTime(5);
         generateBit();
       }
     }
@@ -285,22 +281,19 @@ G.instance = two.bind('update', frameCount => {
       if (!G.bit.direction || chance === 0 || !checkBitMoveLegal()) {
         rollBitDirection();
       }
-      G.bit.group.translation.addSelf(G.bit.direction);
 
-      // If bit collides with anything, make it respawn
-      // so players have to explicitly get it
+      // Try dislodging bit up to 4 times (a while loop would make game hang in certain cases)
       for (let i = 0; i < 4; i++) {
         if (
           checkCollision(G.bit.group._collection[0].getBoundingClientRect())
             .didCollide
         ) {
-          // player.score += 250;
-          // setTime(10);
-          // generateBit(true);
           rollBitDirection();
+        } else {
           break;
         }
       }
+      G.bit.group.translation.addSelf(G.bit.direction);
     }
     for (let i = 0; i < G.players.length; i++) {
       if (!G.players[i].alive) {
