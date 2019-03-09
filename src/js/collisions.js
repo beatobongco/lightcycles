@@ -102,7 +102,7 @@ function checkLightTrailCollision(obj, slipstream = false) {
       let trailHitbox = trail.getBoundingClientRect();
       if (collisionFunc(obj, trailHitbox, lightTrailOffset)) {
         result.didCollide = true;
-        result.color = G.players[i].sparkColor;
+        result.color = G.players[i].turboColor;
         if (hitbox.right > trailHitbox.right) {
           result.oppositeDir = rightVec;
         } else if (hitbox.left < trailHitbox.left) {
