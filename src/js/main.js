@@ -12,7 +12,7 @@ import {
   lightTrailWidth,
   hitboxSize
 } from './constants';
-import initGrid from './grid';
+import { initGrid } from './grid';
 import { checkPlayerCollision, checkLightTrailCollision } from './collisions';
 import {
   playDerezzSound,
@@ -58,6 +58,7 @@ function createLightTrail(player) {
   lightTrail.linewidth = lightTrailWidth;
   lightTrail.opacity = 0.9;
   lightTrail.origin = player.currentOrigin;
+  lightTrail.owner = player;
 
   // If lines have same origin, remove them from the list
   if (player.lightTrails.length > 0) {

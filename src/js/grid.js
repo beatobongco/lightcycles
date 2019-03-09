@@ -1,6 +1,10 @@
 import { stageWidth, stageHeight, gridSize } from './constants';
 import { two } from './constants';
 
+const numRegions = 3; // per dimension, so that would be num x num
+const xBreakPoint = Math.floor(stageWidth / numRegions);
+const yBreakPoint = Math.floor(stageHeight / numRegions);
+const regions = [];
 function initGrid() {
   const stage = two.makeRectangle(
     stageWidth / 2,
@@ -12,7 +16,7 @@ function initGrid() {
   stage.stroke = '#ecf0f1';
   stage.linewidth = 3;
 
-  // create grid
+  // create grid and regions
   for (let x = 0; x <= stageWidth; x += gridSize) {
     two.makeLine(x, 0, x, stageHeight).stroke = '#fff';
   }
@@ -21,6 +25,38 @@ function initGrid() {
   }
 
   two.update();
+
+  // create regions
+  let maxY = null;
+  let minY = 0;
+  for (let y = 0; y <= stageHeight; y++) {
+    if (y !== 0 && y % yBreakPoint === 0) {
+      maxY = y;
+      let maxX = null;
+      let minX = 0;
+      for (let x = 0; x <= stageWidth; x++) {
+        if (x !== 0 && x % xBreakPoint === 0) {
+          maxX = x;
+          regions.push({
+            minX,
+            maxX,
+            minY,
+            maxY
+          });
+          const lastRegion = regions.length > 0 && regions[regions.length - 1];
+          if (lastRegion) {
+            minX = lastRegion.maxX + 1;
+          }
+        }
+      }
+      const lastRegion = regions.length > 0 && regions[regions.length - 1];
+      if (lastRegion) {
+        minY = lastRegion.maxY + 1;
+      }
+    }
+  }
+  // for debugging, can remove later on
+  G.regions = regions;
 }
 
-export default initGrid;
+export { initGrid, regions };
