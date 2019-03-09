@@ -190,8 +190,7 @@ function generateMove(player, frameCount) {
         player.fillColor = '#0652DD';
       }
       player.score += 1000;
-      two.remove(G.bit.group);
-      G.bit = null;
+      G.bit.remove();
       if (G.mode === '1P') {
         addTime(5);
         generateBit();
@@ -248,6 +247,7 @@ function generateMove(player, frameCount) {
 function rollBitDirection() {
   const direction = [upVec, downVec, leftVec, rightVec][getRandomInt(0, 3)];
   G.bit.direction = direction;
+  G.bit.group.translation.addSelf(direction);
 }
 
 function checkBitMoveLegal() {
@@ -278,7 +278,7 @@ G.instance = two.bind('update', frameCount => {
       // player.score / 2000
       const chance = getRandomInt(0, 1);
 
-      if (!G.bit.direction || chance === 0 || !checkBitMoveLegal()) {
+      if (!G.bit.direction || chance === 0) {
         rollBitDirection();
       }
 
@@ -286,14 +286,16 @@ G.instance = two.bind('update', frameCount => {
       for (let i = 0; i < 4; i++) {
         if (
           checkCollision(G.bit.group._collection[0].getBoundingClientRect())
-            .didCollide
+            .didCollide ||
+          !checkBitMoveLegal()
         ) {
           rollBitDirection();
         } else {
           break;
         }
       }
-      G.bit.group.translation.addSelf(G.bit.direction);
+
+      G.bit.updateText();
     }
     for (let i = 0; i < G.players.length; i++) {
       if (!G.players[i].alive) {
@@ -379,3 +381,5 @@ G.instance = two.bind('update', frameCount => {
   }
   stats.end();
 });
+
+G.two = two;
