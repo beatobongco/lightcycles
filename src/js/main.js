@@ -9,17 +9,11 @@ import {
   maxSpeed,
   playerSize,
   scoreKey,
-  stageWidth,
-  stageHeight,
   lightTrailWidth,
   hitboxSize
 } from './constants';
 import initGrid from './grid';
-import {
-  checkPlayerCollision,
-  checkLightTrailCollision,
-  checkCollision
-} from './collisions';
+import { checkPlayerCollision, checkLightTrailCollision } from './collisions';
 import {
   playDerezzSound,
   playBikeSound,
@@ -30,8 +24,9 @@ import {
 } from './sound';
 import { getOppositeDirection, createShards, getRandomInt } from './util';
 import initControls from './controls';
-import { createPlayerCircle, generateBit } from './players';
+import { createPlayerCircle } from './players';
 import { addTime } from './timer';
+import { generateBit } from './bit';
 
 loadSounds();
 initGrid();
@@ -243,28 +238,6 @@ function generateMove(player, frameCount) {
   );
 }
 
-function rollBitDirection() {
-  const direction = [upVec, downVec, leftVec, rightVec][getRandomInt(0, 3)];
-  G.bit.direction = direction;
-  G.bit.group.translation.addSelf(direction);
-}
-
-function checkBitMoveLegal() {
-  const newVec = G.bit.group.translation.clone();
-  newVec.addSelf(G.bit.direction);
-  // TODO: removed padding for now since it causes hangs
-  // Add back when bit spawning has padding too
-  if (
-    newVec.x > stageWidth - 0 ||
-    newVec.x < 0 ||
-    newVec.y > stageHeight - 0 ||
-    newVec.y < 0
-  ) {
-    return false;
-  }
-  return true;
-}
-
 G.instance = two.bind('update', frameCount => {
   stats.begin();
   if (!G.gameOver) {
@@ -273,28 +246,7 @@ G.instance = two.bind('update', frameCount => {
       generateMove(player, frameCount);
     }
     if (G.bit) {
-      // const player = G.players[0];
-      // player.score / 2000
-      const chance = getRandomInt(0, 1);
-
-      if (!G.bit.direction || chance === 0) {
-        rollBitDirection();
-      }
-
-      // Try dislodging bit up to 4 times (a while loop would make game hang in certain cases)
-      for (let i = 0; i < 4; i++) {
-        if (
-          checkCollision(G.bit.group._collection[0].getBoundingClientRect())
-            .didCollide ||
-          !checkBitMoveLegal()
-        ) {
-          rollBitDirection();
-        } else {
-          break;
-        }
-      }
-
-      G.bit.updateText();
+      G.bit.move();
     }
     for (let i = 0; i < G.players.length; i++) {
       if (!G.players[i].alive) {

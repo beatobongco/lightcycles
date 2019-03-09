@@ -1,5 +1,6 @@
 import { createTimer } from './timer';
-import { initPlayers, generateBit } from './players';
+import { initPlayers } from './players';
+import { generateBit } from './bit';
 import { two } from './constants';
 import {
   initPlayerSounds,
