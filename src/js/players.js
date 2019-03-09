@@ -149,7 +149,9 @@ function initPlayer(
     corpses: [],
     sparks: null,
     sound: new Audio(),
-    soundPromise: null
+    soundPromise: null,
+    hasShield: false,
+    shieldDist: 0 // distance travelled while shield procs
   };
   renderHUD(p);
 

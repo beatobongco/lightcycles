@@ -128,8 +128,6 @@ function generateMove(player, frameCount) {
   // note this does not include offsets
   const cooldown = hitboxSize / 2 + lightTrailWidth / 2;
 
-  let usedShield = false;
-
   player.score += Math.ceil((player.speed + bonus) / 2);
 
   for (let i = 0; i < player.speed + bonus; i++) {
@@ -198,15 +196,14 @@ function generateMove(player, frameCount) {
         generateBit();
       }
     }
-    if (collision.usedShield) {
-      usedShield = true;
+    // We allow shield exactly for one lighttrail
+    if (player.shieldDist >= lightTrailWidth - 1) {
+      player.hasShield = false;
+      player.shieldDist = 0;
+      player.fillColor = player.originalFill;
     }
   }
 
-  if (usedShield) {
-    player.hasShield = false;
-    player.fillColor = player.originalFill;
-  }
   playBikeSound(player, bonus);
 
   if (!G.toggleTrails) {

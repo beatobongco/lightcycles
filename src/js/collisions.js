@@ -5,8 +5,7 @@ import {
   downVec,
   leftVec,
   rightVec,
-  playerSize,
-  hitboxSize
+  playerSize
 } from './constants';
 import { createShards, getRandomInt } from './util';
 import { playShieldSound } from './sound';
@@ -154,22 +153,25 @@ function checkPlayerCollision(player) {
     // It might trigger for the next pixel collision check which would
     // render the shield useless if the conditions are right
     if (player.hasShield) {
-      playShieldSound();
-      player.corpses.push(
-        createShards(
-          player.group.translation,
-          lightTrailCollision.color,
-          0,
-          0,
-          getRandomInt(3, 3 * player.speed),
-          playerSize * player.speed,
-          2,
-          3,
-          playerSize * 2
-        )
-      );
+      // dont trigger collision if player has shield, and only show shatters once
       result.didCollide = false;
-      result.usedShield = true;
+      if (player.shieldDist === 0) {
+        playShieldSound();
+        player.corpses.push(
+          createShards(
+            player.group.translation,
+            lightTrailCollision.color,
+            0,
+            0,
+            getRandomInt(3, 3 * player.speed),
+            playerSize * player.speed,
+            2,
+            3,
+            playerSize * 2
+          )
+        );
+      }
+      player.shieldDist += 1;
     } else {
       return lightTrailCollision;
     }
