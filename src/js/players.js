@@ -219,8 +219,7 @@ function generateBit(sameAsLast) {
   }
 
   if (G.bit) {
-    two.remove(G.bit.group);
-    G.bit = null;
+    G.bit.remove();
   }
   let outerFill = '#1abc9c';
   let innerFill = '#E6FFFF';
@@ -245,9 +244,27 @@ function generateBit(sameAsLast) {
   G.bit = {
     group: group,
     direction: null,
-    spawnedAt: G.gameTimer.timeLeft,
-    type: type
+    type: type,
+    timeLeft: 10,
+    updateText: function updateText() {
+      if (G.bit.timeText) {
+        two.remove(G.bit.timeText);
+      }
+      // create text
+      const { x, y } = this.group.translation;
+      G.bit.timeText = two.makeText(this.timeLeft, x + 8, y - 8, {
+        fill: 'white',
+        family: 'Press Start 2P',
+        size: 8
+      });
+    },
+    remove: function removeBit() {
+      two.remove(this.timeText);
+      two.remove(this.group);
+      G.bit = null;
+    }
   };
+  G.bit.updateText();
 
   if (checkCollision(G.bit.group.getBoundingClientRect()).didCollide) {
     // Generate bit at random position until it doesn't collide with anything
