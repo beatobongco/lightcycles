@@ -226,8 +226,8 @@ function generateBit(sameAsLast) {
   let outerFill = '#1abc9c';
   let innerFill = '#E6FFFF';
   if (type === 'shield') {
-    innerFill = '#1B1464';
-    outerFill = '#0652DD';
+    innerFill = '#0652DD';
+    outerFill = '#1B1464';
   }
   let group, inner, outer;
   outer = two.makeCircle(0, 0, 7);
