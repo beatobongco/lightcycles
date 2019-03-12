@@ -9,49 +9,9 @@ import {
 } from './constants';
 import { createShards, getRandomInt } from './util';
 import { playShieldSound } from './sound';
+import { getRegion, regions } from './grid';
 
-// A NOTE ON PLAYER COLLECTIONS
-// 0: big player circle
-// 1: smaller hitbox
-
-function _playerCollision(player, b, offset = 0) {
-  const hitbox = player.group._collection[1].getBoundingClientRect();
-  // Depending on the direction you're going
-  // Make sure collision on your butt has a buffer
-  // so (1) you dont derezz yourself
-  // and (2) you dont get a speed boost
-
-  // Offsets make b's hitbox "smaller"
-  let bottomOffset = 0,
-    topOffset = 0,
-    leftOffset = 0,
-    rightOffset = 0;
-  // If offset is any smaller, when turning you will get zebra lighttrails
-  // from speed bonus from the collision with your tail
-  const invulnOffset = playerSize;
-  if (player.direction === 'up') {
-    topOffset = invulnOffset;
-  } else if (player.direction === 'down') {
-    bottomOffset = invulnOffset;
-  } else if (player.direction === 'left') {
-    leftOffset = invulnOffset;
-  } else if (player.direction === 'right') {
-    rightOffset = invulnOffset;
-  }
-
-  if (
-    !(
-      hitbox.right < b.left + offset + leftOffset ||
-      hitbox.left > b.right - offset - rightOffset ||
-      hitbox.bottom < b.top + offset + topOffset ||
-      hitbox.top > b.bottom - offset - bottomOffset
-    )
-  ) {
-    return true;
-  }
-}
-
-function _regularCollision(a, b, offset = 0) {
+function didCollide(a, b, offset = 0) {
   if (
     !(
       a.right < b.left + offset ||
@@ -65,53 +25,47 @@ function _regularCollision(a, b, offset = 0) {
 }
 
 function checkLightTrailCollision(obj, slipstream = false) {
-  // TODO: can be optimized by using regions
-  let hitbox = obj;
-  let player = null;
-  let collisionFunc = _regularCollision;
-  // was: hitboxSize / 2 to allow players to really stick to lighttrails
-  // it was reduced to 0 to prevent bugs where you would collide with enemy while
-  // slipstreaming
-  let lightTrailOffset = 0;
-  if (obj.type && obj.type === 'player') {
-    player = obj;
-    hitbox = player.group._collection[1].getBoundingClientRect();
-    // use the big circle for slipstreams
-    if (slipstream) {
-      hitbox = player.group._collection[0].getBoundingClientRect();
-      lightTrailOffset = -4;
-    }
-    collisionFunc = _playerCollision;
-  }
-
   const result = { didCollide: false };
-
-  for (let i = 0; i < G.players.length; i++) {
-    for (let j = 0; j < G.players[i].lightTrails.length; j++) {
-      //Immune to own lighttrails for slipstream
-      if (slipstream && player.name === G.players[i].name) {
+  let lightTrailOffset = 0;
+  let hitbox = obj.getHitbox();
+  if (slipstream) {
+    // use the big circle for slipstreams
+    hitbox = obj.getSsHitbox();
+    lightTrailOffset = -4;
+  }
+  const { x, y } = obj.group.translation;
+  const region = getRegion(x, y);
+  const { lightTrails } = regions[region];
+  for (let i = 0; i < lightTrails.length; i++) {
+    const lt = lightTrails[i];
+    //Immune to own lighttrails for slipstream
+    if (slipstream && obj.name === lt.owner.name) {
+      continue;
+    }
+    // Decided to go with immunity to the last 2 trails instead of invulnerable back portion of cycle
+    if (obj.type === 'player') {
+      const trails = obj.immuneTrails;
+      if (
+        (trails.length >= 1 && trails[trails.length - 1] === lt.origin) ||
+        (trails.length >= 2 && trails[trails.length - 2] === lt.origin) ||
+        obj.trailPoint.equals(lt.origin)
+      ) {
         continue;
       }
-      let trail = G.players[i].lightTrails[j];
+    }
 
-      // Immune to the last trail if player hasn't yet detached from it
-      if (player && trail.origin.equals(player.currentOrigin)) {
-        continue;
-      }
-
-      let trailHitbox = trail.getBoundingClientRect();
-      if (collisionFunc(obj, trailHitbox, lightTrailOffset)) {
-        result.didCollide = true;
-        result.color = G.players[i].turboColor;
-        if (hitbox.right > trailHitbox.right) {
-          result.oppositeDir = rightVec;
-        } else if (hitbox.left < trailHitbox.left) {
-          result.oppositeDir = leftVec;
-        } else if (hitbox.bottom > trailHitbox.bottom) {
-          result.oppositeDir = downVec;
-        } else if (hitbox.top < trailHitbox.top) {
-          result.oppositeDir = upVec;
-        }
+    const trailHitbox = lt.getBoundingClientRect();
+    if (didCollide(hitbox, trailHitbox, lightTrailOffset)) {
+      result.didCollide = true;
+      result.color = lt.owner.turboColor;
+      if (hitbox.right > trailHitbox.right) {
+        result.oppositeDir = rightVec;
+      } else if (hitbox.left < trailHitbox.left) {
+        result.oppositeDir = leftVec;
+      } else if (hitbox.bottom > trailHitbox.bottom) {
+        result.oppositeDir = downVec;
+      } else if (hitbox.top < trailHitbox.top) {
+        result.oppositeDir = upVec;
       }
     }
   }
@@ -120,7 +74,7 @@ function checkLightTrailCollision(obj, slipstream = false) {
 
 function checkPlayerCollision(player) {
   const result = { didCollide: false };
-  const hitbox = player.group._collection[1].getBoundingClientRect();
+  const hitbox = player.getHitbox();
   // WALLS
   if (
     hitbox.right >= stageWidth ||
@@ -135,17 +89,14 @@ function checkPlayerCollision(player) {
   for (let i = 0; i < G.players.length; i++) {
     if (
       player.name !== G.players[i].name &&
-      _regularCollision(
-        player.group._collection[1].getBoundingClientRect(),
-        G.players[i].group._collection[1].getBoundingClientRect()
-      )
+      didCollide(player.getHitbox(), G.players[i].getHitbox())
     ) {
       result.didCollide = true;
       return result;
     }
   }
   // LIGHTTRAILS
-  const lightTrailCollision = checkLightTrailCollision(player, false);
+  const lightTrailCollision = checkLightTrailCollision(player);
   if (lightTrailCollision.didCollide) {
     // We check for shield collision here but we dont deactivate it just yet
     // because we want it to last a whole turn / update call
@@ -175,20 +126,26 @@ function checkPlayerCollision(player) {
     } else {
       return lightTrailCollision;
     }
+  } else if (player.hasShield && player.shieldDist > 0) {
+    // We need to increment shield distance also even if nothing collided to make sure it wears off
+    // I found cases wherein there was one shield frame left after going through a wall
+    // The player was still blue but would die upon next impact
+    player.shieldDist += 1;
   }
   // BIT
-  if (G.bit && _regularCollision(hitbox, G.bit.group.getBoundingClientRect())) {
+  if (G.bit && didCollide(hitbox, G.bit.group.getBoundingClientRect())) {
     result.obtainedBit = true;
   }
   // END BIT
   return result;
 }
 
-function checkCollision(hitbox) {
+function checkCollision(obj) {
   // Determines if an objects hitbox collided with or is near collidable objects (so far just light trails and walls)
   // mostly used for non-player objects like bit or powerups
   // Returns {didCollide: bool, oppositeDir: vector for effects where valid}
   const result = { didCollide: false };
+  const hitbox = obj.getHitbox();
   // WALLS
   if (
     hitbox.right >= stageWidth ||
@@ -210,7 +167,7 @@ function checkCollision(hitbox) {
     return result;
   }
   // LIGHTTRAILS
-  return checkLightTrailCollision(hitbox);
+  return checkLightTrailCollision(obj);
 }
 
 export { checkCollision, checkLightTrailCollision, checkPlayerCollision };
