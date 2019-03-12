@@ -9,6 +9,7 @@ import {
   playJoinSound,
   playRezzinSound
 } from './sound';
+import { regions } from './grid';
 
 const userKeyAcc = 'KeyT';
 const enemyKeyAcc = 'BracketRight';
@@ -41,6 +42,12 @@ function playerJoin() {
 function startGame() {
   document.getElementsByClassName('controls')[0].style.display = 'none';
   two.pause();
+  regions.forEach(r => {
+    r.lightTrails.forEach(l => {
+      two.remove(l);
+    });
+    r.lightTrails = [];
+  });
   if (G.players.length > 0) {
     G.players.forEach(p => {
       two.remove(p.group);
@@ -48,9 +55,6 @@ function startGame() {
         two.remove(c);
       });
       two.remove(p.sparks);
-      p.lightTrails.forEach(l => {
-        two.remove(l);
-      });
     });
     stopPlayerSounds();
   }
