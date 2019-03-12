@@ -12,7 +12,7 @@ import {
   lightTrailWidth,
   hitboxSize
 } from './constants';
-import { initGrid } from './grid';
+import { initGrid, getRegion, regions } from './grid';
 import { checkPlayerCollision, checkLightTrailCollision } from './collisions';
 import {
   playDerezzSound,
@@ -45,32 +45,34 @@ function checkMoveLegal(newDirection, player) {
 }
 
 function createLightTrail(player) {
-  // TODO: find a way to fill in the line without causing crashes
-  // due to excess hitbox
+  // A way to fill in the line without causing crashes due to excess hitbox
   // const { oppX, oppY } = getOppositeDirection(player.direction);
   const lightTrail = two.makeLine(
-    player.currentOrigin.x, //+ oppX * fillWidth,
-    player.currentOrigin.y, //+ oppY * fillWidth,
+    player.trailPoint.x, //+ oppX * fillWidth,
+    player.trailPoint.y, //+ oppY * fillWidth,
     player.group.translation.x,
     player.group.translation.y
   );
   lightTrail.stroke = player.strokeColor;
   lightTrail.linewidth = lightTrailWidth;
   lightTrail.opacity = 0.9;
-  lightTrail.origin = player.currentOrigin;
+  lightTrail.origin = player.trailPoint;
   lightTrail.owner = player;
 
   // If lines have same origin, remove them from the list
-  if (player.lightTrails.length > 0) {
-    const lastTrail = player.lightTrails[player.lightTrails.length - 1];
-    if (
-      lastTrail.origin.equals(lightTrail.origin) &&
-      lastTrail.stroke === lightTrail.stroke
-    ) {
-      two.remove(player.lightTrails.pop());
+  const { x, y } = player.group.translation;
+  const region = regions[getRegion(x, y)];
+  const lts = region.lightTrails;
+  // Remove previous lighttrail in region if has same origin with current
+  // Since when players create a trail per move, if we dont do this
+  // num trails in a region would quickly become huge and useless
+  // we only really need the longest line
+  if (lts.length > 0) {
+    if (lts[lts.length - 1].origin.equals(lightTrail.origin)) {
+      two.remove(lts.pop());
     }
   }
-  player.lightTrails.push(lightTrail);
+  lts.push(lightTrail);
 }
 
 function generateMove(player, frameCount) {
@@ -105,7 +107,7 @@ function generateMove(player, frameCount) {
     ) {
       // drop a new origin for turbo
       player.strokeColor = player.turboColor;
-      player.currentOrigin = player.group.translation.clone();
+      player.dropTrailPoint();
     }
   }
 
@@ -114,7 +116,7 @@ function generateMove(player, frameCount) {
     player.speed + bonus <= maxSpeed
   ) {
     player.strokeColor = player.originalStroke;
-    player.currentOrigin = player.group.translation.clone();
+    player.dropTrailPoint();
   }
 
   const trn = player.group.translation;
@@ -134,7 +136,7 @@ function generateMove(player, frameCount) {
         player.direction = direction;
         player.lastMoveDist = 0;
         // set a new origin for the light trail
-        player.currentOrigin = player.group.translation.clone();
+        player.dropTrailPoint();
         // reset sound when turning
         player.sound.currentTime = 0;
       }
@@ -183,6 +185,7 @@ function generateMove(player, frameCount) {
       }
       if (G.bit.type === 'shield') {
         player.hasShield = true;
+        player.shieldDist = 0;
         player.fillColor = '#0652DD';
       }
       player.score += 1000;
@@ -193,7 +196,7 @@ function generateMove(player, frameCount) {
       }
     }
     // We allow shield exactly for one lighttrail
-    if (player.shieldDist >= lightTrailWidth - 1) {
+    if (player.shieldDist >= lightTrailWidth + hitboxSize + 1) {
       player.hasShield = false;
       player.shieldDist = 0;
       player.fillColor = player.originalFill;
@@ -207,7 +210,7 @@ function generateMove(player, frameCount) {
   } else if (player.isAccelerating) {
     createLightTrail(player);
   } else {
-    player.currentOrigin = player.group.translation.clone();
+    player.dropTrailPoint();
   }
 
   two.remove(player.sparks);
