@@ -69,12 +69,15 @@ function createPlayerCircle(x, y, strokeColor, fillColor) {
   circle.fill = fillColor;
   circle.linewidth = 2;
   const hitbox = two.makeRectangle(x, y, hitboxSize, hitboxSize);
-  hitbox.fill = 'red'; // for debugging
   hitbox.noFill();
   hitbox.noStroke();
   const group = two.makeGroup(circle, hitbox);
   group.center();
   group.translation.set(x, y);
+  // for debugging
+  // circle.noFill();
+  // circle.noStroke();
+  // hitbox.fill = 'red';
   return group;
 }
 
@@ -92,6 +95,19 @@ function initPlayer(
   HUDelement
 ) {
   const p = {
+    trailPoint: new Two.Vector(x, y),
+    immuneTrails: [],
+    dropTrailPoint: function setOrigin() {
+      const point = this.group.translation.clone();
+      this.immuneTrails = [this.trailPoint, point];
+      this.trailPoint = point;
+    },
+    getHitbox: function getHitbox() {
+      return this.group._collection[1].getBoundingClientRect();
+    },
+    getSsHitbox: function getSsHitbox() {
+      return this.group._collection[0].getBoundingClientRect();
+    },
     el: HUDelement,
     name: name,
     direction: defaultDirection,
@@ -141,8 +157,6 @@ function initPlayer(
     originalFill: fillColor,
     turboColor: turboColor,
     sparkColor: sparkColor,
-    currentOrigin: new Two.Vector(x, y),
-    lightTrails: [],
     corpses: [],
     sparks: null,
     sound: new Audio(),
