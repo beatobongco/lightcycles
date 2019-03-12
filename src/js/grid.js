@@ -1,7 +1,7 @@
 import { stageWidth, stageHeight, gridSize } from './constants';
 import { two } from './constants';
 
-const numRegions = 3; // per dimension, so that would be num x num
+const numRegions = 36; // per dimension, so that would be num x num
 const xBreakPoint = Math.floor(stageWidth / numRegions);
 const yBreakPoint = Math.floor(stageHeight / numRegions);
 const regions = [];
@@ -41,8 +41,20 @@ function initGrid() {
             minX,
             maxX,
             minY,
-            maxY
+            maxY,
+            lightTrails: []
           });
+          // for visualization, change later to some configurable variable
+          if (true) {
+            const rect = two.makeRectangle(
+              (maxX + minX) / 2,
+              (maxY + minY) / 2,
+              maxX - minX,
+              maxY - minY
+            );
+            rect.fill = 'red';
+            rect.opacity = 0.5;
+          }
           const lastRegion = regions.length > 0 && regions[regions.length - 1];
           if (lastRegion) {
             minX = lastRegion.maxX + 1;
@@ -59,4 +71,13 @@ function initGrid() {
   G.regions = regions;
 }
 
-export { initGrid, regions };
+function getRegion(x, y) {
+  for (let i = 0; i < regions.length; i++) {
+    const r = regions[i];
+    if (x >= r.minX && x <= r.maxX && y >= r.minY && y <= r.maxY) {
+      return i;
+    }
+  }
+}
+
+export { initGrid, regions, getRegion };
