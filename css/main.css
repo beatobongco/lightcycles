@@ -107,9 +107,14 @@ a {
   justify-content: center;
   margin-top: -10px;
 }
+
 .windot {
   font-size: 24px;
   margin-right: 3px;
+}
+
+.windot.win {
+  color: #fff200;
 }
 
 .credits {
@@ -133,7 +138,11 @@ a {
 }
 
 .blink {
-  animation: blinker 1s linear infinite;
+  animation: blinker 1s linear;
+}
+
+.blink.infinite {
+  animation-iteration-count: infinite;
 }
 
 @keyframes blinker {

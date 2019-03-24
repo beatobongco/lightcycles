@@ -299,7 +299,7 @@ G.instance = two.bind('update', frameCount => {
           }
         });
         if (winner) {
-          winner.roundWins += 1;
+          winner.increaseRoundWins();
           pointsText += `<p> ${winner.name} WINS </p>`;
         } else {
           pointsText = `<p>DRAW.</p>`;
@@ -310,7 +310,7 @@ G.instance = two.bind('update', frameCount => {
         G.players.some(p => {
           if (p.alive) {
             G.gameOverText = `${p.name} WINS`;
-            p.roundWins += 1;
+            p.increaseRoundWins();
             return true;
           }
         });

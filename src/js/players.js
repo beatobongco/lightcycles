@@ -11,7 +11,7 @@ import {
 function renderJoinUI(el, playerName, control) {
   document.getElementById(el).innerHTML = `
     <h3>${playerName}</h3>
-    <div class="blink">
+    <div class="blink infinite">
       <p><small class="tiny">PRESS</small></p>
       <p class="centered">${control}</p>
       <p><small class="tiny">TO JOIN</small></p>
@@ -19,7 +19,7 @@ function renderJoinUI(el, playerName, control) {
   `;
 }
 
-function renderHUD(player) {
+function renderHUD(player, newWin) {
   const n = '';
   const { el, name, wins, roundWins, speed, score } = player;
   let roundsHTML = n,
@@ -32,7 +32,11 @@ function renderHUD(player) {
       '<span class="windot">&#9675;</span>'
     ];
     for (let i = 0; i < roundWins; i++) {
-      roundDots[i] = '<span class="windot">&#9679;</span>';
+      let classes = 'win windot';
+      if (newWin && i === roundWins - 1) {
+        classes += ' blink';
+      }
+      roundDots[i] = `<span class="${classes}">&#9679;</span>`;
     }
     roundsHTML = `<p><small>ROUND</small></p>
     <div class="rounds">${roundDots.join('')}</div>`;
@@ -97,17 +101,22 @@ function initPlayer(
   const p = {
     trailPoint: new Two.Vector(x, y),
     immuneTrails: [],
-    dropTrailPoint: function setOrigin() {
+    dropTrailPoint() {
       const point = this.group.translation.clone();
       this.immuneTrails = [this.trailPoint, point];
       this.trailPoint = point;
     },
-    getHitbox: function getHitbox() {
+    getHitbox() {
       return this.group._collection[1].getBoundingClientRect();
     },
-    getSsHitbox: function getSsHitbox() {
+    getSsHitbox() {
       return this.group._collection[0].getBoundingClientRect();
     },
+    increaseRoundWins() {
+      this.roundWins += 1;
+      renderHUD(this, true);
+    },
+    roundWins: roundWins,
     el: HUDelement,
     name: name,
     direction: defaultDirection,
@@ -126,14 +135,6 @@ function initPlayer(
     },
     set wins(wns) {
       this._wins = wns;
-      renderHUD(this);
-    },
-    _roundWins: roundWins,
-    get roundWins() {
-      return this._roundWins;
-    },
-    set roundWins(rnd) {
-      this._roundWins = rnd;
       renderHUD(this);
     },
     _score: 0, // 1 per unit distance traveled
